@@ -78,7 +78,9 @@ class PermohonanResource extends Resource
                                 $query->select('perizinan_id')
                                     ->from('formulirs')
                                     ->where('perizinan_id', $get('perizinan_id'));
-                            })->get();
+                            })
+                            ->where('role_id', auth()->user()->roles->first()->id) // Filter berdasarkan role_id = 1
+                            ->get();
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
                                 if ($option->type == 'string') {
@@ -89,15 +91,14 @@ class PermohonanResource extends Resource
                                     $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
                                 } else if ($option->type == 'select') {
                                     $jsonOptions = $option->options;
-                                    $valuesArray = array_map(function ($item) {
+                                    $valuesArray = array_map(function($item) {
                                         return $item['value'];
                                     }, $jsonOptions);
-
+                            
                                     // Set options untuk select
                                     $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
                                         ->options(array_combine($valuesArray, $valuesArray)) // Menggunakan array_combine agar value menjadi key dan value
-                                        ->required();
-                                }
+                                        ->required();                                }
                             }
                             return [
                                 ...$selectOptions

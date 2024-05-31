@@ -9,6 +9,7 @@ use Filament\Forms\Form;
 use App\Models\Perizinan;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\FormulirResource\Pages;
@@ -42,12 +43,13 @@ class FormulirResource extends Resource
                         'date' => 'Date',
                         'select' => 'Select',
                     ]),
+                Forms\Components\Select::make('role_id')
+                    ->options(Role::all()->pluck('name', 'id')->toArray()),
                 Repeater::make('options')
                     ->schema([
-                        Forms\Components\TextInput::make('value')->required(),
+                        Forms\Components\TextInput::make('value'),
                     ])
                     ->columns(2)
-
             ]);
     }
 
@@ -55,8 +57,10 @@ class FormulirResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('perizinan_id')
+                Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('role.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_formulir')
                     ->searchable(),
