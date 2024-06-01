@@ -26,6 +26,11 @@ class PermohonanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static ?string $navigationGroup = 'Pengajuan';
+
+    protected static ?int $navigationGroupSort = 1;
+
+
     public static function form(Form $form): Form
     {
         return $form
@@ -78,27 +83,39 @@ class PermohonanResource extends Resource
                                 $query->select('perizinan_id')
                                     ->from('formulirs')
                                     ->where('perizinan_id', $get('perizinan_id'));
-                            })
-                            ->where('role_id', auth()->user()->roles->first()->id) // Filter berdasarkan role_id = 1
-                            ->get();
+                            })->get();
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
                                 if ($option->type == 'string') {
-                                    $selectOptions[$option->nama_formulir] =
-                                        Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
-                                        ->required();
+                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2 || auth()->user()->roles->first()->id != 2) {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->required();
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
                                 } else if ($option->type == 'date') {
-                                    $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2 || auth()->user()->roles->first()->id != 2) {
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
                                 } else if ($option->type == 'select') {
-                                    $jsonOptions = $option->options;
-                                    $valuesArray = array_map(function($item) {
-                                        return $item['value'];
-                                    }, $jsonOptions);
-                            
-                                    // Set options untuk select
-                                    $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                                        ->options(array_combine($valuesArray, $valuesArray)) // Menggunakan array_combine agar value menjadi key dan value
-                                        ->required();                                }
+                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2 || auth()->user()->roles->first()->id != 2) {
+                                        $jsonOptions = $option->options;
+                                        $valuesArray = array_map(function ($item) {
+                                            return $item['value'];
+                                        }, $jsonOptions);
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->options(array_combine($valuesArray, $valuesArray)) // Menggunakan array_combine agar value menjadi key dan value
+                                            ->required();
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                }
                             }
                             return [
                                 ...$selectOptions
@@ -134,6 +151,7 @@ class PermohonanResource extends Resource
             ])
             ->filters([
                 //
+
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -145,6 +163,18 @@ class PermohonanResource extends Resource
                 ]),
             ]);
     }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        if (auth()->user()->roles->first()->name == 'super_admin') {
+            return $query;
+        } else {
+            return $query->where('user_id', auth()->id());
+        }
+    }
+
+
 
     public static function getRelations(): array
     {

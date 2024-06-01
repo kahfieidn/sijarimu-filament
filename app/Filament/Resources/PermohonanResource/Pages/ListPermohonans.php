@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\PermohonanResource\Pages;
 
-use App\Filament\Resources\PermohonanResource;
 use Filament\Actions;
+use Illuminate\Database\Query\Builder;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\PermohonanResource;
 
 class ListPermohonans extends ListRecords
 {
@@ -16,4 +17,6 @@ class ListPermohonans extends ListRecords
             Actions\CreateAction::make(),
         ];
     }
+
+
 }
