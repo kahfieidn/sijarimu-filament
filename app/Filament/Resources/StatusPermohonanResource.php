@@ -17,11 +17,11 @@ class StatusPermohonanResource extends Resource
 {
     protected static ?string $model = StatusPermohonan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-check-badge';
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 7;
 
     public static function form(Form $form): Form
     {

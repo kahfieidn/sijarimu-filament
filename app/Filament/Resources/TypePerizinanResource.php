@@ -17,7 +17,7 @@ class TypePerizinanResource extends Resource
 {
     protected static ?string $model = TypePerizinan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-tag';
 
     protected static ?string $navigationGroup = 'Administrator';
 

@@ -20,15 +20,20 @@ class PerizinanLifecycleResource extends Resource
 {
     protected static ?string $model = PerizinanLifecycle::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-hashtag';
+
+    protected static ?string $navigationGroup = 'Administrator';
+
+    protected static ?int $navigationSort = 3;
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('nama_flow')
-                            ->required()
-                            ->maxLength(255),
+                    ->required()
+                    ->maxLength(255),
                 Repeater::make('flow')
                     ->schema([
                         Select::make('flow')
@@ -49,8 +54,8 @@ class PerizinanLifecycleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_flow')
-                ->numeric()
-                ->sortable(),
+                    ->numeric()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

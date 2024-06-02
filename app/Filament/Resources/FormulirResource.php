@@ -20,11 +20,11 @@ class FormulirResource extends Resource
 {
     protected static ?string $model = Formulir::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard';
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 6;
 
 
     public static function form(Form $form): Form
