@@ -8,17 +8,22 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Formulir;
 use Filament\Forms\Form;
+use App\Models\Perizinan;
 use App\Models\Permohonan;
 use Filament\Tables\Table;
 use App\Models\Persyaratan;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PermohonanResource\Pages;
 use App\Filament\Resources\PermohonanResource\RelationManagers;
+use App\Filament\Resources\PermohonanResource\Pages\CreatePermohonan;
 
 class PermohonanResource extends Resource
 {
@@ -43,13 +48,30 @@ class PermohonanResource extends Resource
                                 ->preload()
                                 ->live()
                                 ->searchable()
-                                ->afterStateUpdated(function (Set $set) {
+                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                    $possible_flows = ['pilih_perizinan', 'profile_usaha', 'checklist_berkas', 'checklist_formulir'];
+                                    foreach ($possible_flows as $flow_name) {
+                                        $set($flow_name, false);
+                                    }
                                     $set('berkas.*.nama_persyaratan', '');
                                     $set('berkas.*.file', null);
-                                })
-                                ->required(),
+
+                                    $perizinan = Perizinan::find($get('perizinan_id'));
+                                    if ($perizinan != null) {
+                                        $flows = $perizinan->perizinan_lifecycle->flow;
+                                        if ($perizinan->perizinan_lifecycle_id) {
+                                            foreach ($flows as $item) {
+                                                if (isset($item['flow'])) {
+                                                    $flow_name = $item['flow'];
+                                                    $set($flow_name, true);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
+                        ->visible(fn (Get $get) => $get('checklist_berkas'))
                         ->schema([
                             Repeater::make('berkas')
                                 ->schema(function (Get $get): array {
@@ -74,10 +96,12 @@ class PermohonanResource extends Resource
                                             ->openable()
                                             ->appendFiles()
                                             ->directory('berkas'),
+
                                     ];
                                 })->columns(2),
                         ]),
                     Wizard\Step::make('Formulir')
+                        ->visible(fn (Get $get) => $get('checklist_formulir'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -120,9 +144,25 @@ class PermohonanResource extends Resource
                             return [
                                 ...$selectOptions
                             ];
-                        })->columns(2),
+                        }),
+                    Wizard\Step::make('Profile Usaha')
+                        ->visible(fn (Get $get) => $get('profile_usaha') == true)
+                        ->schema([
+                            Forms\Components\TextInput::make('additional_field')
+                                ->label('Field Tambahan')
+                                ->required(),
+                            Forms\Components\TextInput::make('sdsd')
+                                ->required()
+                                ->maxLength(255),
+                        ]),
+                    Wizard\Step::make('Konfirmasi Data')
+                        ->schema([
+                            Placeholder::make('konfirmasi_keabsahan_data')
+                                ->content('Kami menyatakan bahwa data tersebut telah diperiksa secara cermat dan dinyatakan benar adanya sesuai dengan sumber yang tersedia. Kami juga menegaskan bahwa kami bertanggung jawab penuh atas keakuratan dan keabsahan data ini ke depannya, serta siap untuk mengklarifikasi atau memperbaiki jika ditemukan ketidaksesuaian di kemudian hari.'),
+                            Forms\Components\Checkbox::make('saya_setuju')
+                                ->accepted()
+                        ]),
                 ])->columnSpanFull(),
-
             ]);
     }
 
@@ -169,8 +209,10 @@ class PermohonanResource extends Resource
         $query = parent::getEloquentQuery();
         if (auth()->user()->roles->first()->name == 'super_admin') {
             return $query;
-        } else {
+        } else if (auth()->user()->roles->first()->name == 'pemohon') {
             return $query->where('user_id', auth()->id());
+        } else if (auth()->user()->roles->first()->name == 'front_office') {
+            return $query->where('status_permohonan_id', 1);
         }
     }
 

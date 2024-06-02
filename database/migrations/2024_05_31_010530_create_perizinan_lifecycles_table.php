@@ -11,11 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('perizinans', function (Blueprint $table) {
+        Schema::create('perizinan_lifecycles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sektor_id')->constrained();
-            $table->foreignId('perizinan_lifecycle_id')->constrained();
-            $table->string('nama_perizinan');
+            $table->string('nama_flow');
+            $table->json('flow');
             $table->timestamps();
         });
     }
@@ -25,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('perizinans');
+        Schema::dropIfExists('perizinan_lifecycles');
     }
 };

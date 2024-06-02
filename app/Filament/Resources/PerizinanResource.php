@@ -33,6 +33,13 @@ class PerizinanResource extends Resource
                 Forms\Components\TextInput::make('nama_perizinan')
                     ->required()
                     ->maxLength(255),
+                // Forms\Components\Select::make('perizinan_life_cycle_id')
+                //     ->options(fn () => \App\Models\PerizinanLifecycle::pluck('flow', 'id'))
+                //     ->required(),
+                Forms\Components\Select::make('perizinan_lifecycle_id')
+                    ->options(fn () => \App\Models\PerizinanLifecycle::pluck('nama_flow', 'id'))
+                    ->required(),
+
             ]);
     }
 

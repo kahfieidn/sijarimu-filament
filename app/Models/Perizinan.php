@@ -12,6 +12,7 @@ class Perizinan extends Model
     protected $fillable = [
         'sektor_id',
         'nama_perizinan',
+        'perizinan_lifecycle_id',
     ];
 
     public function sektor()
@@ -27,6 +28,10 @@ class Perizinan extends Model
     public function formulir()
     {
         return $this->hasMany(Formulir::class);
+    }
+
+    public function perizinan_lifecycle(){
+        return $this->belongsTo(PerizinanLifecycle::class);
     }
 
 }
