@@ -45,8 +45,8 @@ class PermohonanResource extends Resource
                         ->schema([
                             Forms\Components\Select::make('perizinan_id')
                                 ->relationship(name: 'perizinan', titleAttribute: 'nama_perizinan')
-                                ->preload()
                                 ->live()
+                                ->preload()
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
                                     $possible_flows = ['pilih_perizinan', 'profile_usaha', 'checklist_berkas', 'checklist_formulir'];
@@ -68,7 +68,7 @@ class PermohonanResource extends Resource
                                             }
                                         }
                                     }
-                                }),
+                                })
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->visible(fn (Get $get) => $get('checklist_berkas'))
@@ -164,6 +164,7 @@ class PermohonanResource extends Resource
                         ]),
                 ])->columnSpanFull(),
             ]);
+            
     }
 
     public static function table(Table $table): Table
