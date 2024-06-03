@@ -10,16 +10,15 @@ use App\Filament\Resources\PermohonanResource;
 
 class CreatePermohonan extends CreateRecord
 {
-  
+
     protected static string $resource = PermohonanResource::class;
     protected $listeners = ['refresh' => 'refreshForm'];
 
-    
     public function refreshForm()
     {
         $this->fillForm();
     }
-
+    
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = auth()->id();

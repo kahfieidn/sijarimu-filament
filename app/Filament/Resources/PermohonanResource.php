@@ -16,7 +16,9 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
@@ -49,7 +51,7 @@ class PermohonanResource extends Resource
                                 ->preload()
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                    $possible_flows = ['pilih_perizinan', 'profile_usaha', 'checklist_berkas', 'checklist_formulir'];
+                                    $possible_flows = ['pilih_perizinan', 'profile_usaha_relation', 'checklist_berkas', 'checklist_formulir'];
                                     foreach ($possible_flows as $flow_name) {
                                         $set($flow_name, false);
                                     }
@@ -68,7 +70,7 @@ class PermohonanResource extends Resource
                                             }
                                         }
                                     }
-                                })
+                                }),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->visible(fn (Get $get) => $get('checklist_berkas'))
@@ -146,14 +148,28 @@ class PermohonanResource extends Resource
                             ];
                         }),
                     Wizard\Step::make('Profile Usaha')
-                        ->visible(fn (Get $get) => $get('profile_usaha') == true)
+                        ->visible(fn (Get $get) => $get('profile_usaha_relation'))
                         ->schema([
-                            Forms\Components\TextInput::make('additional_field')
-                                ->label('Field Tambahan')
-                                ->required(),
-                            Forms\Components\TextInput::make('sdsd')
-                                ->required()
-                                ->maxLength(255),
+                            Fieldset::make('Profile Usaha')
+                                ->relationship('profile_usaha')
+                                ->schema([
+                                    Forms\Components\TextInput::make('nama_perusahaan')
+                                        ->label('Nama Perusahaan')->columnSpanFull(),
+                                    Forms\Components\TextInput::make('npwp')
+                                        ->label('NPWP'),
+                                    Forms\Components\FileUpload::make('npwp_file')
+                                        ->label('NPWP File'),
+                                    Forms\Components\TextInput::make('nib')
+                                        ->label('NIB'),
+                                    Forms\Components\FileUpload::make('nib_file')
+                                        ->label('NIB File'),
+                                    Forms\Components\TextArea::make('alamat')
+                                        ->label('Alamat'),
+                                    Forms\Components\TextInput::make('provinsi')
+                                        ->label('Provinsi'),
+                                    Forms\Components\TextInput::make('domisili')
+                                        ->label('Domisili'),
+                                ]),
                         ]),
                     Wizard\Step::make('Konfirmasi Data')
                         ->schema([
@@ -164,7 +180,6 @@ class PermohonanResource extends Resource
                         ]),
                 ])->columnSpanFull(),
             ]);
-            
     }
 
     public static function table(Table $table): Table

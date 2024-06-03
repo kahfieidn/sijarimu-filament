@@ -24,7 +24,6 @@ class EditPermohonan extends EditRecord
                 }
             }
         }
-
         return $data;
     }
 

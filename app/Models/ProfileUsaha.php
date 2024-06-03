@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Permohonan;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class ProfileUsaha extends Model
 {
@@ -17,6 +18,8 @@ class ProfileUsaha extends Model
         'nib_file',
         'alamat',
         'provinsi',
-        'domisili',
+        'domisili',        
     ];
+
+
 }

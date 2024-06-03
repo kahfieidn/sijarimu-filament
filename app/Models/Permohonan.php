@@ -2,8 +2,11 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\ProfileUsaha;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Permohonan extends Model
 {
@@ -13,6 +16,7 @@ class Permohonan extends Model
         'perizinan_id',
         'user_id',
         'status_permohonan_id',
+        'profile_usaha_id',
         'nama_pemohon',
         'berkas',
         'formulir',
@@ -38,5 +42,11 @@ class Permohonan extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function profile_usaha()
+    {
+        return $this->belongsTo(ProfileUsaha::class);
+    }
+
 
 }

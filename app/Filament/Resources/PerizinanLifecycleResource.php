@@ -39,7 +39,7 @@ class PerizinanLifecycleResource extends Resource
                         Select::make('flow')
                             ->options([
                                 'pilih_perizinan' => 'Pilih Perizinan',
-                                'profile_usaha' => 'Profile Usaha',
+                                'profile_usaha_relation' => 'Profile Usaha Relation',
                                 'checklist_berkas' => 'Checklist Berkas',
                                 'checklist_formulir' => 'Checklist Formulir',
                             ])
