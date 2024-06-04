@@ -12,9 +12,12 @@ class PerizinanLifecycle extends Model
     protected $fillable = [
         'nama_flow',
         'flow',
+        'flow_status',
     ];
 
     protected $casts = [
         'flow' => 'json',
+        'flow_status' => 'json',
     ];
+    
 }

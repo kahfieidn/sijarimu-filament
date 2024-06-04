@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Support\Str;
 use App\Models\ProfileUsaha;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -28,6 +29,27 @@ class Permohonan extends Model
         'formulir' => 'json',
     ];
 
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->{$model->getKeyName()})) {
+                $model->{$model->getKeyName()} = Str::uuid()->toString();
+            }
+        });
+    }
+
+    public function getIncrementing()
+    {
+        return false;
+    }
+
+    public function getKeyType()
+    {
+        return 'string';
+    }
+
+
     public function perizinan()
     {
         return $this->belongsTo(Perizinan::class);
@@ -47,6 +69,4 @@ class Permohonan extends Model
     {
         return $this->belongsTo(ProfileUsaha::class);
     }
-
-
 }

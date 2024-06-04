@@ -6,8 +6,10 @@ use Filament\Forms;
 use Filament\Tables;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\StatusPermohonan;
 use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
+use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
@@ -43,6 +45,17 @@ class PerizinanLifecycleResource extends Resource
                                 'checklist_berkas' => 'Checklist Berkas',
                                 'checklist_formulir' => 'Checklist Formulir',
                             ])
+                            ->required(),
+                    ])
+                    ->columns(2),
+                Repeater::make('flow_status')
+                    ->schema([
+                        Select::make('role')
+                            ->options(Role::all()->pluck('name', 'id')->toArray())
+                            ->required(),
+                        Select::make('status')
+                            ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
+                            ->multiple()
                             ->required(),
                     ])
                     ->columns(2),

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_flow');
             $table->json('flow');
+            $table->json('flow_status');
             $table->timestamps();
         });
     }

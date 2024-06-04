@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\PerizinanLifecycle;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Perizinan extends Model
 {
@@ -31,7 +32,7 @@ class Perizinan extends Model
     }
 
     public function perizinan_lifecycle(){
-        return $this->belongsTo(PerizinanLifecycle::class);
+        return $this->belongsTo(PerizinanLifecycle::class, 'perizinan_lifecycle_id', 'id');
     }
 
 }
