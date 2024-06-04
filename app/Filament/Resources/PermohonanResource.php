@@ -76,27 +76,8 @@ class PermohonanResource extends Resource
                                         }
                                     }
                                 })
+                                ->required()
                                 ->disabledOn('edit'),
-                            Select::make('status_permohonan_id')
-                                ->label('Status Permohonan')
-                                ->searchable()
-                                ->options(function (Get $get) {
-                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
-                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
-                                        ->pluck('flow_status');
-                                    $options = [];
-                                    
-                                    foreach ($data as $item) {
-                                        foreach ($item as $roleData) {
-                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
-                                                $options = $roleData['status'];
-                                                break 2;
-                                            }
-                                        }
-                                    }
-                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
-                                    return $final_relation_status;
-                                }),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->visible(fn (Get $get) => $get('checklist_berkas'))
@@ -216,11 +197,29 @@ class PermohonanResource extends Resource
                         ]),
                     Wizard\Step::make('Konfirmasi Data')
                         ->schema([
+                            Select::make('status_permohonan_id')
+                                ->label('Status Permohonan')
+                                ->searchable()
+                                ->options(function (Get $get) {
+                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+                                        ->pluck('flow_status');
+                                    $options = [];
 
-                            Placeholder::make('konfirmasi_keabsahan_data')
-                                ->content('Kami menyatakan bahwa data tersebut telah diperiksa secara cermat dan dinyatakan benar adanya sesuai dengan sumber yang tersedia. Kami juga menegaskan bahwa kami bertanggung jawab penuh atas keakuratan dan keabsahan data ini ke depannya, serta siap untuk mengklarifikasi atau memperbaiki jika ditemukan ketidaksesuaian di kemudian hari.'),
+                                    foreach ($data as $item) {
+                                        foreach ($item as $roleData) {
+                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
+                                                $options = $roleData['status'];
+                                                break 2;
+                                            }
+                                        }
+                                    }
+                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
+                                    return $final_relation_status;
+                                }),
+                            Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')
-                                ->label('Saya Setuju')
+                                ->label('Ya, Saya Setuju!')
                                 ->accepted()
                         ])
                 ])->columnSpanFull(),
