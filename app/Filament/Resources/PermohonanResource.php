@@ -81,25 +81,20 @@ class PermohonanResource extends Resource
                                 ->label('Status Permohonan')
                                 ->options(function (Get $get) {
                                     // $perizinan = Perizinan::all()->where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id');
-
                                     $data = PerizinanLifecycle::where('id', 1)
                                         ->pluck('flow_status');
-
                                     $options = [];
-
+                                    
                                     foreach ($data as $item) {
                                         foreach ($item as $roleData) {
                                             if ($roleData['role'] == '2') {
-                                                $statusIds = $roleData['status'];
-                                                $statusNames = StatusPermohonan::whereIn('id', $statusIds)->pluck('nama_status');
-                                                $options = $statusNames->toArray();
-                                                break 2; // Keluar dari kedua loop karena peran yang diinginkan sudah ditemukan
+                                                $options = $roleData['status'];
+                                                break 2;
                                             }
                                         }
                                     }
-
-                                    // Mengembalikan opsi untuk peran dengan nilai '1'
-                                    return $options;
+                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
+                                    return $final_relation_status;
                                 }),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
