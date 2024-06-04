@@ -89,8 +89,10 @@ class PermohonanResource extends Resource
 
                                     foreach ($data as $item) {
                                         foreach ($item as $roleData) {
-                                            if ($roleData['role'] == '1') {
-                                                $options = $roleData['status'];
+                                            if ($roleData['role'] == '2') {
+                                                $statusIds = $roleData['status'];
+                                                $statusNames = StatusPermohonan::whereIn('id', $statusIds)->pluck('nama_status');
+                                                $options = $statusNames->toArray();
                                                 break 2; // Keluar dari kedua loop karena peran yang diinginkan sudah ditemukan
                                             }
                                         }
