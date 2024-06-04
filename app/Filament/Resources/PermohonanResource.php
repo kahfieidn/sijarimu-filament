@@ -64,6 +64,24 @@ class PermohonanResource extends Resource
                                     $set('berkas.*.nama_persyaratan', '');
                                     $set('berkas.*.file', null);
                                     $perizinan = Perizinan::find($get('perizinan_id'));
+
+                                    //Setting default dynamic form
+                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+                                    ->pluck('flow_status');     
+                                    $options = null;
+                                    if ($perizinan) {
+                                        foreach ($data as $item) {
+                                            foreach ($item as $roleData) {
+                                                if ($roleData['role'] == auth()->user()->roles->first()->id) {
+                                                    $options = $roleData['default_status'];
+                                                    break 2;
+                                                }
+                                            }
+                                        }
+                                    }
+                                    $set('status_permohonan_id', $options);
+
                                     if ($perizinan != null) {
                                         $flows = $perizinan->perizinan_lifecycle->flow;
                                         if ($perizinan->perizinan_lifecycle_id) {
@@ -78,6 +96,26 @@ class PermohonanResource extends Resource
                                 })
                                 ->required()
                                 ->disabledOn('edit'),
+                            Select::make('status_permohonan_id')
+                                ->label('Status Permohonan')
+                                ->searchable()
+                                ->preload()
+                                ->options(function (Get $get) {
+                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+                                        ->pluck('flow_status');
+                                    $options = [];
+                                    foreach ($data as $item) {
+                                        foreach ($item as $roleData) {
+                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
+                                                $options = $roleData['status'];
+                                                break 2;
+                                            }
+                                        }
+                                    }
+                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
+                                    return $final_relation_status;
+                                }),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->visible(fn (Get $get) => $get('checklist_berkas'))
@@ -99,16 +137,14 @@ class PermohonanResource extends Resource
                                                 return $selectedOptions->contains($value);
                                             })
                                             ->live()
-                                            ->preload()
-                                            ->columnSpanFull(),
+                                            ->preload(),
                                         Forms\Components\FileUpload::make('file')
                                             ->required()
                                             ->openable()
                                             ->appendFiles()
-                                            ->directory('berkas')
-                                            ->columnSpanFull(),
+                                            ->directory('berkas'),
                                         Forms\Components\Select::make('status')
-                                            ->disabled(auth()->user()->roles->first()->name == 'pemohon')
+                                            ->visible(auth()->user()->roles->first()->name != 'pemohon')
                                             ->dehydrated()
                                             ->options([
                                                 'revision' => 'Revision',
@@ -119,7 +155,7 @@ class PermohonanResource extends Resource
                                             ->default('pending')
                                             ->required(),
                                         Forms\Components\TextInput::make('keterangan')
-                                            ->disabled(auth()->user()->roles->first()->name == 'pemohon')
+                                            ->visible(auth()->user()->roles->first()->name != 'pemohon')
                                             ->dehydrated()
                                             ->default('-')
                                             ->required(),
@@ -197,26 +233,7 @@ class PermohonanResource extends Resource
                         ]),
                     Wizard\Step::make('Konfirmasi Data')
                         ->schema([
-                            Select::make('status_permohonan_id')
-                                ->label('Status Permohonan')
-                                ->searchable()
-                                ->options(function (Get $get) {
-                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
-                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
-                                        ->pluck('flow_status');
-                                    $options = [];
 
-                                    foreach ($data as $item) {
-                                        foreach ($item as $roleData) {
-                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
-                                                $options = $roleData['status'];
-                                                break 2;
-                                            }
-                                        }
-                                    }
-                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
-                                    return $final_relation_status;
-                                }),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')
                                 ->label('Ya, Saya Setuju!')

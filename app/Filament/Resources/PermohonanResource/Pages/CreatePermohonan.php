@@ -21,7 +21,6 @@ class CreatePermohonan extends CreateRecord
     
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        dd($data);
         $data['user_id'] = auth()->id();
         // $data['status_permohonan_id'] = 1;
         return $data;
