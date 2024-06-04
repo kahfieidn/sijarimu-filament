@@ -79,15 +79,16 @@ class PermohonanResource extends Resource
                                 ->disabledOn('edit'),
                             Select::make('status_permohonan_id')
                                 ->label('Status Permohonan')
+                                ->searchable()
                                 ->options(function (Get $get) {
-                                    // $perizinan = Perizinan::all()->where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id');
-                                    $data = PerizinanLifecycle::where('id', 1)
+                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
                                         ->pluck('flow_status');
                                     $options = [];
                                     
                                     foreach ($data as $item) {
                                         foreach ($item as $roleData) {
-                                            if ($roleData['role'] == '2') {
+                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
                                                 $options = $roleData['status'];
                                                 break 2;
                                             }
