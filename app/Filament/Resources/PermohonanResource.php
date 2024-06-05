@@ -215,6 +215,8 @@ class PermohonanResource extends Resource
                     Wizard\Step::make('Konfirmasi Permohonan')
                         ->schema([
                             Select::make('status_permohonan_id')
+                                ->searchable()
+                                ->label('Status Permohonan')
                                 ->options(function (Get $get) {
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
                                     $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
@@ -231,7 +233,7 @@ class PermohonanResource extends Resource
                                     $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
                                     return $final_relation_status;
                                 })
-                                ->visible(auth()->user()->roles->first()->name != 'pemohon')
+                                ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                 ->dehydrated(),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')

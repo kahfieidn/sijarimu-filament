@@ -45,6 +45,7 @@ class EditPermohonan extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
+        $perizinan = Perizinan::where('id', $data['perizinan_id'])->first();
         $perizinan_lifecycle_id = Perizinan::where('id', $data['perizinan_id'])->first()->pluck('perizinan_lifecycle_id')->first();
 
         $flow_status = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
