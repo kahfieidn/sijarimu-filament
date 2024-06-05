@@ -47,6 +47,8 @@ class PerizinanLifecycleResource extends Resource
                                         'profile_usaha_relation' => 'Profile Usaha Relation',
                                         'checklist_berkas' => 'Checklist Berkas',
                                         'checklist_formulir' => 'Checklist Formulir',
+                                        'konfirmasi_pemohon' => 'Konfirmasi Pemohon',
+                                        'fo_moderation' => 'Moderasi FO',
                                     ])
                                     ->required(),
                             ])

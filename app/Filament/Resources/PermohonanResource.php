@@ -25,6 +25,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -57,7 +58,7 @@ class PermohonanResource extends Resource
                                 ->preload()
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                    $possible_flows = ['pilih_perizinan', 'profile_usaha_relation', 'checklist_berkas', 'checklist_formulir'];
+                                    $possible_flows = ['pilih_perizinan', 'profile_usaha_relation', 'checklist_berkas', 'checklist_formulir', 'konfirmasi_pemohon', 'fo_moderation'];
                                     foreach ($possible_flows as $flow_name) {
                                         $set($flow_name, false);
                                     }
@@ -154,30 +155,28 @@ class PermohonanResource extends Resource
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
                                 if ($option->type == 'string') {
-                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2 || auth()->user()->roles->first()->id != 2) {
+                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2) {
                                         $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
-                                            ->required();
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'date') {
-                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2 || auth()->user()->roles->first()->id != 2) {
+                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2) {
                                         $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'select') {
-                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2 || auth()->user()->roles->first()->id != 2) {
+                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
                                         }, $jsonOptions);
                                         $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                                            ->options(array_combine($valuesArray, $valuesArray)) // Menggunakan array_combine agar value menjadi key dan value
-                                            ->required();
+                                            ->options(array_combine($valuesArray, $valuesArray));
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -213,6 +212,7 @@ class PermohonanResource extends Resource
                                 ]),
                         ]),
                     Wizard\Step::make('Konfirmasi Permohonan')
+                        ->visible(fn (Get $get) => $get('konfirmasi_pemohon') && auth()->user()->roles->first()->name == 'pemohon')
                         ->schema([
                             Select::make('status_permohonan_id')
                                 ->searchable()
@@ -239,6 +239,36 @@ class PermohonanResource extends Resource
                             Forms\Components\Checkbox::make('saya_setuju')
                                 ->label('Ya, Saya Setuju!')
                                 ->accepted(),
+                        ]),
+                    Wizard\Step::make('Front Office Moderation')
+                        ->visible(fn (Get $get) => $get('fo_moderation'))
+                        ->schema([
+                            Select::make('status_permohonan_id')
+                                ->searchable()
+                                ->label('Status Permohonan')
+                                ->options(function (Get $get) {
+                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+                                        ->pluck('flow_status');
+                                    $options = [];
+                                    foreach ($data as $item) {
+                                        foreach ($item as $roleData) {
+                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
+                                                $options = $roleData['status'];
+                                                break 2;
+                                            }
+                                        }
+                                    }
+                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
+                                    return $final_relation_status;
+                                })
+                                ->disabled(auth()->user()->roles->first()->name == 'pemohon')
+                                ->dehydrated()
+                                ->live()
+                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                }),
+                            RichEditor::make('message')
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2')
                         ])
                 ])->columnSpanFull(),
             ]);
@@ -294,7 +324,7 @@ class PermohonanResource extends Resource
         } else if (auth()->user()->roles->first()->name == 'pemohon') {
             return $query->where('user_id', auth()->id());
         } else if (auth()->user()->roles->first()->name == 'front_office') {
-            return $query->where('status_permohonan_id', 1);
+            return $query->where('status_permohonan_id', 3);
         }
     }
 
