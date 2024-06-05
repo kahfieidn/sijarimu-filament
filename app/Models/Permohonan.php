@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Support\Str;
 use App\Models\ProfileUsaha;
+use App\Enums\PermohonanStatus;
+use App\Models\StatusPermohonan;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -18,6 +20,7 @@ class Permohonan extends Model
         'user_id',
         'status_permohonan_id',
         'profile_usaha_id',
+        'message',
         'nama_pemohon',
         'berkas',
         'formulir',

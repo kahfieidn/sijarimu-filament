@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained();
             $table->foreignId('status_permohonan_id')->constrained();
             $table->foreignId('profile_usaha_id')->nullable();
+            $table->text('message')->nullable();
             $table->json('formulir');
             $table->json('berkas');
             $table->timestamps();

@@ -11,6 +11,7 @@ use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
 use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Illuminate\Database\Eloquent\Builder;
@@ -33,35 +34,39 @@ class PerizinanLifecycleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_flow')
-                    ->required()
-                    ->maxLength(255),
-                Repeater::make('flow')
+                Section::make('Detail Flow')
                     ->schema([
-                        Select::make('flow')
-                            ->options([
-                                'pilih_perizinan' => 'Pilih Perizinan',
-                                'profile_usaha_relation' => 'Profile Usaha Relation',
-                                'checklist_berkas' => 'Checklist Berkas',
-                                'checklist_formulir' => 'Checklist Formulir',
+                        Forms\Components\TextInput::make('nama_flow')
+                            ->required()
+                            ->maxLength(255),
+                        Repeater::make('flow')
+                            ->schema([
+                                Select::make('flow')
+                                    ->options([
+                                        'pilih_perizinan' => 'Pilih Perizinan',
+                                        'profile_usaha_relation' => 'Profile Usaha Relation',
+                                        'checklist_berkas' => 'Checklist Berkas',
+                                        'checklist_formulir' => 'Checklist Formulir',
+                                    ])
+                                    ->required(),
                             ])
-                            ->required(),
+                            ->columns(2),
+                        Repeater::make('flow_status')
+                            ->schema([
+                                Select::make('role')
+                                    ->options(Role::all()->pluck('name', 'id')->toArray())
+                                    ->required(),
+                                Select::make('status')
+                                    ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
+                                    ->multiple()
+                                    ->required(),
+                                Select::make('default_status')
+                                    ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
+                                    ->required(),
+                            ])
+                            ->columns(2),
+
                     ])
-                    ->columns(2),
-                Repeater::make('flow_status')
-                    ->schema([
-                        Select::make('role')
-                            ->options(Role::all()->pluck('name', 'id')->toArray())
-                            ->required(),
-                        Select::make('status')
-                            ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
-                            ->multiple()
-                            ->required(),
-                        Select::make('default_status')
-                            ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
-                            ->required(),
-                    ])
-                    ->columns(2),
             ]);
     }
 

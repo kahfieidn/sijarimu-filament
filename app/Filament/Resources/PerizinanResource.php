@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PerizinanResource\Pages;
-use App\Filament\Resources\PerizinanResource\RelationManagers;
-use App\Models\Perizinan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
+use App\Models\Perizinan;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\PerizinanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PerizinanResource\RelationManagers;
 
 class PerizinanResource extends Resource
 {
@@ -27,19 +28,21 @@ class PerizinanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('sektor_id')
-                    ->options(fn () => \App\Models\Sektor::pluck('nama_sektor', 'id'))
-                    ->required(),
-                Forms\Components\TextInput::make('nama_perizinan')
-                    ->required()
-                    ->maxLength(255),
-                // Forms\Components\Select::make('perizinan_life_cycle_id')
-                //     ->options(fn () => \App\Models\PerizinanLifecycle::pluck('flow', 'id'))
-                //     ->required(),
-                Forms\Components\Select::make('perizinan_lifecycle_id')
-                    ->options(fn () => \App\Models\PerizinanLifecycle::pluck('nama_flow', 'id'))
-                    ->required(),
-
+                Section::make('Detail Perizinan')
+                    ->schema([
+                        Forms\Components\Select::make('sektor_id')
+                            ->options(fn () => \App\Models\Sektor::pluck('nama_sektor', 'id'))
+                            ->required(),
+                        Forms\Components\TextInput::make('nama_perizinan')
+                            ->required()
+                            ->maxLength(255),
+                        // Forms\Components\Select::make('perizinan_life_cycle_id')
+                        //     ->options(fn () => \App\Models\PerizinanLifecycle::pluck('flow', 'id'))
+                        //     ->required(),
+                        Forms\Components\Select::make('perizinan_lifecycle_id')
+                            ->options(fn () => \App\Models\PerizinanLifecycle::pluck('nama_flow', 'id'))
+                            ->required(),
+                    ])->columns(3),
             ]);
     }
 

@@ -11,5 +11,7 @@ class StatusPermohonan extends Model
 
     protected $fillable = [
         'nama_status',
+        'icon',
+        'color'
     ];
 }
