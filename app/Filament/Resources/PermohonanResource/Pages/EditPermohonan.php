@@ -25,7 +25,6 @@ class EditPermohonan extends EditRecord
         parent::mount($record);
     }
 
-
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $perizinan = Perizinan::find($data['perizinan_id']);
@@ -61,21 +60,24 @@ class EditPermohonan extends EditRecord
             }
         }
 
-        if(auth()->user()->roles->first()->name == 'pemohon' && $data['status_permohonan_id'] == 2) {
+        if (auth()->user()->roles->first()->name == 'pemohon' && $data['status_permohonan_id'] == 2) {
+            foreach ($data['berkas'] as &$berkas) {
+                $berkas['status'] = "pending";
+                $berkas['keterangan'] = "-";
+            }
+            $data['message'] = null;
             $data['status_permohonan_id'] = $options;
         }
 
         return $data;
     }
 
-
-
-
     protected function getHeaderActions(): array
     {
         return [
             Actions\ViewAction::make(),
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->visible(fn ($record) => auth()->user()->roles->first()->name == 'super_admin'),
         ];
     }
 }

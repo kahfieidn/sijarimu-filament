@@ -13,6 +13,7 @@ use App\Models\Permohonan;
 use Filament\Tables\Table;
 use App\Models\Persyaratan;
 use App\Models\StatusPermohonan;
+use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
 use Filament\Forms\Components\Split;
@@ -28,6 +29,7 @@ use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
+use Filament\Infolists\Components\TextEntry;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PermohonanResource\Pages;
@@ -126,7 +128,8 @@ class PermohonanResource extends Resource
                                             ->appendFiles()
                                             ->directory('berkas'),
                                         Forms\Components\Select::make('status')
-                                            ->visible(auth()->user()->roles->first()->name != 'pemohon')
+                                            ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
+                                            ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                             ->dehydrated()
                                             ->options([
                                                 'revision' => 'Revision',
@@ -137,7 +140,8 @@ class PermohonanResource extends Resource
                                             ->default('pending')
                                             ->required(),
                                         Forms\Components\TextInput::make('keterangan')
-                                            ->visible(auth()->user()->roles->first()->name != 'pemohon')
+                                            ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
+                                            ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                             ->dehydrated()
                                             ->default('-')
                                             ->required(),
@@ -212,7 +216,8 @@ class PermohonanResource extends Resource
                                 ]),
                         ]),
                     Wizard\Step::make('Konfirmasi Permohonan')
-                        ->visible(fn (Get $get) => $get('konfirmasi_pemohon') && auth()->user()->roles->first()->name == 'pemohon')
+                        ->hidden(fn (Get $get) => $get('konfirmasi_pemohon') && auth()->user()->roles->first()->name != 'pemohon')
+                        ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')
                                 ->searchable()
@@ -241,7 +246,8 @@ class PermohonanResource extends Resource
                                 ->accepted(),
                         ]),
                     Wizard\Step::make('Front Office Moderation')
-                        ->visible(fn (Get $get) => $get('fo_moderation'))
+                        ->hidden(fn (Get $get) => $get('fo_moderation') && auth()->user()->roles->first()->name != 'front_office')
+                        ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')
                                 ->searchable()
@@ -268,8 +274,12 @@ class PermohonanResource extends Resource
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
                                 }),
                             RichEditor::make('message')
-                                ->visible(fn ($get) => $get('status_permohonan_id') === '2')
-                        ])
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
+                            Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
+                            Forms\Components\Checkbox::make('saya_setuju')
+                                ->label('Ya, Saya Setuju!')
+                                ->accepted(),
+                        ]),
                 ])->columnSpanFull(),
             ]);
     }
@@ -307,14 +317,41 @@ class PermohonanResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->disabled(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id != 2),
-
+                Tables\Actions\Action::make('View Information')
+                    ->infolist([
+                        // Inside, we can treat this as any info list and add all the fields we want!
+                        \Filament\Infolists\Components\Section::make('Informasi')
+                            ->schema([
+                                TextEntry::make('message')
+                                ->html(),
+                            ])
+                            ->columns(),
+                    ])
+                    ->visible(function ($record) {
+                        return $record->status_permohonan_id == 2;
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\DeleteBulkAction::make()
+                        ->visible(function () {
+                            return auth()->user()->roles->first()->name == 'super_admin'; // Ganti 'admin' dengan nama role yang diinginkan
+                        }),
                 ]),
             ]);
     }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                TextEntry::make('status_permohonan_id')
+            ]);
+    }
+
+
+
+
 
     public static function getEloquentQuery(): Builder
     {
