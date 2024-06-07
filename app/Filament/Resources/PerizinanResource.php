@@ -22,7 +22,7 @@ class PerizinanResource extends Resource
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 7;
+    protected static ?int $navigationSort = 6;
 
     public static function form(Form $form): Form
     {

@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Feature;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
 use App\Models\Formulir;
@@ -60,15 +61,16 @@ class PermohonanResource extends Resource
                                 ->preload()
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                    $possible_flows = ['pilih_perizinan', 'profile_usaha_relation', 'checklist_berkas', 'checklist_formulir', 'konfirmasi_pemohon', 'fo_moderation', 'bo_moderation'];
+                                    $possible_flows = Feature::all()->pluck('nama_feature')->toArray();
                                     foreach ($possible_flows as $flow_name) {
                                         $set($flow_name, false);
                                     }
+
                                     $set('berkas.*.nama_persyaratan', '');
                                     $set('berkas.*.file', null);
                                     $perizinan = Perizinan::find($get('perizinan_id'));
 
-                                    //Setting default dynamic form
+                                    //Setting default select status_permohonan_id dynamic form
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
                                     $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
                                         ->pluck('flow_status');
@@ -85,17 +87,24 @@ class PermohonanResource extends Resource
                                     }
                                     $set('status_permohonan_id', $options);
 
+                                    $role = auth()->user()->roles->first()->id;
+                                    
                                     if ($perizinan != null) {
                                         $flows = $perizinan->perizinan_lifecycle->flow;
                                         if ($perizinan->perizinan_lifecycle_id) {
                                             foreach ($flows as $item) {
                                                 if (isset($item['flow'])) {
                                                     $flow_name = $item['flow'];
-                                                    $set($flow_name, true);
+
+                                                    if (in_array("$role", $item['role_id'])) {
+                                                        $set($flow_name, true);
+                                                    }
+                                                                                                                                        $flow_name = $item['flow'];
                                                 }
                                             }
                                         }
                                     }
+
                                 })
                                 ->required()
                                 ->disabledOn('edit')->dehydrated(),
@@ -215,7 +224,7 @@ class PermohonanResource extends Resource
                                 ]),
                         ]),
                     Wizard\Step::make('Konfirmasi Permohonan')
-                        ->hidden(fn (Get $get) => $get('konfirmasi_pemohon') && auth()->user()->roles->first()->name != 'pemohon')
+                        ->visible(fn (Get $get) => $get('konfirmasi_pemohon'))
                         ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')
@@ -245,7 +254,7 @@ class PermohonanResource extends Resource
                                 ->accepted(),
                         ]),
                     Wizard\Step::make('Front Office Moderation')
-                        ->visible(fn (Get $get) => $get('fo_moderation') && auth()->user()->roles->first()->name == 'front_office')
+                        ->visible(fn (Get $get) => $get('fo_moderation'))
                         ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')
@@ -280,7 +289,7 @@ class PermohonanResource extends Resource
                                 ->accepted(),
                         ]),
                     Wizard\Step::make('Back Office Moderation')
-                        ->visible(fn (Get $get) => $get('bo_moderation') && auth()->user()->roles->first()->name == 'back_office')
+                        ->visible(fn (Get $get) => $get('bo_moderation'))
                         ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')

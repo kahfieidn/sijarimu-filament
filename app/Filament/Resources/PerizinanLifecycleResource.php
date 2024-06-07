@@ -18,6 +18,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PerizinanLifecycleResource\Pages;
 use App\Filament\Resources\PerizinanLifecycleResource\RelationManagers;
+use App\Models\Feature;
 
 class PerizinanLifecycleResource extends Resource
 {
@@ -27,7 +28,7 @@ class PerizinanLifecycleResource extends Resource
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 5;
 
 
     public static function form(Form $form): Form
@@ -42,15 +43,12 @@ class PerizinanLifecycleResource extends Resource
                         Repeater::make('flow')
                             ->schema([
                                 Select::make('flow')
-                                    ->options([
-                                        'pilih_perizinan' => 'Pilih Perizinan',
-                                        'profile_usaha_relation' => 'Profile Usaha Relation',
-                                        'checklist_berkas' => 'Checklist Berkas',
-                                        'checklist_formulir' => 'Checklist Formulir',
-                                        'konfirmasi_pemohon' => 'Konfirmasi Pemohon',
-                                        'fo_moderation' => 'Moderasi FO',
-                                        'bo_moderation' => 'Moderasi BO',
-                                    ])
+                                    ->options(Feature::all()->pluck('nama_feature', 'nama_feature')->toArray()) // Menggunakan 'nama_feature' sebagai kunci dan label
+                                    ->searchable()
+                                    ->required(),
+                                Select::make('role_id')
+                                    ->options(Role::all()->pluck('name', 'id')->toArray())
+                                    ->multiple()
                                     ->searchable()
                                     ->required(),
                             ]),

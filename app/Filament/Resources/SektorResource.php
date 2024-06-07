@@ -21,7 +21,7 @@ class SektorResource extends Resource
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

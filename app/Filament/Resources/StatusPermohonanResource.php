@@ -25,7 +25,7 @@ class StatusPermohonanResource extends Resource
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -33,6 +33,9 @@ class StatusPermohonanResource extends Resource
             ->schema([
                 Section::make('Informasi Status Permohonan')
                     ->schema([
+                        Forms\Components\TextInput::make('general_status')
+                            ->required()
+                            ->maxLength(255),
                         Forms\Components\TextInput::make('nama_status')
                             ->required()
                             ->maxLength(255),
