@@ -18,5 +18,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@gmail.com',
             'password' => bcrypt('jika12345'),
         ]);
+
+        $this->call([
+            FeatureSeeder::class,
+        ]);
     }
 }
