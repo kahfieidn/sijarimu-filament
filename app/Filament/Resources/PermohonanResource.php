@@ -60,7 +60,7 @@ class PermohonanResource extends Resource
                                 ->preload()
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                    $possible_flows = ['pilih_perizinan', 'profile_usaha_relation', 'checklist_berkas', 'checklist_formulir', 'konfirmasi_pemohon', 'fo_moderation'];
+                                    $possible_flows = ['pilih_perizinan', 'profile_usaha_relation', 'checklist_berkas', 'checklist_formulir', 'konfirmasi_pemohon', 'fo_moderation', 'bo_moderation'];
                                     foreach ($possible_flows as $flow_name) {
                                         $set($flow_name, false);
                                     }
@@ -84,7 +84,6 @@ class PermohonanResource extends Resource
                                         }
                                     }
                                     $set('status_permohonan_id', $options);
-
 
                                     if ($perizinan != null) {
                                         $flows = $perizinan->perizinan_lifecycle->flow;
@@ -280,6 +279,41 @@ class PermohonanResource extends Resource
                                 ->label('Ya, Saya Setuju!')
                                 ->accepted(),
                         ]),
+                    Wizard\Step::make('Back Office Moderation')
+                        ->visible(fn (Get $get) => $get('bo_moderation') && auth()->user()->roles->first()->name == 'back_office')
+                        ->dehydrated()
+                        ->schema([
+                            Select::make('status_permohonan_id')
+                                ->searchable()
+                                ->label('Status Permohonan')
+                                ->options(function (Get $get) {
+                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+                                        ->pluck('flow_status');
+                                    $options = [];
+                                    foreach ($data as $item) {
+                                        foreach ($item as $roleData) {
+                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
+                                                $options = $roleData['status'];
+                                                break 2;
+                                            }
+                                        }
+                                    }
+                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
+                                    return $final_relation_status;
+                                })
+                                ->disabled(auth()->user()->roles->first()->name == 'pemohon')
+                                ->dehydrated()
+                                ->live()
+                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                }),
+                            RichEditor::make('message')
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
+                            Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
+                            Forms\Components\Checkbox::make('saya_setuju')
+                                ->label('Ya, Saya Setuju!')
+                                ->accepted(),
+                        ]),
                 ])->columnSpanFull(),
             ]);
     }
@@ -355,8 +389,6 @@ class PermohonanResource extends Resource
             $query->whereJsonContains('role_id', "$role");
         });
                 
-        
-
     }
 
 

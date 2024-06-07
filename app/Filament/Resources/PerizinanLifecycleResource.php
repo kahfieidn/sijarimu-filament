@@ -27,7 +27,7 @@ class PerizinanLifecycleResource extends Resource
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 6;
 
 
     public static function form(Form $form): Form
@@ -49,10 +49,14 @@ class PerizinanLifecycleResource extends Resource
                                         'checklist_formulir' => 'Checklist Formulir',
                                         'konfirmasi_pemohon' => 'Konfirmasi Pemohon',
                                         'fo_moderation' => 'Moderasi FO',
+                                        'bo_moderation' => 'Moderasi BO',
                                     ])
+                                    ->searchable()
                                     ->required(),
-                            ])
-                            ->columns(2),
+                            ]),
+                    ])->columns(2),
+                Section::make('Detail Flow Status')
+                    ->schema([
                         Repeater::make('flow_status')
                             ->schema([
                                 Select::make('role')
@@ -67,8 +71,7 @@ class PerizinanLifecycleResource extends Resource
                                     ->required(),
                             ])
                             ->columns(2),
-
-                    ])
+                    ]),
             ]);
     }
 

@@ -11,13 +11,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('status_permohonans', function (Blueprint $table) {
+        Schema::create('core_flows', function (Blueprint $table) {
             $table->id();
-            $table->string('general_status');
-            $table->string('nama_status');
-            $table->string('icon');
-            $table->string('color');
-            $table->json('role_id')->constrained('roles');
+            $table->foreignId('role_id')->constrained('roles');
+            $table->json('features');
             $table->timestamps();
         });
     }
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('status_permohonans');
+        Schema::dropIfExists('core_flows');
     }
 };

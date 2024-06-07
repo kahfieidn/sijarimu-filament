@@ -2,9 +2,9 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PersyaratanResource\Pages;
-use App\Filament\Resources\PersyaratanResource\RelationManagers;
-use App\Models\Persyaratan;
+use App\Filament\Resources\CoreFlowResource\Pages;
+use App\Filament\Resources\CoreFlowResource\RelationManagers;
+use App\Models\CoreFlow;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -13,29 +13,26 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class PersyaratanResource extends Resource
+class CoreFlowResource extends Resource
 {
-    protected static ?string $model = Persyaratan::class;
+    protected static ?string $model = CoreFlow::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationGroup = 'Administrator';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 2;
+
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('perizinan_id')
-                    ->options(fn () => \App\Models\Perizinan::pluck('nama_perizinan', 'id'))
+                Forms\Components\TextInput::make('role_id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('features')
                     ->required(),
-                Forms\Components\TextInput::make('nama_persyaratan')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi_persyaratan')
-                    ->required()
-                    ->maxLength(255),
             ]);
     }
 
@@ -43,12 +40,9 @@ class PersyaratanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
+                Tables\Columns\TextColumn::make('role_id')
+                    ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('nama_persyaratan')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('deskripsi_persyaratan')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -82,10 +76,10 @@ class PersyaratanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListPersyaratans::route('/'),
-            'create' => Pages\CreatePersyaratan::route('/create'),
-            'view' => Pages\ViewPersyaratan::route('/{record}'),
-            'edit' => Pages\EditPersyaratan::route('/{record}/edit'),
+            'index' => Pages\ListCoreFlows::route('/'),
+            'create' => Pages\CreateCoreFlow::route('/create'),
+            'view' => Pages\ViewCoreFlow::route('/{record}'),
+            'edit' => Pages\EditCoreFlow::route('/{record}/edit'),
         ];
     }
 }
