@@ -15,12 +15,16 @@ class ViewPermohonan extends ViewRecord
     {
         $perizinan = Perizinan::find($data['perizinan_id']);
         $flows = $perizinan->perizinan_lifecycle->flow;
+        $role = auth()->user()->roles->first()->id;
 
         if ($perizinan->perizinan_lifecycle_id) {
             foreach ($flows as $item) {
                 if (isset($item['flow'])) {
                     $flow_name = $item['flow'];
-                    $data[$flow_name] = true; // Corrected line
+
+                    if (in_array("$role", $item['role_id'])) {
+                        $data[$flow_name] = true;
+                    }
                 }
             }
         }
