@@ -8,12 +8,13 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use App\Models\StatusPermohonan;
 use Filament\Resources\Resource;
+use Filament\Support\Colors\Color;
+use Spatie\Permission\Models\Role;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\StatusPermohonanResource\Pages;
 use App\Filament\Resources\StatusPermohonanResource\RelationManagers;
-use Filament\Support\Colors\Color;
 
 
 class StatusPermohonanResource extends Resource
@@ -35,7 +36,7 @@ class StatusPermohonanResource extends Resource
                         Forms\Components\TextInput::make('nama_status')
                             ->required()
                             ->maxLength(255),
-                            Forms\Components\Select::make('icon')
+                        Forms\Components\Select::make('icon')
                             ->searchable()
                             ->options([
                                 'heroicon-o-check-badge' => 'Check Badge',
@@ -328,7 +329,7 @@ class StatusPermohonanResource extends Resource
                                 'heroicon-o-x-circle' => 'X Circle',
                                 'heroicon-o-x-mark' => 'X Mark',
                             ])
-                            ->required(),                        
+                            ->required(),
                         Forms\Components\Select::make('color')
                             ->options([
                                 'danger' => 'danger',
@@ -338,7 +339,12 @@ class StatusPermohonanResource extends Resource
                                 'success' => 'success',
                                 'warning' => 'warning',
                             ])
-                            ->required()
+                            ->required(),
+                        Forms\Components\Select::make('role_id')
+                            ->options(Role::all()->pluck('name', 'id')->toArray())
+                            ->multiple()
+                            ->searchable()
+                            ->required(),
                     ])->columns(3)
             ]);
     }

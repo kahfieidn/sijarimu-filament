@@ -159,7 +159,7 @@ class PermohonanResource extends Resource
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
                                 if ($option->type == 'string') {
-                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2) {
+                                    if ($option->role_id == 2) {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
                                     } else {
@@ -167,14 +167,14 @@ class PermohonanResource extends Resource
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'date') {
-                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2) {
+                                    if ($option->role_id == 2) {
                                         $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'select') {
-                                    if ($option->role_id == 2 && auth()->user()->roles->first()->id == 2) {
+                                    if ($option->role_id == 2) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
@@ -246,7 +246,7 @@ class PermohonanResource extends Resource
                                 ->accepted(),
                         ]),
                     Wizard\Step::make('Front Office Moderation')
-                        ->hidden(fn (Get $get) => $get('fo_moderation') && auth()->user()->roles->first()->name != 'front_office')
+                        ->visible(fn (Get $get) => $get('fo_moderation') && auth()->user()->roles->first()->name == 'front_office')
                         ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')
@@ -316,14 +316,15 @@ class PermohonanResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->disabled(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id != 2),
-                Tables\Actions\Action::make('View Information')
+                    ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon'),
+                Tables\Actions\Action::make('Lihat Pesan')
+                    ->icon('heroicon-s-exclamation-triangle')
                     ->infolist([
                         // Inside, we can treat this as any info list and add all the fields we want!
                         \Filament\Infolists\Components\Section::make('Informasi')
                             ->schema([
                                 TextEntry::make('message')
-                                ->html(),
+                                    ->html(),
                             ])
                             ->columns(),
                     ])
@@ -335,34 +336,27 @@ class PermohonanResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make()
                         ->visible(function () {
-                            return auth()->user()->roles->first()->name == 'super_admin'; // Ganti 'admin' dengan nama role yang diinginkan
+                            return auth()->user()->roles->first()->name == 'super_admin';
                         }),
                 ]),
             ]);
     }
 
-    public static function infolist(Infolist $infolist): Infolist
-    {
-        return $infolist
-            ->schema([
-                TextEntry::make('status_permohonan_id')
-            ]);
-    }
-
-
-
-
-
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        if (auth()->user()->roles->first()->name == 'super_admin') {
-            return $query;
-        } else if (auth()->user()->roles->first()->name == 'pemohon') {
-            return $query->where('user_id', auth()->id());
-        } else if (auth()->user()->roles->first()->name == 'front_office') {
-            return $query->where('status_permohonan_id', 3);
+        $role = auth()->user()->roles->first()->id;
+        $userId = auth()->id();
+
+        if (auth()->user()->roles->first()->name == 'pemohon') {
+            return $query->where('user_id', $userId);
         }
+        return $query->whereHas('status_permohonan', function ($query) use ($role) {
+            $query->whereJsonContains('role_id', "$role");
+        });
+                
+        
+
     }
 
 

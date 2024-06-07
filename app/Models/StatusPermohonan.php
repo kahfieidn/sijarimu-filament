@@ -12,6 +12,11 @@ class StatusPermohonan extends Model
     protected $fillable = [
         'nama_status',
         'icon',
-        'color'
+        'color',
+        'role_id'
+    ];
+
+    protected $casts = [
+        'role_id' => 'json',
     ];
 }
