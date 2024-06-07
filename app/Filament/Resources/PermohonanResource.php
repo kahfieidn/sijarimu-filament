@@ -222,41 +222,6 @@ class PermohonanResource extends Resource
                                         ->label('Domisili'),
                                 ]),
                         ]),
-                    Wizard\Step::make('Front Office Moderation')
-                        ->visible(fn (Get $get) => $get('fo_moderation'))
-                        ->dehydrated()
-                        ->schema([
-                            Select::make('status_permohonan_id')
-                                ->searchable()
-                                ->label('Status Permohonan')
-                                ->options(function (Get $get) {
-                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
-                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
-                                        ->pluck('flow_status');
-                                    $options = [];
-                                    foreach ($data as $item) {
-                                        foreach ($item as $roleData) {
-                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
-                                                $options = $roleData['status'];
-                                                break 2;
-                                            }
-                                        }
-                                    }
-                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
-                                    return $final_relation_status;
-                                })
-                                ->disabled(auth()->user()->roles->first()->name == 'pemohon')
-                                ->dehydrated()
-                                ->live()
-                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                }),
-                            RichEditor::make('message')
-                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
-                            Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
-                            Forms\Components\Checkbox::make('saya_setuju')
-                                ->label('Ya, Saya Setuju!')
-                                ->accepted(),
-                        ]),
                     Wizard\Step::make('Back Office Moderation')
                         ->visible(fn (Get $get) => $get('bo_moderation'))
                         ->dehydrated()
@@ -293,7 +258,6 @@ class PermohonanResource extends Resource
                                 ->accepted(),
                         ]),
                     Wizard\Step::make('Konfirmasi Permohonan')
-                        ->hidden(fn (Get $get) => $get('konfirmasi_permohonan'))
                         ->dehydrated()
                         ->schema([
                             Select::make('status_permohonan_id')
@@ -316,7 +280,12 @@ class PermohonanResource extends Resource
                                     return $final_relation_status;
                                 })
                                 ->disabled(auth()->user()->roles->first()->name == 'pemohon')
-                                ->dehydrated(),
+                                ->dehydrated()
+                                ->live()
+                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                }),
+                            RichEditor::make('message')
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')
                                 ->label('Ya, Saya Setuju!')
