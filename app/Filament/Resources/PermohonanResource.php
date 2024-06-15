@@ -278,7 +278,7 @@ class PermohonanResource extends Resource
                             Select::make('status_permohonan_id')
                                 ->label('Status Permohonan')
                                 ->searchable()
-                                ->options(function (Get $get) {
+                                ->options(function (Get $get, $state) {
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
                                     $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
                                         ->pluck('flow_status');
@@ -287,6 +287,9 @@ class PermohonanResource extends Resource
                                     foreach ($data as $item) {
                                         foreach ($item as $roleData) {
                                             if ($roleData['condition_status'] == $get('status_permohonan_id_from_edit') && $roleData['role'] == auth()->user()->roles->first()->id) {
+                                                $options = $roleData['status'];
+                                                break;
+                                            }else if ($roleData['condition_status'] == null && $roleData['role'] == auth()->user()->roles->first()->id) {
                                                 $options = $roleData['status'];
                                                 break;
                                             }
