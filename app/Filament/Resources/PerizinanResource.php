@@ -41,7 +41,12 @@ class PerizinanResource extends Resource
                         //     ->required(),
                         Forms\Components\Select::make('perizinan_lifecycle_id')
                             ->options(fn () => \App\Models\PerizinanLifecycle::pluck('nama_flow', 'id'))
+                            ->searchable()
                             ->required(),
+                        Forms\Components\Textarea::make('template_rekomendasi')
+                            ->required(),
+                        Forms\Components\Textarea::make('template_izin')
+                            ->required()
                     ])->columns(3),
             ]);
     }

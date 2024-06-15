@@ -7,6 +7,9 @@ use App\Models\Perizinan;
 use App\Models\Permohonan;
 use App\Models\StatusPermohonan;
 use App\Models\PerizinanLifecycle;
+use Filament\Tables\Actions\Action;
+use Illuminate\Contracts\View\View;
+use Filament\Support\Enums\MaxWidth;
 use Filament\Resources\Pages\EditRecord;
 use App\Filament\Resources\PermohonanResource;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -42,8 +45,6 @@ class EditPermohonan extends EditRecord
                 }
             }
         }
-
-
         return $data;
     }
 
@@ -80,9 +81,12 @@ class EditPermohonan extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\ViewAction::make(),
             Actions\DeleteAction::make()
                 ->visible(fn ($record) => auth()->user()->roles->first()->name == 'super_admin'),
+            Actions\ViewAction::make(),
+            Actions\Action::make('Draft Izin')
+                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                ->openUrlInNewTab()
         ];
     }
 }

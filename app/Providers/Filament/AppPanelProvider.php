@@ -61,6 +61,7 @@ class AppPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->spa()
+            ->sidebarFullyCollapsibleOnDesktop()
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ]);

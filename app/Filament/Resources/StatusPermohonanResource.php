@@ -356,6 +356,8 @@ class StatusPermohonanResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('general_status')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('nama_status')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')

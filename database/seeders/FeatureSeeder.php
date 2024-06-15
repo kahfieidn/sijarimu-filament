@@ -31,7 +31,7 @@ class FeatureSeeder extends Seeder
             'deskripsi' => '-',
         ]);
         \App\Models\Feature::create([
-            'nama_feature' => 'konfirmasi_pemohon',
+            'nama_feature' => 'konfirmasi_permohonan',
             'deskripsi' => '-',
         ]);
         \App\Models\Feature::create([
@@ -39,9 +39,36 @@ class FeatureSeeder extends Seeder
             'deskripsi' => '-',
         ]);
         \App\Models\Feature::create([
-            'nama_feature' => 'bo_moderation',
+            'nama_feature' => 'bo_before_opd_moderation',
             'deskripsi' => '-',
         ]);
-
+        \App\Models\Feature::create([
+            'nama_feature' => 'verifikator_1_before_opd_moderation',
+            'deskripsi' => '-',
+        ]);
+        \App\Models\Feature::create([
+            'nama_feature' => 'verifikator_2_before_opd_moderation',
+            'deskripsi' => '-',
+        ]);
+        \App\Models\Feature::create([
+            'nama_feature' => 'opd_moderation',
+            'deskripsi' => '-',
+        ]);
+        \App\Models\Feature::create([
+            'nama_feature' => 'bo_after_opd_moderation',
+            'deskripsi' => '-',
+        ]);
+        \App\Models\Feature::create([
+            'nama_feature' => 'verifikator_1_after_opd_moderation',
+            'deskripsi' => '-',
+        ]);
+        \App\Models\Feature::create([
+            'nama_feature' => 'verifikator_2_after_opd_moderation',
+            'deskripsi' => '-',
+        ]);
+        \App\Models\Feature::create([
+            'nama_feature' => 'kadis_moderation',
+            'deskripsi' => '-',
+        ]);
     }
 }

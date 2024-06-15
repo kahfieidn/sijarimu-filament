@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nama_status');
             $table->string('icon');
             $table->string('color');
-            $table->json('role_id')->constrained('roles');
+            $table->json('role_id')->constrained('roles')->nullable();
             $table->timestamps();
         });
     }

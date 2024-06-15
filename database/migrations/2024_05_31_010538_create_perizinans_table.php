@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('sektor_id')->constrained();
             $table->foreignId('perizinan_lifecycle_id')->constrained();
             $table->string('nama_perizinan');
+            $table->text('template_rekomendasi')->nullable();
+            $table->text('template_izin')->nullable();
             $table->timestamps();
         });
     }

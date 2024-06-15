@@ -14,6 +14,8 @@ class Perizinan extends Model
         'sektor_id',
         'nama_perizinan',
         'perizinan_lifecycle_id',
+        'template_rekomendasi',
+        'template_izin'
     ];
 
     public function sektor()

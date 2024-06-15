@@ -20,6 +20,10 @@ return new class extends Migration
             $table->text('message')->nullable();
             $table->json('formulir');
             $table->json('berkas');
+            $table->date('tanggal_rekomendasi_terbit')->nullable();
+            $table->date('tanggal_izin_terbit')->nullable();
+            $table->string('rekomendasi_terbit')->nullable();
+            $table->string('izin_terbit')->nullable();
             $table->timestamps();
         });
     }

@@ -1,0 +1,1 @@
+{!! $permohonan->perizinan->template_izin !!}
