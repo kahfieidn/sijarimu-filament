@@ -64,10 +64,15 @@ class PerizinanLifecycleResource extends Resource
                                     ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
                                     ->multiple()
                                     ->required(),
+                                Select::make('condition_status')
+                                    ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
+                                    ->searchable(),
                                 Select::make('default_status')
                                     ->options(StatusPermohonan::pluck('nama_status', 'id')->toArray())
+                                    ->searchable()
                                     ->required(),
                             ])
+                            ->cloneable()
                             ->columns(2),
                     ]),
             ]);

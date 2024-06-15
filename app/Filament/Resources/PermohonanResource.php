@@ -282,15 +282,17 @@ class PermohonanResource extends Resource
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
                                     $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
                                         ->pluck('flow_status');
+
                                     $options = [];
                                     foreach ($data as $item) {
                                         foreach ($item as $roleData) {
-                                            if ($roleData['role'] == auth()->user()->roles->first()->id) {
+                                            if ($roleData['role'] == auth()->user()->roles->first()->id && $roleData['condition_status'] == $get('status_permohonan_id')) {
                                                 $options = $roleData['status'];
                                                 break 2;
                                             }
                                         }
                                     }
+
                                     $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
                                     return $final_relation_status;
                                 })
