@@ -52,7 +52,7 @@ class PerizinanLifecycleResource extends Resource
                                     ->searchable()
                                     ->required(),
                             ]),
-                    ])->columns(2),
+                    ]),
                 Section::make('Detail Flow Status')
                     ->schema([
                         Repeater::make('flow_status')

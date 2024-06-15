@@ -45,6 +45,9 @@ class EditPermohonan extends EditRecord
                 }
             }
         }
+
+        $data['status_permohonan_id_from_edit'] = $data['status_permohonan_id'];
+
         return $data;
     }
 

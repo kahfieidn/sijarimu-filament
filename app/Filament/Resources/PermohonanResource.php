@@ -276,8 +276,8 @@ class PermohonanResource extends Resource
                     Wizard\Step::make('Konfirmasi Permohonan')
                         ->schema([
                             Select::make('status_permohonan_id')
-                                ->searchable()
                                 ->label('Status Permohonan')
+                                ->searchable()
                                 ->options(function (Get $get) {
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
                                     $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
@@ -286,9 +286,9 @@ class PermohonanResource extends Resource
                                     $options = [];
                                     foreach ($data as $item) {
                                         foreach ($item as $roleData) {
-                                            if ($roleData['role'] == auth()->user()->roles->first()->id && $roleData['condition_status'] == $get('status_permohonan_id')) {
+                                            if ($roleData['condition_status'] == $get('status_permohonan_id_from_edit') && $roleData['role'] == auth()->user()->roles->first()->id) {
                                                 $options = $roleData['status'];
-                                                break 2;
+                                                break;
                                             }
                                         }
                                     }
@@ -298,19 +298,17 @@ class PermohonanResource extends Resource
                                 })
                                 ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                 ->dehydrated()
-                                ->live()
-                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                }),
+                                ->live(),
                             RichEditor::make('message')
-                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2')
+                                ->reactive(),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')
                                 ->label('Ya, Saya Setuju!')
                                 ->accepted(),
-                        ])
-                        ->live()
-                        ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                        }),
+                        ])->live()
+                        ->dehydrated()
+
                 ])->columnSpanFull()->nextAction(
                     fn (Action $action) => $action->label('Selanjutnya'),
                 )->previousAction(
