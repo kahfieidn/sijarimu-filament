@@ -13,6 +13,25 @@ class GenerateIzin extends Controller
 {
     //
 
+    public function sample($permohonan_id)
+    {
+        $permohonan = Permohonan::find($permohonan_id);
+        $get_id_users = $permohonan->user->id;
+        $get_nama_izin = $permohonan->perizinan->nama_perizinan;
+        $nama_user = $permohonan->user->name;
+        $data = [
+            'permohonan' => $permohonan,
+        ];
+        $pdf = FacadePdf::loadView('cetak.izin.sample', $data);
+        $customPaper = array(0, 0, 609.4488, 935.433);
+        $pdf->set_paper($customPaper);
+        $pdf->render();
+
+        // $pdf = PDF::loadView('cetak.izin', compact('permohonan'));
+
+        return $pdf->stream($get_nama_izin . '_' . $nama_user . '.pdf');
+    }
+
     public function generateIzin($permohonan_id)
     {
         $permohonan = Permohonan::find($permohonan_id);

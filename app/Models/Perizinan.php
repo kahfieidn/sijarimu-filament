@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\PerizinanLifecycle;
+use App\Models\PerizinanConfiguration;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -14,8 +15,9 @@ class Perizinan extends Model
         'sektor_id',
         'nama_perizinan',
         'perizinan_lifecycle_id',
+        'perizinan_configuration_id',
         'template_rekomendasi',
-        'template_izin'
+        'template_izin',
     ];
 
     public function sektor()
@@ -35,6 +37,10 @@ class Perizinan extends Model
 
     public function perizinan_lifecycle(){
         return $this->belongsTo(PerizinanLifecycle::class, 'perizinan_lifecycle_id', 'id');
+    }
+
+    public function perizinan_configuration(){
+        return $this->belongsTo(PerizinanConfiguration::class, 'perizinan_configuration_id', 'id');
     }
 
 }
