@@ -49,11 +49,12 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    protected static function booted(): void
-    {
-        static::created(function (User $user) {
-            $user->assignRole('pemohon');
-        });
-    }
+    //production
+    // protected static function booted(): void
+    // {
+    //     static::created(function (User $user) {
+    //         $user->assignRole('pemohon');
+    //     });
+    // }
 
 }

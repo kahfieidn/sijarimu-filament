@@ -11,13 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('perizinan_configurations', function (Blueprint $table) {
+        Schema::create('assign_perizinan_handles', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_configuration');
-            $table->string('format_nomor_rekomendasi');
-            $table->decimal('iteration_rekomendasi');
-            $table->string('format_nomor_izin');
-            $table->decimal('iteration_izin');
+            $table->foreignId('user_id')->constrained();
+            $table->boolean('is_all_perizinan')->default(true);
+            $table->json('perizinan_id')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('perizinan_configurations');
+        Schema::dropIfExists('assign_perizinan_handles');
     }
 };

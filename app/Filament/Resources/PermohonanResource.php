@@ -19,6 +19,7 @@ use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Split;
+use App\Models\AssignPerizinanHandle;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
@@ -28,6 +29,7 @@ use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
@@ -289,7 +291,7 @@ class PermohonanResource extends Resource
                                             if ($roleData['condition_status'] == $get('status_permohonan_id_from_edit') && $roleData['role'] == auth()->user()->roles->first()->id) {
                                                 $options = $roleData['status'];
                                                 break;
-                                            }else if ($roleData['condition_status'] == null && $roleData['role'] == auth()->user()->roles->first()->id) {
+                                            } else if ($roleData['condition_status'] == null && $roleData['role'] == auth()->user()->roles->first()->id) {
                                                 $options = $roleData['status'];
                                                 break;
                                             }
@@ -390,12 +392,17 @@ class PermohonanResource extends Resource
         $role = auth()->user()->roles->first()->id;
         $userId = auth()->id();
 
+        $get_assign_perizinan_handle = AssignPerizinanHandle::where('user_id', $userId)->first();
+
         if (auth()->user()->roles->first()->name == 'pemohon') {
             return $query->where('user_id', $userId);
+        } elseif ($get_assign_perizinan_handle == null) {
+            return $query->where('id', 0);
+        } elseif ($get_assign_perizinan_handle['is_all_perizinan'] == 1) {
+            return $query;
+        } else {
+            return $query->whereIn('perizinan_id', $get_assign_perizinan_handle['perizinan_id']);
         }
-        return $query->whereHas('status_permohonan', function ($query) use ($role) {
-            $query->whereJsonContains('role_id', "$role");
-        });
     }
 
 

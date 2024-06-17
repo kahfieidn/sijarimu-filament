@@ -23,7 +23,7 @@ class StatusPermohonanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-check-badge';
 
-    protected static ?string $navigationGroup = 'Administrator';
+    protected static ?string $navigationGroup = 'Master Configuration';
 
     protected static ?int $navigationSort = 2;
 

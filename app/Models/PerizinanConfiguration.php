@@ -10,7 +10,10 @@ class PerizinanConfiguration extends Model
     use HasFactory;
 
     protected $fillable = [
+        'nama_configuration',
+        'format_nomor_rekomendasi',
+        'iteration_rekomendasi',
         'format_nomor_izin',
-        'iteration',
+        'iteration_izin',
     ];
 }

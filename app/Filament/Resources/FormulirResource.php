@@ -22,9 +22,9 @@ class FormulirResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard';
 
-    protected static ?string $navigationGroup = 'Administrator';
+    protected static ?string $navigationGroup = 'System Configuration';
 
-    protected static ?int $navigationSort = 8;
+    protected static ?int $navigationSort = 4;
 
 
     public static function form(Form $form): Form

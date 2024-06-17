@@ -20,9 +20,9 @@ class PerizinanResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
 
-    protected static ?string $navigationGroup = 'Administrator';
+    protected static ?string $navigationGroup = 'System Configuration';
 
-    protected static ?int $navigationSort = 6;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -41,6 +41,10 @@ class PerizinanResource extends Resource
                         //     ->required(),
                         Forms\Components\Select::make('perizinan_lifecycle_id')
                             ->options(fn () => \App\Models\PerizinanLifecycle::pluck('nama_flow', 'id'))
+                            ->searchable()
+                            ->required(),
+                        Forms\Components\Select::make('perizinan_configuration_id')
+                            ->options(fn () => \App\Models\PerizinanConfiguration::pluck('nama_configuration', 'id'))
                             ->searchable()
                             ->required(),
                         Forms\Components\Textarea::make('template_rekomendasi')

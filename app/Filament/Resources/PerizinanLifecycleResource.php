@@ -26,7 +26,7 @@ class PerizinanLifecycleResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-hashtag';
 
-    protected static ?string $navigationGroup = 'Administrator';
+    protected static ?string $navigationGroup = 'Master Configuration';
 
     protected static ?int $navigationSort = 5;
 

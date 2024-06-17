@@ -19,7 +19,7 @@ class SektorResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-group';
 
-    protected static ?string $navigationGroup = 'Administrator';
+    protected static ?string $navigationGroup = 'Master Configuration';
 
     protected static ?int $navigationSort = 4;
 
