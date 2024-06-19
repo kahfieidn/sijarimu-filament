@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Feature;
@@ -22,6 +23,7 @@ use App\Models\PerizinanLifecycle;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Split;
 use App\Models\AssignPerizinanHandle;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
@@ -46,7 +48,6 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PermohonanResource\Pages;
 use App\Filament\Resources\PermohonanResource\RelationManagers;
 use App\Filament\Resources\PermohonanResource\Pages\CreatePermohonan;
-use Filament\Forms\Components\Hidden;
 
 class PermohonanResource extends Resource
 {
@@ -121,16 +122,6 @@ class PermohonanResource extends Resource
                                 })
                                 ->required()
                                 ->disabledOn('edit')->dehydrated(),
-                            // Section::make('Checklist Berkas')
-                            //     ->schema([
-                            //         ViewField::make('rating')
-                            //             ->label('Preview')
-                            //             ->view('filament.resources.permohonan-resource.pages.sample')
-                            //     ]),
-
-
-
-
                         ]),
                     Wizard\Step::make('Profile Usaha')
                         ->visible(fn (Get $get) => $get('profile_usaha_relation'))
@@ -162,6 +153,8 @@ class PermohonanResource extends Resource
                             Repeater::make('berkas')
                                 ->schema(function (Get $get): array {
                                     $selectedOptions = collect($get('berkas.*.nama_persyaratan'))->filter();
+                                    $currentMonthYear = Carbon::now()->format('Y-F');
+
                                     return [
                                         Select::make('nama_persyaratan')
                                             ->options(function () use ($get) {
@@ -182,7 +175,7 @@ class PermohonanResource extends Resource
                                             ->required()
                                             ->openable()
                                             ->appendFiles()
-                                            ->directory('berkas'),
+                                            ->directory('berkas' . '/' . $currentMonthYear),
                                         Forms\Components\Select::make('status')
                                             ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
                                             ->disabled(auth()->user()->roles->first()->name == 'pemohon')
@@ -370,7 +363,6 @@ class PermohonanResource extends Resource
             ])
             ->filters([
                 //
-
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -378,7 +370,7 @@ class PermohonanResource extends Resource
                     ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon'),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
-                    ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                    ->url(fn (Permohonan $record): string => url('storage/izin/' .$record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 12;

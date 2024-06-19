@@ -47,11 +47,13 @@ class PerizinanResource extends Resource
                             ->options(fn () => \App\Models\PerizinanConfiguration::pluck('nama_configuration', 'id'))
                             ->searchable()
                             ->required(),
-                        Forms\Components\Textarea::make('template_rekomendasi')
-                            ->required(),
-                        Forms\Components\Textarea::make('template_izin')
-                            ->required()
-                    ])->columns(3),
+                        Forms\Components\Toggle::make('is_template')
+                            ->onIcon('heroicon-m-bolt')
+                            ->offIcon('heroicon-m-user')
+                            ->columnSpanFull(),
+                        Forms\Components\Textarea::make('template_rekomendasi'),
+                        Forms\Components\Textarea::make('template_izin'),
+                    ])->columns(2),
             ]);
     }
 

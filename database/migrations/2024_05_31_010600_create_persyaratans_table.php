@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('perizinan_id')->constrained();
             $table->string('nama_persyaratan');
-            $table->string('deskripsi_persyaratan');
+            $table->text('deskripsi_persyaratan')->nullable();
             $table->timestamps();
         });
     }

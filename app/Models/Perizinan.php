@@ -16,6 +16,7 @@ class Perizinan extends Model
         'nama_perizinan',
         'perizinan_lifecycle_id',
         'perizinan_configuration_id',
+        'is_template',
         'template_rekomendasi',
         'template_izin',
     ];

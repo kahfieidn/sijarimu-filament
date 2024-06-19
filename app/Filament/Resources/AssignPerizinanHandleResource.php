@@ -39,8 +39,10 @@ class AssignPerizinanHandleResource extends Resource
                             ->multiple()
                             ->searchable(),
                         Forms\Components\Toggle::make('is_all_perizinan')
+                            ->onIcon('heroicon-m-bolt')
+                            ->offIcon('heroicon-m-user')
                             ->required(),
-                    ])->columns(3),
+                    ])->columns(2),
             ]);
     }
 

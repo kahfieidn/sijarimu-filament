@@ -3,10 +3,9 @@
 Sijarimu adalah Aplikasi Sistem perizinan online DPMPTSP ini diperuntukkan bagi pemohon yang akan mengajukan permohonan Perizinan Non OSS secara online.
 
 ## Tech Stack
-- Laravel
-- Filament
+- Laravel + Filament
 - Alpine JS
-- Tailwind CSS
+- Tailwind CSS / Preline CSS
 - MySQL
 
 If any issue, please open issue at this repository - Kahfie IDN

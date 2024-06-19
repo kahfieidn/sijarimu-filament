@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\PermohonanResource\Pages;
 
+use Carbon\Carbon;
 use Filament\Actions;
 use App\Models\Perizinan;
 use App\Models\Permohonan;
@@ -10,7 +11,11 @@ use App\Models\PerizinanLifecycle;
 use Filament\Tables\Actions\Action;
 use Illuminate\Contracts\View\View;
 use Filament\Support\Enums\MaxWidth;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Storage;
 use Filament\Resources\Pages\EditRecord;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+
 use App\Filament\Resources\PermohonanResource;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
@@ -70,6 +75,7 @@ class EditPermohonan extends EditRecord
             }
         }
 
+        //Set status permohonan unggah berkas to default status
         if (auth()->user()->roles->first()->name == 'pemohon' && $data['status_permohonan_id'] == 2) {
             foreach ($data['berkas'] as &$berkas) {
                 $berkas['status'] = "pending";
@@ -78,9 +84,38 @@ class EditPermohonan extends EditRecord
             $data['message'] = null;
             $data['status_permohonan_id'] = $options;
         }
-
         return $data;
     }
+
+    protected function handleRecordUpdate(Model $record, array $data): Model
+    {
+        $currentMonthYear = Carbon::now()->format('Y-F');
+        $permohonan = Permohonan::find($record->id); // Make sure $record->id is correct
+    
+        // Check if the 'status_permohonan_id' exists in $data array
+        if (isset($data['status_permohonan_id']) && $data['status_permohonan_id'] == 12) {
+            $pdfData = [
+                'permohonan' => $permohonan,
+            ];
+    
+            $storageDirectory = 'izin/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
+            $pdf = FacadePdf::loadView('cetak.izin.request', $pdfData);
+            $customPaper = [0, 0, 609.4488, 935.433];
+            $pdf->set_paper($customPaper);
+    
+            $fileContent = $pdf->output();
+            $hashedFileName = hash('sha256', $storageDirectory) . '.' . pathinfo($storageDirectory, PATHINFO_EXTENSION);
+    
+            Storage::put('public/izin/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
+            $permohonan->update([
+                'izin_terbit' => $currentMonthYear . '/' . $hashedFileName,
+            ]);
+        }
+    
+        $record->update($data);
+        return $record;
+    }
+    
 
     protected function getHeaderActions(): array
     {

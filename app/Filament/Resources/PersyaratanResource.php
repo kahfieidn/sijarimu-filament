@@ -32,14 +32,13 @@ class PersyaratanResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('perizinan_id')
                             ->options(fn () => \App\Models\Perizinan::pluck('nama_perizinan', 'id'))
+                            ->searchable()
                             ->required(),
                         Forms\Components\TextInput::make('nama_persyaratan')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\TextInput::make('deskripsi_persyaratan')
-                            ->required()
-                            ->maxLength(255),
-                    ])
+                        Forms\Components\RichEditor::make('deskripsi_persyaratan')->columnSpanFull()
+                    ])->columns(2)
             ]);
     }
 

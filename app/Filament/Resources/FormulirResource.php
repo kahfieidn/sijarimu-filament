@@ -37,6 +37,7 @@ class FormulirResource extends Resource
                     ->schema([
                         Forms\Components\Select::make('perizinan_id')
                             ->options(Perizinan::all()->pluck('nama_perizinan', 'id')->toArray())
+                            ->searchable()
                             ->required(),
                         Forms\Components\TextInput::make('nama_formulir')
                             ->required()
@@ -46,7 +47,8 @@ class FormulirResource extends Resource
                                 'string' => 'String',
                                 'date' => 'Date',
                                 'select' => 'Select',
-                            ]),
+                            ])
+                            ->searchable(),
                         Forms\Components\Select::make('features')
                             ->options(Feature::all()->pluck('nama_feature', 'nama_feature')->toArray())
                             ->multiple(),
