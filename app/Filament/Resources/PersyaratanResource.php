@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PersyaratanResource\Pages;
-use App\Filament\Resources\PersyaratanResource\RelationManagers;
-use App\Models\Persyaratan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\Persyaratan;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PersyaratanResource\Pages;
+use App\Filament\Resources\PersyaratanResource\RelationManagers;
 
 class PersyaratanResource extends Resource
 {
@@ -27,15 +28,18 @@ class PersyaratanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('perizinan_id')
-                    ->options(fn () => \App\Models\Perizinan::pluck('nama_perizinan', 'id'))
-                    ->required(),
-                Forms\Components\TextInput::make('nama_persyaratan')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi_persyaratan')
-                    ->required()
-                    ->maxLength(255),
+                Section::make('Persyaratan')
+                    ->schema([
+                        Forms\Components\Select::make('perizinan_id')
+                            ->options(fn () => \App\Models\Perizinan::pluck('nama_perizinan', 'id'))
+                            ->required(),
+                        Forms\Components\TextInput::make('nama_persyaratan')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('deskripsi_persyaratan')
+                            ->required()
+                            ->maxLength(255),
+                    ])
             ]);
     }
 

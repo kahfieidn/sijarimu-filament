@@ -14,10 +14,12 @@ return new class extends Migration
         Schema::create('perizinan_configurations', function (Blueprint $table) {
             $table->id();
             $table->string('nama_configuration');
-            $table->string('format_nomor_rekomendasi');
-            $table->decimal('iteration_rekomendasi');
-            $table->string('format_nomor_izin');
-            $table->decimal('iteration_izin');
+            $table->string('prefix_nomor_rekomendasi');
+            $table->string('suffix_nomor_rekomendasi');
+            $table->string('nomor_rekomendasi');
+            $table->string('prefix_nomor_izin');
+            $table->string('suffix_nomor_izin');
+            $table->string('nomor_izin');
             $table->timestamps();
         });
     }

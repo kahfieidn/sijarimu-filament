@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\TypePerizinanResource\Pages;
-use App\Filament\Resources\TypePerizinanResource\RelationManagers;
-use App\Models\TypePerizinan;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\TypePerizinan;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\TypePerizinanResource\Pages;
+use App\Filament\Resources\TypePerizinanResource\RelationManagers;
 
 class TypePerizinanResource extends Resource
 {
@@ -27,8 +28,11 @@ class TypePerizinanResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_type')
-                    ->required(),
+                Section::make('Type Perizinan')
+                    ->schema([
+                        Forms\Components\TextInput::make('nama_type')
+                            ->required(),
+                    ])
             ]);
     }
 

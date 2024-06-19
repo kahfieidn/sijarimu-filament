@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\FeatureResource\Pages;
-use App\Filament\Resources\FeatureResource\RelationManagers;
-use App\Models\Feature;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Feature;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\FeatureResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\FeatureResource\RelationManagers;
 
 class FeatureResource extends Resource
 {
@@ -27,12 +28,15 @@ class FeatureResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_feature')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('deskripsi')
-                    ->required()
-                    ->maxLength(255),
+                Section::make('Feature')
+                    ->schema([
+                        Forms\Components\TextInput::make('nama_feature')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('deskripsi')
+                            ->required()
+                            ->maxLength(255),
+                    ])
             ]);
     }
 

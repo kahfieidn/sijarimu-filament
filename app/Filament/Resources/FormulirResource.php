@@ -4,12 +4,14 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Feature;
 use App\Models\Formulir;
 use Filament\Forms\Form;
 use App\Models\Perizinan;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Spatie\Permission\Models\Role;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Repeater;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\FormulirResource\Pages;
@@ -31,25 +33,28 @@ class FormulirResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('perizinan_id')
-                    ->options(Perizinan::all()->pluck('nama_perizinan', 'id')->toArray())
-                    ->required(),
-                Forms\Components\TextInput::make('nama_formulir')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\Select::make('type')
-                    ->options([
-                        'string' => 'String',
-                        'date' => 'Date',
-                        'select' => 'Select',
-                    ]),
-                Forms\Components\Select::make('role_id')
-                    ->options(Role::all()->pluck('name', 'id')->toArray()),
-                Repeater::make('options')
+                Section::make('Formulir Information')
                     ->schema([
-                        Forms\Components\TextInput::make('value'),
-                    ])
-                    ->columns(2)
+                        Forms\Components\Select::make('perizinan_id')
+                            ->options(Perizinan::all()->pluck('nama_perizinan', 'id')->toArray())
+                            ->required(),
+                        Forms\Components\TextInput::make('nama_formulir')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Select::make('type')
+                            ->options([
+                                'string' => 'String',
+                                'date' => 'Date',
+                                'select' => 'Select',
+                            ]),
+                        Forms\Components\Select::make('features')
+                            ->options(Feature::all()->pluck('nama_feature', 'nama_feature')->toArray())
+                            ->multiple(),
+                        Repeater::make('options')
+                            ->schema([
+                                Forms\Components\TextInput::make('value'),
+                            ])
+                    ])->columns(2)
             ]);
     }
 
@@ -59,8 +64,6 @@ class FormulirResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->numeric()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('role.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_formulir')
                     ->searchable(),

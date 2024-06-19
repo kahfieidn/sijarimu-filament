@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\PerizinanConfigurationResource\Pages;
-use App\Filament\Resources\PerizinanConfigurationResource\RelationManagers;
-use App\Models\PerizinanConfiguration;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\PerizinanConfiguration;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\PerizinanConfigurationResource\Pages;
+use App\Filament\Resources\PerizinanConfigurationResource\RelationManagers;
 
 class PerizinanConfigurationResource extends Resource
 {
@@ -27,21 +28,30 @@ class PerizinanConfigurationResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_configuration')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('format_nomor_rekomendasi')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('iteration_rekomendasi')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('format_nomor_izin')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('iteration_izin')
-                    ->required()
-                    ->numeric(),
+                Section::make('Perizinan Configuration Information')
+                    ->schema([
+                        Forms\Components\TextInput::make('nama_configuration')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('prefix_nomor_rekomendasi')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('suffix_nomor_rekomendasi')
+                            ->required(),
+                        Forms\Components\TextInput::make('nomor_rekomendasi')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
+                        Forms\Components\TextInput::make('prefix_nomor_izin')
+                            ->required(),
+                        Forms\Components\TextInput::make('suffix_nomor_izin')
+                            ->required(),
+                        Forms\Components\TextInput::make('nomor_izin')
+                            ->required()
+                            ->numeric()
+                            ->columnSpanFull(),
+                    ])->columns(2)
             ]);
     }
 
@@ -51,14 +61,20 @@ class PerizinanConfigurationResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('nama_configuration')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('format_nomor_rekomendasi')
+                Tables\Columns\TextColumn::make('prefix_nomor_rekomendasi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('iteration_rekomendasi')
+                Tables\Columns\TextColumn::make('suffix_nomor_rekomendasi')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('format_nomor_izin')
+                Tables\Columns\TextColumn::make('nomor_rekomendasi')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('iteration_izin')
+                Tables\Columns\TextColumn::make('prefix_nomor_izin')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('suffix_nomor_izin')
+                    ->numeric()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('nomor_izin')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

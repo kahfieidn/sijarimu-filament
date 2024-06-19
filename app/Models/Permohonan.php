@@ -25,6 +25,12 @@ class Permohonan extends Model
         'berkas',
         'formulir',
         'status',
+        'nomor_izin',
+        'nomor_rekomendasi',
+        'tanggal_rekomendasi_terbit',
+        'tanggal_izin_terbit',
+        'rekomendasi_terbit',
+        'izin_terbit',
     ];
 
     protected $casts = [

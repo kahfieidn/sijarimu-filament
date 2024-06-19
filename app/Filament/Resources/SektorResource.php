@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\SektorResource\Pages;
-use App\Filament\Resources\SektorResource\RelationManagers;
-use App\Models\Sektor;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Sektor;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\SektorResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\SektorResource\RelationManagers;
 
 class SektorResource extends Resource
 {
@@ -27,9 +28,12 @@ class SektorResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('nama_sektor')
-                    ->required()
-                    ->maxLength(255),
+                Section::make('Sektor')
+                    ->schema([
+                        Forms\Components\TextInput::make('nama_sektor')
+                            ->required()
+                            ->maxLength(255),
+                    ])
             ]);
     }
 

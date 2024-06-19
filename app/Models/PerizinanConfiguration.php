@@ -11,9 +11,11 @@ class PerizinanConfiguration extends Model
 
     protected $fillable = [
         'nama_configuration',
-        'format_nomor_rekomendasi',
-        'iteration_rekomendasi',
-        'format_nomor_izin',
-        'iteration_izin',
+        'prefix_nomor_rekomendasi',
+        'suffix_nomor_rekomendasi',
+        'nomor_rekomendasi',
+        'prefix_nomor_izin',
+        'suffix_nomor_izin',
+        'nomor_izin',
     ];
 }

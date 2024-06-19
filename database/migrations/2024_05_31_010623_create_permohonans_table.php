@@ -21,6 +21,7 @@ return new class extends Migration
             $table->json('formulir');
             $table->json('berkas');
             $table->string('nomor_izin')->nullable();
+            $table->string('nomor_rekomendasi')->nullable();
             $table->date('tanggal_rekomendasi_terbit')->nullable();
             $table->date('tanggal_izin_terbit')->nullable();
             $table->string('rekomendasi_terbit')->nullable();

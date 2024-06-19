@@ -13,7 +13,7 @@ class Formulir extends Model
 
     protected $fillable = [
         'perizinan_id',
-        'role_id',
+        'features',
         'nama_formulir',
         'type',
         'options',
@@ -21,6 +21,7 @@ class Formulir extends Model
 
     protected $casts = [
         'options' => 'json',
+        'features' => 'json',
     ];
 
     public function perizinan()

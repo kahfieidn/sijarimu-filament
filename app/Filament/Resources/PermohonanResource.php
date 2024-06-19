@@ -13,6 +13,8 @@ use App\Models\Perizinan;
 use App\Models\Permohonan;
 use Filament\Tables\Table;
 use App\Models\Persyaratan;
+use Filament\Support\RawJs;
+use Illuminate\Support\Str;
 use App\Models\StatusPermohonan;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
@@ -23,10 +25,13 @@ use App\Models\AssignPerizinanHandle;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
+use App\Models\PerizinanConfiguration;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\ViewField;
 use Filament\Notifications\Notification;
@@ -92,6 +97,11 @@ class PermohonanResource extends Resource
                                     }
                                     $set('status_permohonan_id', $options);
 
+                                    //Setting default Nomor Izin && Nomor Rekomendasi
+                                    $set('nomor_rekomendasi', $perizinan->perizinan_configuration->prefix_nomor_rekomendasi . $perizinan->perizinan_configuration->nomor_rekomendasi . $perizinan->perizinan_configuration->suffix_nomor_rekomendasi);
+                                    $set('nomor_izin', $perizinan->perizinan_configuration->prefix_nomor_izin . $perizinan->perizinan_configuration->nomor_izin . $perizinan->perizinan_configuration->suffix_nomor_izin);
+                                    
+
                                     $role = auth()->user()->roles->first()->id;
 
                                     if ($perizinan != null) {
@@ -116,6 +126,10 @@ class PermohonanResource extends Resource
                             //             ->label('Preview')
                             //             ->view('filament.resources.permohonan-resource.pages.sample')
                             //     ]),
+
+
+
+
                         ]),
                     Wizard\Step::make('Profile Usaha')
                         ->visible(fn (Get $get) => $get('profile_usaha_relation'))
@@ -197,10 +211,12 @@ class PermohonanResource extends Resource
                                     ->from('formulirs')
                                     ->where('perizinan_id', $get('perizinan_id'));
                             })->get();
+
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
+
                                 if ($option->type == 'string') {
-                                    if ($option->role_id == 2) {
+                                    if (in_array('checklist_formulir', $option->features)) {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
                                     } else {
@@ -208,14 +224,14 @@ class PermohonanResource extends Resource
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'date') {
-                                    if ($option->role_id == 2) {
+                                    if (in_array('checklist_formulir', $option->features)) {
                                         $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'select') {
-                                    if ($option->role_id == 2) {
+                                    if (in_array('checklist_formulir', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
@@ -240,10 +256,12 @@ class PermohonanResource extends Resource
                                     ->from('formulirs')
                                     ->where('perizinan_id', $get('perizinan_id'));
                             })->get();
+
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
+
                                 if ($option->type == 'string') {
-                                    if ($option->role_id == auth()->user()->roles->first()->id) {
+                                    if (in_array('bo_after_opd_moderation', $option->features)) {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
                                     } else {
@@ -251,14 +269,14 @@ class PermohonanResource extends Resource
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'date') {
-                                    if ($option->role_id == auth()->user()->roles->first()->id) {
+                                    if (in_array('bo_after_opd_moderation', $option->features)) {
                                         $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'select') {
-                                    if ($option->role_id == auth()->user()->roles->first()->id) {
+                                    if (in_array('bo_after_opd_moderation', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
@@ -304,6 +322,8 @@ class PermohonanResource extends Resource
                                 ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                 ->dehydrated()
                                 ->live(),
+                            TextInput::make('nomor_rekomendasi'),
+                            TextInput::make('nomor_izin'),
                             RichEditor::make('message')
                                 ->visible(fn ($get) => $get('status_permohonan_id') === '2')
                                 ->reactive(),
@@ -333,7 +353,7 @@ class PermohonanResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('status_permohonan.nama_status')
+                Tables\Columns\TextColumn::make('status_permohonan.general_status')
                     ->badge()
                     ->color(fn ($record): string => $record->status_permohonan->color)
                     ->icon(fn ($record): string => $record->status_permohonan->icon)
@@ -360,7 +380,7 @@ class PermohonanResource extends Resource
                     ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
-                        return $record->status_permohonan_id == 11;
+                        return $record->status_permohonan_id == 12;
                     }),
                 Tables\Actions\Action::make('Lihat Pesan')
                     ->icon('heroicon-s-exclamation-triangle')
@@ -396,12 +416,19 @@ class PermohonanResource extends Resource
 
         if (auth()->user()->roles->first()->name == 'pemohon') {
             return $query->where('user_id', $userId);
+        } else if ($get_assign_perizinan_handle != null && $get_assign_perizinan_handle['is_all_perizinan'] == 0) {
+            return $query->whereHas('status_permohonan', function ($query) use ($role, $get_assign_perizinan_handle) {
+                $query->whereIn('perizinan_id', $get_assign_perizinan_handle['perizinan_id'])
+                    ->whereJsonContains('role_id', "$role");
+            });
         } elseif ($get_assign_perizinan_handle == null) {
-            return $query->where('id', 0);
+            return $query->whereHas('status_permohonan', function ($query) use ($role) {
+                $query->whereJsonContains('role_id', "$role");
+            });
         } elseif ($get_assign_perizinan_handle['is_all_perizinan'] == 1) {
-            return $query;
-        } else {
-            return $query->whereIn('perizinan_id', $get_assign_perizinan_handle['perizinan_id']);
+            return $query->whereHas('status_permohonan', function ($query) use ($role) {
+                $query->whereJsonContains('role_id', "$role");
+            });
         }
     }
 

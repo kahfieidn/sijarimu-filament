@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nama_formulir');
             $table->enum('type', ['string', 'date', 'select']);
             $table->json('options')->nullable();
-            $table->foreignId('role_id')->constrained();
+            $table->json('features')->nullable();
             $table->timestamps();
         });
     }
