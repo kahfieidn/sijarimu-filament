@@ -46,6 +46,7 @@ use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PermohonanResource\Pages;
 use App\Filament\Resources\PermohonanResource\RelationManagers;
 use App\Filament\Resources\PermohonanResource\Pages\CreatePermohonan;
+use Filament\Forms\Components\Hidden;
 
 class PermohonanResource extends Resource
 {
@@ -100,7 +101,7 @@ class PermohonanResource extends Resource
                                     //Setting default Nomor Izin && Nomor Rekomendasi
                                     $set('nomor_rekomendasi', $perizinan->perizinan_configuration->prefix_nomor_rekomendasi . $perizinan->perizinan_configuration->nomor_rekomendasi . $perizinan->perizinan_configuration->suffix_nomor_rekomendasi);
                                     $set('nomor_izin', $perizinan->perizinan_configuration->prefix_nomor_izin . $perizinan->perizinan_configuration->nomor_izin . $perizinan->perizinan_configuration->suffix_nomor_izin);
-                                    
+
 
                                     $role = auth()->user()->roles->first()->id;
 
@@ -322,8 +323,8 @@ class PermohonanResource extends Resource
                                 ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                 ->dehydrated()
                                 ->live(),
-                            TextInput::make('nomor_rekomendasi'),
-                            TextInput::make('nomor_izin'),
+                            Hidden::make('nomor_rekomendasi'),
+                            Hidden::make('nomor_izin'),
                             RichEditor::make('message')
                                 ->visible(fn ($get) => $get('status_permohonan_id') === '2')
                                 ->reactive(),
