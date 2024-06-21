@@ -51,6 +51,9 @@ class PerizinanLifecycleResource extends Resource
                                     ->multiple()
                                     ->searchable()
                                     ->required(),
+                                Select::make('condition_status')
+                                    ->options(StatusPermohonan::all()->pluck('nama_status', 'id')->toArray())
+                                    ->searchable(),
                             ]),
                     ]),
                 Section::make('Detail Flow Status')
@@ -83,7 +86,7 @@ class PerizinanLifecycleResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_flow')
-                    ->numeric()
+                    ->wrap()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

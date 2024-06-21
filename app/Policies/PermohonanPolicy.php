@@ -15,7 +15,7 @@ class PermohonanPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->can('view_any_permohonan');
+        return $user->can('view_any_tracking');
     }
 
     /**
@@ -23,7 +23,7 @@ class PermohonanPolicy
      */
     public function view(User $user, Permohonan $permohonan): bool
     {
-        return $user->can('view_permohonan');
+        return $user->can('view_tracking');
     }
 
     /**
@@ -31,7 +31,7 @@ class PermohonanPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can('create_permohonan');
+        return $user->can('create_tracking');
     }
 
     /**
@@ -39,7 +39,7 @@ class PermohonanPolicy
      */
     public function update(User $user, Permohonan $permohonan): bool
     {
-        return $user->can('update_permohonan');
+        return $user->can('update_tracking');
     }
 
     /**
@@ -47,7 +47,7 @@ class PermohonanPolicy
      */
     public function delete(User $user, Permohonan $permohonan): bool
     {
-        return $user->can('delete_permohonan');
+        return $user->can('delete_tracking');
     }
 
     /**
@@ -55,7 +55,7 @@ class PermohonanPolicy
      */
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete_any_permohonan');
+        return $user->can('delete_any_tracking');
     }
 
     /**
@@ -63,7 +63,7 @@ class PermohonanPolicy
      */
     public function forceDelete(User $user, Permohonan $permohonan): bool
     {
-        return $user->can('force_delete_permohonan');
+        return $user->can('force_delete_tracking');
     }
 
     /**
@@ -71,7 +71,7 @@ class PermohonanPolicy
      */
     public function forceDeleteAny(User $user): bool
     {
-        return $user->can('force_delete_any_permohonan');
+        return $user->can('force_delete_any_tracking');
     }
 
     /**
@@ -79,7 +79,7 @@ class PermohonanPolicy
      */
     public function restore(User $user, Permohonan $permohonan): bool
     {
-        return $user->can('restore_permohonan');
+        return $user->can('restore_tracking');
     }
 
     /**
@@ -87,7 +87,7 @@ class PermohonanPolicy
      */
     public function restoreAny(User $user): bool
     {
-        return $user->can('restore_any_permohonan');
+        return $user->can('restore_any_tracking');
     }
 
     /**
@@ -95,7 +95,7 @@ class PermohonanPolicy
      */
     public function replicate(User $user, Permohonan $permohonan): bool
     {
-        return $user->can('replicate_permohonan');
+        return $user->can('replicate_tracking');
     }
 
     /**
@@ -103,6 +103,6 @@ class PermohonanPolicy
      */
     public function reorder(User $user): bool
     {
-        return $user->can('reorder_permohonan');
+        return $user->can('reorder_tracking');
     }
 }

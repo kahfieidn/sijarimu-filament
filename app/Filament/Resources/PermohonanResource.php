@@ -21,6 +21,7 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
 use Illuminate\Support\HtmlString;
+use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Split;
 use App\Models\AssignPerizinanHandle;
 use Filament\Forms\Components\Hidden;
@@ -31,22 +32,19 @@ use App\Models\PerizinanConfiguration;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Textarea;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\ViewField;
-use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Wizard\Step;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PermohonanResource\Pages;
 use App\Filament\Resources\PermohonanResource\RelationManagers;
+use App\Filament\Resources\PermohonanResource\Pages\EditPermohonan;
 use App\Filament\Resources\PermohonanResource\Pages\CreatePermohonan;
 
 class PermohonanResource extends Resource
@@ -54,8 +52,8 @@ class PermohonanResource extends Resource
     protected static ?string $model = Permohonan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-on-square-stack';
-
     protected static ?string $navigationGroup = 'Pengajuan';
+    protected static ?string $pluralModelLabel = 'Permohonan';
 
     protected static ?int $navigationGroupSort = 1;
 
@@ -65,22 +63,22 @@ class PermohonanResource extends Resource
         return $form
             ->schema([
                 Wizard::make([
-                    Wizard\Step::make('Pilih Jenis Perizinan')
+                    Wizard\Step::make('Pilih Perizinan')
                         ->schema([
                             Forms\Components\Select::make('perizinan_id')
                                 ->relationship(name: 'perizinan', titleAttribute: 'nama_perizinan')
-                                ->live()
-                                ->preload()
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                    // $livewire->dispatch('refresh')->to(CreatePermohonan::class);
+                                    $set('berkas.*.nama_persyaratan', '');
+                                    $set('berkas.*.file', null);
+                                    $perizinan = Perizinan::find($get('perizinan_id'));
+
+                                    // Set False if not in the flow
                                     $possible_flows = Feature::all()->pluck('nama_feature')->toArray();
                                     foreach ($possible_flows as $flow_name) {
                                         $set($flow_name, false);
                                     }
-
-                                    $set('berkas.*.nama_persyaratan', '');
-                                    $set('berkas.*.file', null);
-                                    $perizinan = Perizinan::find($get('perizinan_id'));
 
                                     //Setting default select status_permohonan_id dynamic form
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
@@ -99,11 +97,6 @@ class PermohonanResource extends Resource
                                     }
                                     $set('status_permohonan_id', $options);
 
-                                    //Setting default Nomor Izin && Nomor Rekomendasi
-                                    $set('nomor_rekomendasi', $perizinan->perizinan_configuration->prefix_nomor_rekomendasi . $perizinan->perizinan_configuration->nomor_rekomendasi . $perizinan->perizinan_configuration->suffix_nomor_rekomendasi);
-                                    $set('nomor_izin', $perizinan->perizinan_configuration->prefix_nomor_izin . $perizinan->perizinan_configuration->nomor_izin . $perizinan->perizinan_configuration->suffix_nomor_izin);
-
-
                                     $role = auth()->user()->roles->first()->id;
 
                                     if ($perizinan != null) {
@@ -118,37 +111,17 @@ class PermohonanResource extends Resource
                                                 }
                                             }
                                         }
+
+                                        //Setting default Nomor Izin && Nomor Rekomendasi
+                                        $set('nomor_rekomendasi', $perizinan->perizinan_configuration->prefix_nomor_rekomendasi . $perizinan->perizinan_configuration->nomor_rekomendasi . $perizinan->perizinan_configuration->suffix_nomor_rekomendasi);
+                                        $set('nomor_izin', $perizinan->perizinan_configuration->prefix_nomor_izin . $perizinan->perizinan_configuration->nomor_izin . $perizinan->perizinan_configuration->suffix_nomor_izin);
                                     }
                                 })
                                 ->required()
-                                ->disabledOn('edit')->dehydrated(),
-                        ]),
-                    Wizard\Step::make('Profile Usaha')
-                        ->visible(fn (Get $get) => $get('profile_usaha_relation'))
-                        ->schema([
-                            Fieldset::make('Profile Usaha')
-                                ->relationship('profile_usaha')
-                                ->schema([
-                                    Forms\Components\TextInput::make('nama_perusahaan')
-                                        ->label('Nama Perusahaan')->columnSpanFull(),
-                                    Forms\Components\TextInput::make('npwp')
-                                        ->label('NPWP'),
-                                    Forms\Components\FileUpload::make('npwp_file')
-                                        ->label('NPWP File'),
-                                    Forms\Components\TextInput::make('nib')
-                                        ->label('NIB'),
-                                    Forms\Components\FileUpload::make('nib_file')
-                                        ->label('NIB File'),
-                                    Forms\Components\TextArea::make('alamat')
-                                        ->label('Alamat')->columnSpanFull(),
-                                    Forms\Components\TextInput::make('provinsi')
-                                        ->label('Provinsi'),
-                                    Forms\Components\TextInput::make('domisili')
-                                        ->label('Domisili'),
-                                ]),
+                                ->live()
+                                ->disableOptionWhen(fn (Get $get) => $get('perizinan_id') != null)
                         ]),
                     Wizard\Step::make('Unggah Berkas')
-                        ->visible(fn (Get $get) => $get('checklist_berkas'))
                         ->schema([
                             Repeater::make('berkas')
                                 ->schema(function (Get $get): array {
@@ -198,7 +171,6 @@ class PermohonanResource extends Resource
                                 })->columns(2),
                         ]),
                     Wizard\Step::make('Formulir')
-                        ->visible(fn (Get $get) => $get('checklist_formulir'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -226,6 +198,75 @@ class PermohonanResource extends Resource
                                     }
                                 } else if ($option->type == 'select') {
                                     if (in_array('checklist_formulir', $option->features)) {
+                                        $jsonOptions = $option->options;
+                                        $valuesArray = array_map(function ($item) {
+                                            return $item['value'];
+                                        }, $jsonOptions);
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->options(array_combine($valuesArray, $valuesArray));
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                }
+                            }
+                            return [
+                                ...$selectOptions
+                            ];
+                        })->columns(2),
+                    Wizard\Step::make('Profile Usaha')
+                        ->visible(fn (Get $get) => $get('profile_usaha_relation'))
+                        ->schema([
+                            Fieldset::make('Profile Usaha')
+                                ->relationship('profile_usaha')
+                                ->schema([
+                                    Forms\Components\TextInput::make('nama_perusahaan')
+                                        ->label('Nama Perusahaan')->columnSpanFull(),
+                                    Forms\Components\TextInput::make('npwp')
+                                        ->label('NPWP'),
+                                    Forms\Components\FileUpload::make('npwp_file')
+                                        ->label('NPWP File'),
+                                    Forms\Components\TextInput::make('nib')
+                                        ->label('NIB'),
+                                    Forms\Components\FileUpload::make('nib_file')
+                                        ->label('NIB File'),
+                                    Forms\Components\TextArea::make('alamat')
+                                        ->label('Alamat')->columnSpanFull(),
+                                    Forms\Components\TextInput::make('provinsi')
+                                        ->label('Provinsi'),
+                                    Forms\Components\TextInput::make('domisili')
+                                        ->label('Domisili'),
+                                ]),
+                        ]),
+                    Wizard\Step::make('Back Office (Draft Rekomendasi)')
+                        ->visible(fn (Get $get) => $get('bo_before_opd_moderation'))
+                        ->schema(function (Get $get): array {
+                            $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
+                                $query->select('perizinan_id')
+                                    ->from('formulirs')
+                                    ->where('perizinan_id', $get('perizinan_id'));
+                            })->get();
+
+                            $selectOptions = [];
+                            foreach ($options as $key => $option) {
+
+                                if ($option->type == 'string') {
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } else if ($option->type == 'date') {
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } else if ($option->type == 'select') {
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
@@ -288,10 +329,10 @@ class PermohonanResource extends Resource
                             ];
                         })->columns(2),
                     Wizard\Step::make('Konfirmasi Permohonan')
+                        ->visible(fn (Get $get) => $get('konfirmasi_permohonan'))
                         ->schema([
                             Select::make('status_permohonan_id')
                                 ->label('Status Permohonan')
-                                ->searchable()
                                 ->options(function (Get $get, $state) {
                                     $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
                                     $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
@@ -313,21 +354,19 @@ class PermohonanResource extends Resource
                                     $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
                                     return $final_relation_status;
                                 })
+                                ->searchable()
                                 ->disabled(auth()->user()->roles->first()->name == 'pemohon')
-                                ->dehydrated()
-                                ->live(),
-                            Hidden::make('nomor_rekomendasi'),
-                            Hidden::make('nomor_izin'),
+                                ->live()
+                                ->dehydrated(),
                             RichEditor::make('message')
-                                ->visible(fn ($get) => $get('status_permohonan_id') === '2')
-                                ->reactive(),
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')
                                 ->label('Ya, Saya Setuju!')
                                 ->accepted(),
-                        ])->live()
-                        ->dehydrated()
-
+                            Hidden::make('nomor_rekomendasi'),
+                            Hidden::make('nomor_izin'),
+                        ]),
                 ])->columnSpanFull()->nextAction(
                     fn (Action $action) => $action->label('Selanjutnya'),
                 )->previousAction(
@@ -340,12 +379,20 @@ class PermohonanResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('perizinan.sektor.nama_sektor')
+                Tables\Columns\TextColumn::make('profile_usaha.nama_perusahaan')
+                    ->label('Nama Perusahaan')
+                    ->default('-')
+                    ->wrap()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->numeric()
+                    ->label('Nama Pemohon')
+                    ->wrap()
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
+                    ->wrap()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('perizinan.sektor.nama_sektor')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
                     ->badge()
@@ -367,10 +414,11 @@ class PermohonanResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon'),
+                    ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon')
+                    ->label('Tinjau'),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
-                    ->url(fn (Permohonan $record): string => url('storage/izin/' .$record->izin_terbit))
+                    ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 12;
@@ -424,8 +472,6 @@ class PermohonanResource extends Resource
             });
         }
     }
-
-
 
     public static function getRelations(): array
     {

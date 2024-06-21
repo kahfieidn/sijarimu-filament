@@ -21,8 +21,8 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class EditPermohonan extends EditRecord
 {
-
     protected static string $resource = PermohonanResource::class;
+
 
     public function mount(string | int $record): void
     {
@@ -44,7 +44,9 @@ class EditPermohonan extends EditRecord
                 if (isset($item['flow'])) {
                     $flow_name = $item['flow'];
 
-                    if (in_array("$role", $item['role_id'])) {
+                    if (in_array("$role", $item['role_id']) && $item['condition_status'] == null) {
+                        $data[$flow_name] = true;
+                    }else if (in_array("$role", $item['role_id']) && $item['condition_status'] == $data['status_permohonan_id']) {
                         $data[$flow_name] = true;
                     }
                 }
@@ -58,7 +60,6 @@ class EditPermohonan extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-
         $perizinan = Perizinan::where('id', $data['perizinan_id'])->first();
         $perizinan_lifecycle_id = Perizinan::where('id', $data['perizinan_id'])->first()->pluck('perizinan_lifecycle_id')->first();
 
@@ -90,10 +91,9 @@ class EditPermohonan extends EditRecord
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $currentMonthYear = Carbon::now()->format('Y-F');
-        $permohonan = Permohonan::find($record->id); // Make sure $record->id is correct
+        $permohonan = Permohonan::find($record->id);
     
-        // Check if the 'status_permohonan_id' exists in $data array
-        if (isset($data['status_permohonan_id']) && $data['status_permohonan_id'] == 12) {
+        if ($data['status_permohonan_id'] == 12 && $permohonan->perizinan->is_template == 1) {
             $pdfData = [
                 'permohonan' => $permohonan,
             ];
@@ -109,6 +109,7 @@ class EditPermohonan extends EditRecord
             Storage::put('public/izin/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
             $permohonan->update([
                 'izin_terbit' => $currentMonthYear . '/' . $hashedFileName,
+                'tanggal_izin_terbit' => Carbon::now(),
             ]);
         }
     

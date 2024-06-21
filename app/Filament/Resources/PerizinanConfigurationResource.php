@@ -60,21 +60,32 @@ class PerizinanConfigurationResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('nama_configuration')
+                    ->wrap()
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('prefix_nomor_rekomendasi')
+                    ->wrap()
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('suffix_nomor_rekomendasi')
+                    ->wrap()
+                    ->sortable()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nomor_rekomendasi')
+                    ->wrap()
+                    ->sortable()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('prefix_nomor_izin')
+                    ->wrap()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('suffix_nomor_izin')
+                    ->wrap()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nomor_izin')
+                    ->wrap()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')

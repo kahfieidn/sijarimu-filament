@@ -3,9 +3,14 @@
 namespace App\Filament\Resources\PermohonanResource\Pages;
 
 use Filament\Actions;
+use Filament\Forms\Get;
+use Filament\Forms\Form;
 use App\Models\Perizinan;
 use App\Models\Permohonan;
+use Filament\Forms\Components\Wizard;
+use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Session;
+use Filament\Forms\Components\Wizard\Step;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\PermohonanResource;
 
@@ -13,12 +18,17 @@ class CreatePermohonan extends CreateRecord
 {
 
     protected static string $resource = PermohonanResource::class;
-    protected $listeners = ['refresh' => 'refreshForm'];
 
-    public function refreshForm()
+
+    protected $listeners = ['refreshTabs' => 'refreshTabs'];
+
+    public function refreshTabs()
     {
-        $this->fillForm();
+        $this->form->fill([
+            'perizinan_id' => $this->form->getState()['perizinan_id'],
+        ]);
     }
+
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {

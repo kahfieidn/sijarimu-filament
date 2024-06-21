@@ -65,6 +65,8 @@ class FormulirResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
+                    ->wrap()
+                    ->listWithLineBreaks()
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_formulir')
