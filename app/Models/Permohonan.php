@@ -29,11 +29,12 @@ class Permohonan extends Model
         'nomor_izin',
         'nomor_rekomendasi',
         'nomor_kajian_teknis',
-        'tanggal_rekomendasi_terbit',
         'tanggal_izin_terbit',
-        'kajian_teknis',
-        'rekomendasi_terbit',
+        'tanggal_rekomendasi_terbit',
+        'tanggal_kajian_teknis_terbit',
         'izin_terbit',
+        'rekomendasi_terbit',
+        'kajian_teknis',
     ];
 
     protected $casts = [

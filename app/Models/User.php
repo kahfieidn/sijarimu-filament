@@ -22,6 +22,7 @@ class User extends Authenticatable
      */
     protected $fillable = [
         'name',
+        'nomor_hp',
         'email',
         'password',
         'google_id',
@@ -50,11 +51,11 @@ class User extends Authenticatable
     ];
 
     //production
-    // protected static function booted(): void
-    // {
-    //     static::created(function (User $user) {
-    //         $user->assignRole('pemohon');
-    //     });
-    // }
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $user->assignRole('pemohon');
+        });
+    }
 
 }

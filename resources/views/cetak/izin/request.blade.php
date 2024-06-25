@@ -1,1 +1,1 @@
-{!! $permohonan->perizinan->template_izin !!}
+@include('cetak.izin.template.' . $permohonan->perizinan->template_izin)

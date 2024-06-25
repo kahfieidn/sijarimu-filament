@@ -321,14 +321,9 @@ class TrackingResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('profile_usaha.nama_perusahaan')
-                    ->label('Nama Perusahaan')
-                    ->default('-')
+                    ->label('Perusahaan/Perorangan')
+                    ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
                     ->wrap()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Nama Pemohon')
-                    ->wrap()
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
@@ -342,7 +337,8 @@ class TrackingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('tanggal_izin_terbit')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -366,7 +362,8 @@ class TrackingResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
-                    ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
+                    // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
+                    ->url(fn(Permohonan $record): string => route('app.cetak.izin.request', $record))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 12;
@@ -390,6 +387,11 @@ class TrackingResource extends Resource
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->roles->first()->name != 'pemohon';
     }
 
     public static function getRelations(): array

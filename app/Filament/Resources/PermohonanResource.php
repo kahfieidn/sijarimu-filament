@@ -41,6 +41,7 @@ use Filament\Forms\Components\Wizard\Step;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use NunoMaduro\Collision\Adapters\Phpunit\State;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PermohonanResource\Pages;
 use App\Filament\Resources\PermohonanResource\RelationManagers;
@@ -111,7 +112,6 @@ class PermohonanResource extends Resource
                                                 }
                                             }
                                         }
-
                                         //Setting default Nomor Izin && Nomor Rekomendasi
                                         $set('nomor_rekomendasi', $perizinan->perizinan_configuration->prefix_nomor_rekomendasi . $perizinan->perizinan_configuration->nomor_rekomendasi . $perizinan->perizinan_configuration->suffix_nomor_rekomendasi);
                                         $set('nomor_izin', $perizinan->perizinan_configuration->prefix_nomor_izin . $perizinan->perizinan_configuration->nomor_izin . $perizinan->perizinan_configuration->suffix_nomor_izin);
@@ -119,6 +119,8 @@ class PermohonanResource extends Resource
                                 })
                                 ->required()
                                 ->live()
+                                ->disabledOn('edit')
+                                ->dehydrated()
                                 ->disableOptionWhen(fn (Get $get) => $get('perizinan_id') != null)
                         ]),
                     Wizard\Step::make('Unggah Berkas')
@@ -142,16 +144,28 @@ class PermohonanResource extends Resource
                                             ->disableOptionWhen(function ($value, $state, Get $get) use ($selectedOptions) {
                                                 return $selectedOptions->contains($value);
                                             })
+                                            ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                                $persyaratan = Persyaratan::where('id', $get('nama_persyaratan'))->first();
+                                                $set('deskripsi_persyaratan', $persyaratan->deskripsi_persyaratan ?? '-');
+                                            })
                                             ->live()
                                             ->preload(),
+                                        Forms\Components\Placeholder::make('deskripsi_persyaratan')
+                                            ->content(function ($get) {
+                                                $deskripsiPersyaratan = $get('deskripsi_persyaratan');
+                                                return new HtmlString($deskripsiPersyaratan ?? '-');
+                                            })
+                                            ->default('-'),
                                         Forms\Components\FileUpload::make('file')
                                             ->required()
-                                            ->openable()
                                             ->appendFiles()
-                                            ->directory('berkas' . '/' . $currentMonthYear),
+                                            ->directory('berkas' . '/' . $currentMonthYear)
+                                            ->appendFiles()
+                                            ->columnSpanFull(),
                                         Forms\Components\Select::make('status')
                                             ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
                                             ->disabled(auth()->user()->roles->first()->name == 'pemohon')
+                                            ->hiddenOn('create')
                                             ->dehydrated()
                                             ->options([
                                                 'revision' => 'Revision',
@@ -164,11 +178,33 @@ class PermohonanResource extends Resource
                                         Forms\Components\TextInput::make('keterangan')
                                             ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
                                             ->disabled(auth()->user()->roles->first()->name == 'pemohon')
+                                            ->hiddenOn('create')
                                             ->dehydrated()
                                             ->default('-')
                                             ->required(),
                                     ];
-                                })->columns(2),
+                                })
+                                ->columns(2)
+                                ->addActionLabel('Tambah Berkas')
+                                ->extraItemActions([
+                                    Action::make('Lihat Berkas')
+                                        ->button('Lihat Berkas')
+                                        ->icon('heroicon-m-cursor-arrow-ripple')
+                                        ->url(function (array $arguments, Repeater $component): ?string {
+                                            $itemData = $component->getItemState($arguments['item']) ?? '';
+                                            if (!$itemData['file']) {
+                                                return null;
+                                            }
+
+                                            return url('storage/' . $itemData['file']);
+                                        }, shouldOpenInNewTab: true)
+                                        ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
+                                ])
+                                ->collapsed(auth()->user()->roles->first()->name != 'pemohon')
+                                ->itemLabel(fn (array $state): ?string => Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first())
+                                ->deleteAction(
+                                    fn (Action $action) => $action->requiresConfirmation(),
+                                ),
                         ]),
                     Wizard\Step::make('Formulir')
                         ->schema(function (Get $get): array {
@@ -225,16 +261,31 @@ class PermohonanResource extends Resource
                                     Forms\Components\TextInput::make('npwp')
                                         ->label('NPWP'),
                                     Forms\Components\FileUpload::make('npwp_file')
+                                        ->openable()
                                         ->label('NPWP File'),
                                     Forms\Components\TextInput::make('nib')
                                         ->label('NIB'),
                                     Forms\Components\FileUpload::make('nib_file')
+                                        ->openable()
                                         ->label('NIB File'),
                                     Forms\Components\TextArea::make('alamat')
                                         ->label('Alamat')->columnSpanFull(),
-                                    Forms\Components\TextInput::make('provinsi')
+                                    Forms\Components\Select::make('provinsi')
+                                        ->options([
+                                            'Kepulauan Riau' => 'Kepulauan Riau',
+                                        ])
+                                        ->native(false)
                                         ->label('Provinsi'),
-                                    Forms\Components\TextInput::make('domisili')
+                                    Forms\Components\Select::make('domisili')
+                                        ->options([
+                                            'Kabupaten Bintan' => 'Kabupaten Bintan',
+                                            'Kabupaten Karimun' => 'Kabupaten Karimun',
+                                            'Kabupaten Kepulauan Anambas' => 'Kabupaten Kepulauan Anambas',
+                                            'Kabupaten Lingga' => 'Kabupaten Lingga',
+                                            'Kabupaten Natuna' => 'Kabupaten Natuna',
+                                            'Kota Batam' => 'Kota Tanjungpinang',
+                                        ])
+                                        ->native(false)
                                         ->label('Domisili'),
                                 ]),
                         ]),
@@ -283,6 +334,20 @@ class PermohonanResource extends Resource
                                 ...$selectOptions
                             ];
                         })->columns(2),
+                    Wizard\Step::make('OPD (Moderation)')
+                        ->visible(fn (Get $get) => $get('opd_moderation'))
+                        ->schema([
+                            Forms\Components\TextInput::make('nomor_kajian_teknis')
+                                ->label('Nomor Surat Kajian Teknis'),
+                            Forms\Components\DatePicker::make('tanggal_kajian_teknis_terbit')
+                                ->label('Tanggal Surat Kajian Teknis'),
+                            Forms\Components\FileUpload::make('kajian_teknis')
+                                ->openable()
+                                ->label('Rekomendasi Teknis')
+                                ->directory('kajian_teknis')
+                                ->openable()
+                                ->columnSpanFull(),
+                        ])->columns(2),
                     Wizard\Step::make('Back Office (Draft SK)')
                         ->visible(fn (Get $get) => $get('bo_after_opd_moderation'))
                         ->schema(function (Get $get): array {
@@ -380,14 +445,9 @@ class PermohonanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('profile_usaha.nama_perusahaan')
-                    ->label('Nama Perusahaan')
-                    ->default('-')
+                    ->label('Perusahaan/Perorangan')
+                    ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
                     ->wrap()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Nama Pemohon')
-                    ->wrap()
-                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
@@ -418,7 +478,8 @@ class PermohonanResource extends Resource
                     ->label('Tinjau'),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
-                    ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
+                    // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
+                    ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 12;

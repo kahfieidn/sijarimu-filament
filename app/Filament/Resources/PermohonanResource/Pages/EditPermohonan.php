@@ -6,6 +6,7 @@ use Carbon\Carbon;
 use Filament\Actions;
 use App\Models\Perizinan;
 use App\Models\Permohonan;
+use App\Models\Persyaratan;
 use App\Models\StatusPermohonan;
 use App\Models\PerizinanLifecycle;
 use Filament\Tables\Actions\Action;
@@ -14,8 +15,8 @@ use Filament\Support\Enums\MaxWidth;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Storage;
 use Filament\Resources\Pages\EditRecord;
-use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Filament\Resources\PermohonanResource;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
@@ -46,13 +47,12 @@ class EditPermohonan extends EditRecord
 
                     if (in_array("$role", $item['role_id']) && $item['condition_status'] == null) {
                         $data[$flow_name] = true;
-                    }else if (in_array("$role", $item['role_id']) && $item['condition_status'] == $data['status_permohonan_id']) {
+                    } else if (in_array("$role", $item['role_id']) && $item['condition_status'] == $data['status_permohonan_id']) {
                         $data[$flow_name] = true;
                     }
                 }
             }
         }
-
         $data['status_permohonan_id_from_edit'] = $data['status_permohonan_id'];
 
         return $data;
@@ -60,7 +60,6 @@ class EditPermohonan extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $perizinan = Perizinan::where('id', $data['perizinan_id'])->first();
         $perizinan_lifecycle_id = Perizinan::where('id', $data['perizinan_id'])->first()->pluck('perizinan_lifecycle_id')->first();
 
         $flow_status = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
@@ -92,31 +91,31 @@ class EditPermohonan extends EditRecord
     {
         $currentMonthYear = Carbon::now()->format('Y-F');
         $permohonan = Permohonan::find($record->id);
-    
+
         if ($data['status_permohonan_id'] == 12 && $permohonan->perizinan->is_template == 1) {
             $pdfData = [
                 'permohonan' => $permohonan,
             ];
-    
+
             $storageDirectory = 'izin/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
             $pdf = FacadePdf::loadView('cetak.izin.request', $pdfData);
             $customPaper = [0, 0, 609.4488, 935.433];
             $pdf->set_paper($customPaper);
-    
+
             $fileContent = $pdf->output();
             $hashedFileName = hash('sha256', $storageDirectory) . '.' . pathinfo($storageDirectory, PATHINFO_EXTENSION);
-    
+
             Storage::put('public/izin/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
             $permohonan->update([
                 'izin_terbit' => $currentMonthYear . '/' . $hashedFileName,
                 'tanggal_izin_terbit' => Carbon::now(),
             ]);
         }
-    
+
         $record->update($data);
         return $record;
     }
-    
+
 
     protected function getHeaderActions(): array
     {
@@ -124,7 +123,16 @@ class EditPermohonan extends EditRecord
             Actions\DeleteAction::make()
                 ->visible(fn ($record) => auth()->user()->roles->first()->name == 'super_admin'),
             Actions\ViewAction::make(),
+            Actions\Action::make('Draft Rekomendasi')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [5, 6, 7, 8, 9, 10, 11, 12]))
+                ->url(fn (Permohonan $record): string => route('app.cetak.permintaan-rekomendasi-request', $record))
+                ->openUrlInNewTab(),
+            Actions\Action::make('Draft Kajian Teknis')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10, 11, 12]))
+                ->url(fn (Permohonan $record): string => url('storage/' . $record->kajian_teknis))
+                ->openUrlInNewTab(),
             Actions\Action::make('Draft Izin')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [9, 10, 11, 12]))
                 ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                 ->openUrlInNewTab()
         ];

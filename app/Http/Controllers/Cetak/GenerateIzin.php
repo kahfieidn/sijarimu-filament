@@ -38,10 +38,11 @@ class GenerateIzin extends Controller
         $get_id_users = $permohonan->user->id;
         $get_nama_izin = $permohonan->perizinan->nama_perizinan;
         $nama_user = $permohonan->user->name;
+        $template_izin = $permohonan->perizinan->template_izin;
         $data = [
             'permohonan' => $permohonan,
         ];
-        $pdf = FacadePdf::loadView('cetak.izin.request', $data);
+        $pdf = FacadePdf::loadView('cetak.izin.request', compact('permohonan'));
         $customPaper = array(0, 0, 609.4488, 935.433);
         $pdf->set_paper($customPaper);
         $pdf->render();

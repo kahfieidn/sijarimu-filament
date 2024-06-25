@@ -1,0 +1,1 @@
+@include('cetak.rekomendasi.template.' . $permohonan->perizinan->template_rekomendasi)

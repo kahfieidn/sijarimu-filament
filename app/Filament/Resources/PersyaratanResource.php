@@ -47,8 +47,12 @@ class PersyaratanResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
+                    ->wrap()
+                    ->lineClamp(2)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('nama_persyaratan')
+                    ->wrap()
+                    ->lineClamp(2)  
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deskripsi_persyaratan')
                     ->searchable(),
