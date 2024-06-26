@@ -17,6 +17,7 @@ class Formulir extends Model
         'nama_formulir',
         'type',
         'options',
+        'is_columnSpanFull',
     ];
 
     protected $casts = [

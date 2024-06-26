@@ -126,10 +126,10 @@ class PermohonanResource extends Resource
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->schema([
-                            Section::make('List Persyaratan')
+                            Section::make('List Persyaratan Yang Belum di Unggah')
                                 ->schema(function (Get $get) {
                                     $selectedOptions = collect($get('berkas.*.nama_persyaratan'))->filter();
-                                    $allOptions = Persyaratan::pluck('nama_persyaratan', 'id');
+                                    $allOptions = Persyaratan::where('perizinan_id', $get('perizinan_id'))->pluck('nama_persyaratan', 'id');
                                     $unselectedOptions = $allOptions->filter(function ($value, $key) use ($selectedOptions) {
                                         return !$selectedOptions->contains($key);
                                     });
@@ -151,7 +151,17 @@ class PermohonanResource extends Resource
                                         Placeholder::make('')
                                             ->content(new HtmlString($unselectedOptionsHtml)),
                                     ];
-                                }),
+                                })->hidden(function (Get $get) {
+                                    $selectedOptions = collect($get('berkas.*.nama_persyaratan'))->filter();
+                                    $allOptions = Persyaratan::where('perizinan_id', $get('perizinan_id'))->pluck('nama_persyaratan', 'id');
+                                    $unselectedOptions = $allOptions->filter(function ($value, $key) use ($selectedOptions) {
+                                        return !$selectedOptions->contains($key);
+                                    });
+
+                                    if ($unselectedOptions->isEmpty()) {
+                                        return true;
+                                    }
+                                })->live(),
                             Repeater::make('berkas')
                                 ->schema(function (Get $get): array {
                                     $selectedOptions = collect($get('berkas.*.nama_persyaratan'))->filter();
@@ -233,7 +243,7 @@ class PermohonanResource extends Resource
                                         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
                                 ])
                                 ->collapsed(auth()->user()->roles->first()->name != 'pemohon')
-                                ->itemLabel(fn (array $state): ?string => Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first() . ' - ' . $state['status'] ?? 'Pending')
+                                ->itemLabel(fn (array $state): ?string => ($state['status'] ?? 'Pending') . ' - ' . Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first())
                                 ->deleteAction(
                                     fn (Action $action) => $action->requiresConfirmation(),
                                 ),
@@ -252,14 +262,16 @@ class PermohonanResource extends Resource
                                 if ($option->type == 'string') {
                                     if (in_array('checklist_formulir', $option->features)) {
                                         $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->columnSpanFull($option->is_columnSpanFull);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'date') {
                                     if (in_array('checklist_formulir', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
+                                            ->columnSpanFull($option->is_columnSpanFull);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -271,6 +283,7 @@ class PermohonanResource extends Resource
                                             return $item['value'];
                                         }, $jsonOptions);
                                         $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->columnSpanFull($option->is_columnSpanFull)
                                             ->options(array_combine($valuesArray, $valuesArray));
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
@@ -483,14 +496,13 @@ class PermohonanResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
+                    ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.sektor.nama_sektor')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
-                    ->badge()
-                    ->color(fn ($record): string => $record->status_permohonan->color)
-                    ->icon(fn ($record): string => $record->status_permohonan->icon)
                     ->wrap()
+                    ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
@@ -515,7 +527,7 @@ class PermohonanResource extends Resource
                     ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
-                        return $record->status_permohonan_id == 12;
+                        return $record->status_permohonan_id == 11;
                     }),
                 Tables\Actions\Action::make('Lihat Pesan')
                     ->icon('heroicon-s-exclamation-triangle')

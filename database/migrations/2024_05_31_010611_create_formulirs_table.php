@@ -16,6 +16,7 @@ return new class extends Migration
             $table->foreignId('perizinan_id')->constrained();
             $table->string('nama_formulir');
             $table->enum('type', ['string', 'date', 'select']);
+            $table->boolean('is_columnSpanFull')->default(false)->nullable();
             $table->json('options')->nullable();
             $table->json('features')->nullable();
             $table->timestamps();

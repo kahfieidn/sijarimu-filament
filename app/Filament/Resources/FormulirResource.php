@@ -52,6 +52,9 @@ class FormulirResource extends Resource
                         Forms\Components\Select::make('features')
                             ->options(Feature::all()->pluck('nama_feature', 'nama_feature')->toArray())
                             ->multiple(),
+                        Forms\Components\Toggle::make('is_columnSpanFull')
+                            ->onIcon('heroicon-m-bolt')
+                            ->offIcon('heroicon-m-user'),
                         Repeater::make('options')
                             ->schema([
                                 Forms\Components\TextInput::make('value'),

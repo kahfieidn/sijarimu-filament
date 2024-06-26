@@ -38,6 +38,7 @@ class PersyaratanResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\RichEditor::make('deskripsi_persyaratan')
+                        ->default('<p>Berkas wajib di isi...</p>')
                         ->columnSpanFull()
                     ])->columns(2)
             ]);

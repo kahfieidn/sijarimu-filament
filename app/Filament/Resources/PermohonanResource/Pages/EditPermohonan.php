@@ -8,14 +8,16 @@ use App\Models\Perizinan;
 use App\Models\Permohonan;
 use App\Models\Persyaratan;
 use App\Models\StatusPermohonan;
+use Filament\Infolists\Infolist;
 use App\Models\PerizinanLifecycle;
 use Filament\Tables\Actions\Action;
 use Illuminate\Contracts\View\View;
+use Infolists\Components\TextEntry;
 use Filament\Support\Enums\MaxWidth;
 use Illuminate\Database\Eloquent\Model;
+
 use Illuminate\Support\Facades\Storage;
 use Filament\Resources\Pages\EditRecord;
-
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Filament\Resources\PermohonanResource;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
@@ -23,6 +25,7 @@ use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 class EditPermohonan extends EditRecord
 {
     protected static string $resource = PermohonanResource::class;
+    protected static ?string $title = 'Tinjau Permohonan';
 
 
     public function mount(string | int $record): void
@@ -92,7 +95,7 @@ class EditPermohonan extends EditRecord
         $currentMonthYear = Carbon::now()->format('Y-F');
         $permohonan = Permohonan::find($record->id);
 
-        if ($data['status_permohonan_id'] == 12 && $permohonan->perizinan->is_template == 1) {
+        if ($data['status_permohonan_id'] == 11 && $permohonan->perizinan->is_template == 1) {
             $pdfData = [
                 'permohonan' => $permohonan,
             ];
@@ -124,15 +127,15 @@ class EditPermohonan extends EditRecord
                 ->visible(fn ($record) => auth()->user()->roles->first()->name == 'super_admin'),
             Actions\ViewAction::make(),
             Actions\Action::make('Draft Rekomendasi')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [5, 6, 7, 8, 9, 10, 11, 12]))
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [5, 6, 7, 8, 9, 10, 11]) && $record->perizinan->is_template_rekomendasi == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.permintaan-rekomendasi-request', $record))
                 ->openUrlInNewTab(),
             Actions\Action::make('Draft Kajian Teknis')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10, 11, 12]))
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10, 11]) && !is_null($record->kajian_teknis))
                 ->url(fn (Permohonan $record): string => url('storage/' . $record->kajian_teknis))
                 ->openUrlInNewTab(),
             Actions\Action::make('Draft Izin')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [9, 10, 11, 12]))
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [9, 10, 11]))
                 ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                 ->openUrlInNewTab()
         ];
