@@ -23,7 +23,7 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
 
-    protected static ?string $navigationGroup = 'Filament Shield';
+    protected static ?string $navigationGroup = 'Pelindung';
 
     protected static ?int $navigationSort = 3;
 
@@ -35,6 +35,7 @@ class UserResource extends Resource
                 Section::make('User Information')
                     ->schema([
                         Forms\Components\TextInput::make('name')
+                            ->label('Nama Lengkap')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('email')
@@ -47,6 +48,12 @@ class UserResource extends Resource
                             ->dehydrateStateUsing(fn ($state) => Hash::make($state))
                             ->visible(fn ($livewire) => $livewire instanceof CreateUser)
                             ->rule(Password::default()),
+                        Forms\Components\TextInput::make('nomor_hp')
+                            ->label(__('Nomor Handphone / (WhatsApp)'))
+                            ->prefix('+62')
+                            ->tel()
+                            ->numeric()
+                            ->required(),
                         Forms\Components\Select::make('roles')
                             ->relationship('roles', 'name')
                             ->multiple()

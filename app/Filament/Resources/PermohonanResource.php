@@ -30,6 +30,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Forms\Components\Wizard;
 use App\Models\PerizinanConfiguration;
 use Filament\Forms\Components\Section;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
@@ -125,11 +126,36 @@ class PermohonanResource extends Resource
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->schema([
+                            Section::make('List Persyaratan')
+                                ->schema(function (Get $get) {
+                                    $selectedOptions = collect($get('berkas.*.nama_persyaratan'))->filter();
+                                    $allOptions = Persyaratan::pluck('nama_persyaratan', 'id');
+                                    $unselectedOptions = $allOptions->filter(function ($value, $key) use ($selectedOptions) {
+                                        return !$selectedOptions->contains($key);
+                                    });
+
+                                    // Mengubah $unselectedOptions menjadi string dalam format HTML <ol>
+                                    $unselectedOptionsHtml = '<ol>';
+                                    $counter = 1;
+                                    foreach ($unselectedOptions as $option) {
+                                        $unselectedOptionsHtml .= '<li>' . $counter . '. ' . htmlspecialchars($option, ENT_QUOTES, 'UTF-8') . '</li>';
+                                        $counter++;
+                                    }
+                                    $unselectedOptionsHtml .= '</ol>';
+
+                                    if ($unselectedOptions->isEmpty()) {
+                                        $unselectedOptionsHtml = '<p>Semua berkas sudah lengkap diunggah</p>';
+                                    }
+
+                                    return [
+                                        Placeholder::make('')
+                                            ->content(new HtmlString($unselectedOptionsHtml)),
+                                    ];
+                                }),
                             Repeater::make('berkas')
                                 ->schema(function (Get $get): array {
                                     $selectedOptions = collect($get('berkas.*.nama_persyaratan'))->filter();
                                     $currentMonthYear = Carbon::now()->format('Y-F');
-
                                     return [
                                         Select::make('nama_persyaratan')
                                             ->options(function () use ($get) {
@@ -140,6 +166,7 @@ class PermohonanResource extends Resource
                                                 })->pluck('nama_persyaratan', 'id');
                                                 return $data;
                                             })
+                                            ->searchable()
                                             ->required()
                                             ->disableOptionWhen(function ($value, $state, Get $get) use ($selectedOptions) {
                                                 return $selectedOptions->contains($value);
@@ -157,6 +184,8 @@ class PermohonanResource extends Resource
                                             })
                                             ->default('-'),
                                         Forms\Components\FileUpload::make('file')
+                                            ->deletable(auth()->user()->roles->first()->name == 'pemohon' ? true : false)
+                                            ->dehydrated()
                                             ->required()
                                             ->appendFiles()
                                             ->directory('berkas' . '/' . $currentMonthYear)
@@ -167,18 +196,21 @@ class PermohonanResource extends Resource
                                             ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                             ->hiddenOn('create')
                                             ->dehydrated()
+                                            ->searchable()
                                             ->options([
-                                                'revision' => 'Revision',
-                                                'pending' => 'Pending',
-                                                'approved' => 'Approved',
-                                                'rejected' => 'Rejected',
+                                                'Revision' => 'Revision',
+                                                'Pending' => 'Pending',
+                                                'Approved' => 'Approved',
+                                                'Rejected' => 'Rejected',
                                             ])
-                                            ->default('pending')
+                                            ->live()
+                                            ->default('Pending')
                                             ->required(),
                                         Forms\Components\TextInput::make('keterangan')
-                                            ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
+                                            ->visible('create', auth()->user()->roles->first()->name != 'pemohon' && $get('status') == 'Rejected')
                                             ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                             ->hiddenOn('create')
+                                            ->live()
                                             ->dehydrated()
                                             ->default('-')
                                             ->required(),
@@ -201,7 +233,7 @@ class PermohonanResource extends Resource
                                         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
                                 ])
                                 ->collapsed(auth()->user()->roles->first()->name != 'pemohon')
-                                ->itemLabel(fn (array $state): ?string => Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first())
+                                ->itemLabel(fn (array $state): ?string => Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first() . ' - ' . $state['status'] ?? 'Pending')
                                 ->deleteAction(
                                     fn (Action $action) => $action->requiresConfirmation(),
                                 ),
@@ -458,6 +490,7 @@ class PermohonanResource extends Resource
                     ->badge()
                     ->color(fn ($record): string => $record->status_permohonan->color)
                     ->icon(fn ($record): string => $record->status_permohonan->icon)
+                    ->wrap()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

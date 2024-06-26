@@ -32,20 +32,20 @@ class StatusPermohonanSeeder extends Seeder
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Back Office Membuat Draft Rekomendasi',
-            'nama_status' => 'Permintaan Back Office Membuat Draft Rekomendasi',
+            'general_status' => 'Back Office Cross Check Berkas & Membuat Draft Permintaan Rekomendasi',
+            'nama_status' => 'Permintaan Back Office Cross Check Berkas & Membuat Draft Permintaan Rekomendasi',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Verifikator 1 Cross Check Draft Rekomendasi',
-            'nama_status' => 'Permintaan Persetujuan Draft Rekomendasi Verifikator 1',
+            'general_status' => 'Verifikator Permintaan Rekomendasi',
+            'nama_status' => 'Persetujuan Permintaan Rekomendasi Oleh Verifikator',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Verifikator 2 Cross Check Draft Rekomendasi',
-            'nama_status' => 'Permintaan Persetujuan Draft Rekomendasi Verifikator 2',
+            'general_status' => 'Persetujuan Kepala Dinas Permintaan Rekomendasi',
+            'nama_status' => 'Persetujuan Permintaan Rekomendasi Oleh Kepala Dinas',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
@@ -62,20 +62,14 @@ class StatusPermohonanSeeder extends Seeder
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Verifikator 1 Cross Check Draft Izin',
-            'nama_status' => 'Permintaan Persetujuan Draft Izin Verifikator 1',
-            'icon' => 'heroicon-o-document-duplicate',
-            'color' => 'primary',
-        ]);
-        \App\Models\StatusPermohonan::create([
-            'general_status' => 'Verifikator 2 Cross Check Draft Izin',
-            'nama_status' => 'Permintaan Persetujuan Draft Izin Verifikator 2',
+            'general_status' => 'Verifikator Izin',
+            'nama_status' => 'Persetujuan Izin Oleh Verifikator',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
             'general_status' => 'Menunggu Persetujuan Izin Oleh Kepala Dinas',
-            'nama_status' => 'Permintaan Persetujuan Izin Terbit Oleh Kepala Dinas',
+            'nama_status' => 'Persetujuan Izin Oleh Kepala Dinas',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);

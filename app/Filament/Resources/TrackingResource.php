@@ -389,10 +389,10 @@ class TrackingResource extends Resource
             ]);
     }
 
-    public static function canViewAny(): bool
-    {
-        return auth()->user()->roles->first()->name != 'pemohon';
-    }
+    // public static function canViewAny(): bool
+    // {
+    //     return auth()->user()->roles->first()->name != 'pemohon';
+    // }
 
     public static function getRelations(): array
     {

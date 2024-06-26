@@ -1,0 +1,52 @@
+on:
+  push:
+    branches: [ 'main' ]
+
+name: 🚀 Deployment
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: composer install --ignore-platform-reqs
+
+    - name: Create env file
+      run: echo "${{ secrets.DOT_ENV_PRODUCTION }}" > .env
+      
+    - name: Config Clearing
+      run: php artisan config:clear
+
+    - name: Cache Clearing
+      run: php artisan cache:clear
+
+    - name: Generate App Key
+      run: php artisan key:generate
+      
+    - name: Generate storage link
+      run: php artisan storage:link
+      
+    - name: Directory Permissions
+      run: chmod -R 777 storage bootstrap/cache
+
+    - name: Install Npm
+      run: npm install
+
+    - name: Compile Css and Js Assets
+      run: npm run build
+
+    - name: Setup PHP with PECL extension
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: '8.2'
+
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      with:
+        server: ${{ secrets.FTP_SERVER }}
+        username: ${{ secrets.FTP_USERNAME }}
+        password: ${{ secrets.FTP_PASSWORD }}
+        server-dir: /

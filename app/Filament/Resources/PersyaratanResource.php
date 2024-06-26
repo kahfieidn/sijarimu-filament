@@ -37,7 +37,8 @@ class PersyaratanResource extends Resource
                         Forms\Components\TextInput::make('nama_persyaratan')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\RichEditor::make('deskripsi_persyaratan')->columnSpanFull()
+                        Forms\Components\RichEditor::make('deskripsi_persyaratan')
+                        ->columnSpanFull()
                     ])->columns(2)
             ]);
     }

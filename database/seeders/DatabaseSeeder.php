@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             'name' => 'Administrator',
             'email' => 'mhmmdkahfi2000@gmail.com',
             'password' => bcrypt('jika12345'),
+            'nomor_hp' => '081234567890',
         ]);
 
         $this->call([
