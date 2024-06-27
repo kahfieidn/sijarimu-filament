@@ -27,7 +27,6 @@ class EditPermohonan extends EditRecord
     protected static string $resource = PermohonanResource::class;
     protected static ?string $title = 'Tinjau Permohonan';
 
-
     public function mount(string | int $record): void
     {
         $permohonan = Permohonan::findOrFail($record); // Fetch the Permohonan record by ID
@@ -95,11 +94,14 @@ class EditPermohonan extends EditRecord
         $currentMonthYear = Carbon::now()->format('Y-F');
         $permohonan = Permohonan::find($record->id);
 
-        if ($data['status_permohonan_id'] == 11 && $permohonan->perizinan->is_template == 1) {
+        $manualRekomendasi = $data['tanda_tangan_permintaan_rekomendasi'] ?? null;
+
+        dd($data['tanda_tangan_permintaan_rekomendasi']);
+
+        if (($data['status_permohonan_id'] == 11 && $permohonan->perizinan->is_template == 1) ) {
             $pdfData = [
                 'permohonan' => $permohonan,
             ];
-
             $storageDirectory = 'izin/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
             $pdf = FacadePdf::loadView('cetak.izin.request', $pdfData);
             $customPaper = [0, 0, 609.4488, 935.433];

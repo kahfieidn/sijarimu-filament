@@ -22,6 +22,7 @@ use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
+use Filament\Forms\Components\Tabs;
 use Filament\Forms\Components\Split;
 use App\Models\AssignPerizinanHandle;
 use Filament\Forms\Components\Hidden;
@@ -34,11 +35,13 @@ use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Wizard\Step;
+use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Widgets\StatsOverviewWidget\Stat;
@@ -122,7 +125,7 @@ class PermohonanResource extends Resource
                                 ->live()
                                 ->disabledOn('edit')
                                 ->dehydrated()
-                                ->disableOptionWhen(fn (Get $get) => $get('perizinan_id') != null)
+                                ->disableOptionWhen(fn (Get $get) => $get('perizinan_id') != null),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->schema([
@@ -255,36 +258,49 @@ class PermohonanResource extends Resource
                                     ->from('formulirs')
                                     ->where('perizinan_id', $get('perizinan_id'));
                             })->get();
-
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
-
                                 if ($option->type == 'string') {
                                     if (in_array('checklist_formulir', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
-                                            ->columnSpanFull($option->is_columnSpanFull);
+                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'date') {
+                                } elseif ($option->type == 'date') {
                                     if (in_array('checklist_formulir', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
-                                            ->columnSpanFull($option->is_columnSpanFull);
+                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'select') {
+                                } elseif ($option->type == 'select') {
                                     if (in_array('checklist_formulir', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
                                         }, $jsonOptions);
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                                            ->columnSpanFull($option->is_columnSpanFull)
+
+                                        $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
                                             ->options(array_combine($valuesArray, $valuesArray));
+
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -379,6 +395,31 @@ class PermohonanResource extends Resource
                                 ...$selectOptions
                             ];
                         })->columns(2),
+                    Wizard\Step::make('Kadis Moderation Rekomendasi')
+                        ->visible(fn (Get $get) => $get('kadis_before_opd_moderation'))
+                        ->schema([
+                            ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
+                                ->options([
+                                    'is_template_rekomendasi' => 'TTE BsRe dari Template Rekomendasi',
+                                    'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
+                                ])
+                                ->live()
+                                ->inline()
+                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                    if ($get('tanda_tangan_permintaan_rekomendasi') == 'is_template_rekomendasi') {
+                                        $set('tanda_tangan_permintaan_rekomendasi', 'is_manual_rekomendasi');
+                                        Notification::make()
+                                            ->title('Fitur ini masih dalam pengembangan')
+                                            ->warning()
+                                            ->duration(5000)
+                                            ->send();
+                                    }
+                                }),
+                            Forms\Components\FileUpload::make('rekomendasi_terbit')
+                                ->required()
+                                ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
+
+                        ]),
                     Wizard\Step::make('OPD (Moderation)')
                         ->visible(fn (Get $get) => $get('opd_moderation'))
                         ->schema([
@@ -471,9 +512,9 @@ class PermohonanResource extends Resource
                             RichEditor::make('message')
                                 ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
-                            Forms\Components\Checkbox::make('saya_setuju')
-                                ->label('Ya, Saya Setuju!')
-                                ->accepted(),
+                            // Forms\Components\Checkbox::make('saya_setuju')
+                            //     ->label('Ya, Saya Setuju!')
+                            //     ->accepted(),
                             Hidden::make('nomor_rekomendasi'),
                             Hidden::make('nomor_izin'),
                         ]),
