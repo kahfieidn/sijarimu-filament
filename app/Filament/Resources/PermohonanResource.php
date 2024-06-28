@@ -329,7 +329,7 @@ class PermohonanResource extends Resource
                                     Forms\Components\FileUpload::make('nib_file')
                                         ->openable()
                                         ->label('NIB File'),
-                                    Forms\Components\TextArea::make('alamat')
+                                    Forms\Components\Textarea::make('alamat')
                                         ->label('Alamat')->columnSpanFull(),
                                     Forms\Components\Select::make('provinsi')
                                         ->options([
