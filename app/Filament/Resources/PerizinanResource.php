@@ -55,6 +55,12 @@ class PerizinanResource extends Resource
                             ->offIcon('heroicon-m-user'),
                         Forms\Components\Textarea::make('template_rekomendasi'),
                         Forms\Components\Textarea::make('template_izin'),
+                        Forms\Components\Toggle::make('is_save_as_template_rekomendasi')
+                            ->onIcon('heroicon-m-bolt')
+                            ->offIcon('heroicon-m-user'),
+                        Forms\Components\Toggle::make('is_save_as_template_izin')
+                            ->onIcon('heroicon-m-bolt')
+                            ->offIcon('heroicon-m-user'),
                     ])->columns(2),
             ]);
     }

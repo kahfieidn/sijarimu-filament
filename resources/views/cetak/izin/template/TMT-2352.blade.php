@@ -72,7 +72,11 @@
                     <p class=MsoNormal><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>&nbsp;</span></p>
                 </td>
                 <td width="47%" valign=top style='width:47.06%;padding:0in 5.4pt 0in 5.4pt'>
-                    <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Tanjungpinang, {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Izin'])->isoFormat('D MMMM Y') }}</span></p>
+                    <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Tanjungpinang, @if(isset($permohonan->formulir['Tanggal Izin']) && $permohonan->formulir['Tanggal Izin'] != null)
+                            {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Izin'])->isoFormat('D MMMM Y') }}
+                            @else
+                            [DRAFT]
+                            @endif</span></p>
                 </td>
             </tr>
         </table>
@@ -132,7 +136,8 @@
                             Nomor PM. 74 Tahun 2016 Tentang Perubahan Atas Peraturan Menteri Perhubungan
                             Nomor PM.93 Tahun 2013 tentang Penyelenggaraan dan Pengusahaan Angkutan Laut
                             dan menunjuk surat {{$permohonan->profile_usaha->nama_perusahaan}} Nomor {{$permohonan->formulir['Nomor Surat Permohonan']}}
-                            tanggal {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Surat Permohonan'])->isoFormat('D MMMM Y') }}, berdasarkan rekomendasi teknis dari</span><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'> </span><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Dinas
+                            tanggal @if(isset($permohonan->formulir['Tanggal Surat Permohonan']))
+                            {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Surat Permohonan'])->isoFormat('D MMMM Y') }}@else[DRAFT]@endif, berdasarkan rekomendasi teknis dari</span><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'> </span><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Dinas
                             Perhubungan Provinsi Kepulauan Riau sesuai surat Nomor {{$permohonan->nomor_kajian_teknis}}
                             Tanggal {{ \Carbon\Carbon::parse($permohonan->tanggal_kajian_teknis)->isoFormat('D MMMM Y') }}, dengan ini disampaikan bahwa kapal Saudara telah dicatat sebagai armada
                             pelayaran rakyat dan</span><span lang=id style='font-size:9.5pt;font-family:
@@ -345,7 +350,15 @@
                 </td>
                 <td width="88%" valign=top style='width:88.12%;padding:0in 5.4pt 0in 5.4pt'>
                     <p class=MsoNormal style='text-align:justify'><span lang=id style='text-align:justify;font-size:9.5pt;font-family:"Arial",sans-serif'>Pengoperasian
-                            Kapal Pelra pada Trayek Tetap dan Teratur ini berlaku pada tanggal {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Izin'])->isoFormat('D MMMM Y') }} sampai dengan {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Expire Izin'])->isoFormat('D MMMM Y') }}, selain itu Saudara wajib
+                            Kapal Pelra pada Trayek Tetap dan Teratur ini berlaku pada tanggal @if(isset($permohonan->formulir['Tanggal Izin']) && $permohonan->formulir['Tanggal Izin'] != null)
+                            {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Izin'])->isoFormat('D MMMM Y') }}
+                            @else
+                            [DRAFT]
+                            @endif sampai dengan @if(isset($permohonan->formulir['Tanggal Expire Izin']) && $permohonan->formulir['Tanggal Expire Izin'] != null)
+                            {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Expire Izin'])->isoFormat('D MMMM Y') }}
+                            @else
+                            [DRAFT]
+                            @endif, selain itu Saudara wajib
                             memperhatikan :</span></p>
                 </td>
             </tr>

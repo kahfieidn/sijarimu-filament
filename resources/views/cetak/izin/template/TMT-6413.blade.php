@@ -1784,7 +1784,7 @@
     <table class="c74">
         <tr class="c22">
             <td class="c0" colspan="1" rowspan="1">
-                <p class="c28"><span class="c1">Tanjungpinang, {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Izin'])->isoFormat('D MMMM Y') }}</span></p>
+                <p class="c28"><span class="c1">Tanjungpinang, @if(isset($permohonan->formulir['Tanggal Terbit Izin'])){{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Terbit Izin'])->isoFormat('D MMMM Y') }}@else [DRAFT] @endif</span></p>
             </td>
         </tr>
         <tr class="c22">
@@ -1801,7 +1801,7 @@
             <td class="c38" colspan="1" rowspan="1">
                 <p class="c28 c47"><span class="c1"></span></p>
                 <p class="c28"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 42.07px; height: 42.07px;">
-                    @if($permohonan->status_permohonan_id == 12)
+                    @if($permohonan->status_permohonan_id == 11)
                         <img alt="" src="images/image2.jpg" style="width: 42.07px; height: 42.07px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title="">
                     @endif
                     </span>

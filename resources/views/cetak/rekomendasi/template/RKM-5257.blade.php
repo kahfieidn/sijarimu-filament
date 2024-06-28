@@ -66,7 +66,7 @@ src="images/headercop.png"></span></p>
   </td>
   <td width="47%" valign=top style='width:47.06%;padding:0in 5.4pt 0in 5.4pt'>
   <p class=MsoNormal align=right style='text-align:right'><span lang=id
-  style='font-family:"Arial",sans-serif'>Tanjungpinang, {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Terbit Rekomendasi'])->isoFormat('D MMMM Y') }}</span></p>
+  style='font-family:"Arial",sans-serif'>Tanjungpinang, @if($permohonan->formulir['Tanggal Terbit Rekomendasi'] != null){{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Terbit Rekomendasi'])->isoFormat('D MMMM Y') }}@else [DRAFT] @endif</span></p>
   </td>
  </tr>
 </table>
@@ -127,7 +127,7 @@ src="images/headercop.png"></span></p>
   <p class=MsoNormal style='text-align:justify'><span style='font-family:"Arial",sans-serif'>Dengan
   Hormat,</span></p>
   <p class=MsoNormal style='text-align:justify'><span style='font-family:"Arial",sans-serif'>Menindaklanjuti
-  Surat Direktur {{$permohonan->profile_usaha->nama_perusahaan}} Nomor {{$permohonan->formulir['Nomor Surat Permohonan']}} tanggal {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Surat Permohonan'])->isoFormat('D MMMM Y') }} perihal Permohonan Persetujuan Perpanjangan Pengoperasian Kapal Angkutan Penyeberangan Sementara, bersama ini kami sampaikan hal-hal
+  Surat Direktur {{$permohonan->profile_usaha->nama_perusahaan}} Nomor @if($permohonan->formulir['Nomor Surat Permohonan'] != null){{$permohonan->formulir['Nomor Surat Permohonan']}}@else [DRAFT] @endif tanggal @if($permohonan->formulir['Tanggal Surat Permohonan'] != null){{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Surat Permohonan'])->isoFormat('D MMMM Y') }}@else [DRAFT] @endif perihal Permohonan Persetujuan Perpanjangan Pengoperasian Kapal Angkutan Penyeberangan Sementara, bersama ini kami sampaikan hal-hal
   sebagai berikut:</span></p>
   </td>
  </tr>

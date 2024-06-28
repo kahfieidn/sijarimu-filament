@@ -201,7 +201,7 @@ class PermohonanResource extends Resource
                                             ->dehydrated()
                                             ->required()
                                             ->appendFiles()
-                                            ->directory('berkas' . '/' . $currentMonthYear)
+                                            ->directory('berkas' . '/' .  $currentMonthYear)
                                             ->appendFiles()
                                             ->columnSpanFull(),
                                         Forms\Components\Select::make('status')
@@ -305,6 +305,35 @@ class PermohonanResource extends Resource
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
+                                } elseif ($option->type == 'textarea') { // Add this block for textarea
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir);
+
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'richeditor') { // Add this block for richeditor
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
+                                            ->toolbarButtons([
+                                                'orderedList',
+                                            ]);
+
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
                                 }
                             }
                             return [
@@ -392,34 +421,41 @@ class PermohonanResource extends Resource
                                 }
                             }
                             return [
-                                ...$selectOptions
+
+                                Forms\Components\TextInput::make('nomor_rekomendasi')
+                                    ->label('Nomor Surat Rekomendasi'),
+
+                                ...$selectOptions,
+
+                                ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
+                                    ->options([
+                                        'is_template_rekomendasi' => 'TTE dari Template Rekomendasi',
+                                        'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
+                                    ])
+                                    ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first() == 1 ? 'is_template_rekomendasi' : 'is_manual_rekomendasi')
+                                    ->live()
+                                    ->inline()
+                                    ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                        if ($get('tanda_tangan_permintaan_rekomendasi') == 'is_template_rekomendasi') {
+                                            $perizinan = Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first();
+                                            if ($perizinan != 1) {
+                                                $set('tanda_tangan_permintaan_rekomendasi', 'is_manual_rekomendasi');
+                                                Notification::make()
+                                                    ->title('Fitur ini masih dalam pengembangan')
+                                                    ->warning()
+                                                    ->duration(5000)
+                                                    ->send();
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\FileUpload::make('rekomendasi_terbit')
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->openable()
+                                    ->directory('rekomendasi_terbit' . '/' . Carbon::now()->format('Y-F'))
+                                    ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
                             ];
                         })->columns(2),
-                    Wizard\Step::make('Kadis Moderation Rekomendasi')
-                        ->visible(fn (Get $get) => $get('kadis_before_opd_moderation'))
-                        ->schema([
-                            ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
-                                ->options([
-                                    'is_template_rekomendasi' => 'TTE BsRe dari Template Rekomendasi',
-                                    'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
-                                ])
-                                ->live()
-                                ->inline()
-                                ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
-                                    if ($get('tanda_tangan_permintaan_rekomendasi') == 'is_template_rekomendasi') {
-                                        $set('tanda_tangan_permintaan_rekomendasi', 'is_manual_rekomendasi');
-                                        Notification::make()
-                                            ->title('Fitur ini masih dalam pengembangan')
-                                            ->warning()
-                                            ->duration(5000)
-                                            ->send();
-                                    }
-                                }),
-                            Forms\Components\FileUpload::make('rekomendasi_terbit')
-                                ->required()
-                                ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
-
-                        ]),
                     Wizard\Step::make('OPD (Moderation)')
                         ->visible(fn (Get $get) => $get('opd_moderation'))
                         ->schema([
@@ -476,7 +512,44 @@ class PermohonanResource extends Resource
                                 }
                             }
                             return [
-                                ...$selectOptions
+
+                                Forms\Components\TextInput::make('nomor_izin')
+                                    ->label('Nomor Surat Izin'),
+
+                                Forms\Components\DatePicker::make('tanggal_izin_terbit')
+                                    ->label('Tanggal Izin Terbit'),
+
+
+                                ...$selectOptions,
+                                ToggleButtons::make('tanda_tangan_izin')
+                                    ->options([
+                                        'is_template_izin' => 'TTE dari Template Izin',
+                                        'is_manual_izin' => 'Unggah Manual Izin',
+                                    ])
+                                    ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_izin')->first() == 1 ? 'is_template_izin' : 'is_manual_izin')
+                                    ->live()
+                                    ->inline()
+                                    ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                        if ($get('tanda_tangan_izin') == 'is_template_izin') {
+                                            $perizinan = Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_izin')->first();
+                                            if ($perizinan != 1) {
+                                                $set('tanda_tangan_izin', 'is_manual_izin');
+                                                Notification::make()
+                                                    ->title('Fitur ini masih dalam pengembangan')
+                                                    ->warning()
+                                                    ->duration(5000)
+                                                    ->send();
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\FileUpload::make('izin_terbit')
+                                    ->required()
+                                    ->openable()
+                                    ->columnSpanFull()
+                                    ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
+                                    ->hidden(fn ($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
+
+
                             ];
                         })->columns(2),
                     Wizard\Step::make('Konfirmasi Permohonan')
@@ -522,7 +595,7 @@ class PermohonanResource extends Resource
                     fn (Action $action) => $action->label('Selanjutnya'),
                 )->previousAction(
                     fn (Action $action) => $action->label('Sebelumnya'),
-                ),
+                )->skippable(),
             ]);
     }
 
@@ -565,7 +638,7 @@ class PermohonanResource extends Resource
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
                     // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
-                    ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                    ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 11;

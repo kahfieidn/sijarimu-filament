@@ -80,7 +80,7 @@ class EditPermohonan extends EditRecord
         //Set status permohonan unggah berkas to default status
         if (auth()->user()->roles->first()->name == 'pemohon' && $data['status_permohonan_id'] == 2) {
             foreach ($data['berkas'] as &$berkas) {
-                $berkas['status'] = "pending";
+                $berkas['status'] = "Pending";
                 $berkas['keterangan'] = "-";
             }
             $data['message'] = null;
@@ -94,15 +94,65 @@ class EditPermohonan extends EditRecord
         $currentMonthYear = Carbon::now()->format('Y-F');
         $permohonan = Permohonan::find($record->id);
 
-        $manualRekomendasi = $data['tanda_tangan_permintaan_rekomendasi'] ?? null;
+        if (isset($data['tanda_tangan_permintaan_rekomendasi'])) {
 
-        dd($data['tanda_tangan_permintaan_rekomendasi']);
+            if ($data['tanda_tangan_permintaan_rekomendasi'] == 'is_manual_rekomendasi') {
+                $pdfData = [
+                    'permohonan' => $permohonan,
+                ];
+                $storageDirectory = 'rekomendasi/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
+                $pdf = FacadePdf::loadView('cetak.rekomendasi.request', $pdfData);
+                $customPaper = [0, 0, 609.4488, 935.433];
+                $pdf->set_paper($customPaper);
 
-        if (($data['status_permohonan_id'] == 11 && $permohonan->perizinan->is_template == 1) ) {
+                $fileContent = $pdf->output();
+                $hashedFileName = hash('sha256', $storageDirectory) . '.' . pathinfo($storageDirectory, PATHINFO_EXTENSION);
+
+                Storage::put('public/rekomendasi/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
+                $permohonan->update([
+                    'rekomendasi' => 'rekomendasi/' . $currentMonthYear . '/' . $hashedFileName,
+                ]);
+            }
+        }
+
+        if (isset($data['tanda_tangan_izin'])) {
+
+            $record->is_using_template_izin = ($data['tanda_tangan_izin'] == 'is_template_izin') ? 1 : 0;
+            if ($data['tanda_tangan_izin'] == 'is_template_izin') {
+                $pdfData = [
+                    'permohonan' => $permohonan,
+                ];
+                $storageDirectory = 'izin_terbit/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
+                $pdf = FacadePdf::loadView('cetak.izin.request', $pdfData);
+                $customPaper = [0, 0, 609.4488, 935.433];
+                $pdf->set_paper($customPaper);
+
+                $fileContent = $pdf->output();
+                $hashedFileName = hash('sha256', $storageDirectory) . '.' . pathinfo($storageDirectory, PATHINFO_EXTENSION);
+
+                Storage::put('public/izin_terbit/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
+                $permohonan->update([
+                    'izin_terbit' => 'izin_terbit/' . $currentMonthYear . '/' . $hashedFileName,
+                ]);
+            }
+        }
+
+        $record->update($data);
+        return $record;
+    }
+
+
+    protected function afterSave(): void
+    {
+        $currentMonthYear = Carbon::now()->format('Y-F');
+        $permohonan = Permohonan::find($this->record->id);
+
+
+        if ($this->record['status_permohonan_id'] == 11 && $this->record['is_using_template_izin'] == 1) {
             $pdfData = [
                 'permohonan' => $permohonan,
             ];
-            $storageDirectory = 'izin/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
+            $storageDirectory = 'izin_terbit/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
             $pdf = FacadePdf::loadView('cetak.izin.request', $pdfData);
             $customPaper = [0, 0, 609.4488, 935.433];
             $pdf->set_paper($customPaper);
@@ -110,16 +160,13 @@ class EditPermohonan extends EditRecord
             $fileContent = $pdf->output();
             $hashedFileName = hash('sha256', $storageDirectory) . '.' . pathinfo($storageDirectory, PATHINFO_EXTENSION);
 
-            Storage::put('public/izin/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
+            Storage::put('public/izin_terbit/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
             $permohonan->update([
-                'izin_terbit' => $currentMonthYear . '/' . $hashedFileName,
-                'tanggal_izin_terbit' => Carbon::now(),
+                'izin_terbit' => 'izin_terbit/' . $currentMonthYear . '/' . $hashedFileName,
             ]);
         }
-
-        $record->update($data);
-        return $record;
     }
+
 
 
     protected function getHeaderActions(): array
@@ -128,17 +175,43 @@ class EditPermohonan extends EditRecord
             Actions\DeleteAction::make()
                 ->visible(fn ($record) => auth()->user()->roles->first()->name == 'super_admin'),
             Actions\ViewAction::make(),
+
+            //Draft Rekomendasi Only
             Actions\Action::make('Draft Rekomendasi')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [5, 6, 7, 8, 9, 10, 11]) && $record->perizinan->is_template_rekomendasi == 1)
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4]) && $record->perizinan->is_template_rekomendasi == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.permintaan-rekomendasi-request', $record))
                 ->openUrlInNewTab(),
-            Actions\Action::make('Draft Kajian Teknis')
+            //Real Rekomendasi
+            Actions\Action::make('Permintaan Rekomendasi')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [5, 6, 7, 8, 9, 10, 11]) && !is_null($record->rekomendasi_terbit))
+                ->url(fn (Permohonan $record): string => url('storage/' . $record->rekomendasi_terbit))
+                ->openUrlInNewTab(),
+
+
+            Actions\Action::make('Kajian Teknis')
                 ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10, 11]) && !is_null($record->kajian_teknis))
                 ->url(fn (Permohonan $record): string => url('storage/' . $record->kajian_teknis))
                 ->openUrlInNewTab(),
+
+
+            //Draft Izin Template (Butuh ttd di Akhir Status)
             Actions\Action::make('Draft Izin')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [9, 10, 11]))
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10]) && $record->is_using_template_izin == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                ->openUrlInNewTab(),
+            Actions\Action::make('Izin')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [11]) && $record->is_using_template_izin == 1)
+                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                ->openUrlInNewTab(),
+
+            Actions\Action::make('Draft Izin')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8]) && $record->is_using_template_izin == 0)
+                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                ->openUrlInNewTab(),
+            //Izin Manual
+            Actions\Action::make('Izin')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [9, 10, 11]) && $record->is_using_template_izin == 0)
+                ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
                 ->openUrlInNewTab()
         ];
     }

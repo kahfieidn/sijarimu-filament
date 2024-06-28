@@ -20,6 +20,8 @@ class Perizinan extends Model
         'is_template_izin',
         'template_rekomendasi',
         'template_izin',
+        'is_save_as_template_rekomendasi',
+        'is_save_as_template_izin'
     ];
 
     public function sektor()

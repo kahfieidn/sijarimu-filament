@@ -35,6 +35,7 @@ class Permohonan extends Model
         'izin_terbit',
         'rekomendasi_terbit',
         'kajian_teknis',
+        'is_using_template_izin',
     ];
 
     protected $casts = [

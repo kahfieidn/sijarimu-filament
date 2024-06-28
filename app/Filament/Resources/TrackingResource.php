@@ -162,12 +162,12 @@ class TrackingResource extends Resource
                                             ->disabled(auth()->user()->roles->first()->name == 'pemohon')
                                             ->dehydrated()
                                             ->options([
-                                                'revision' => 'Revision',
-                                                'pending' => 'Pending',
-                                                'approved' => 'Approved',
-                                                'rejected' => 'Rejected',
+                                                'Revision' => 'Revision',
+                                                'Pending' => 'Pending',
+                                                'Approved' => 'Approved',
+                                                'Rejected' => 'Rejected',
                                             ])
-                                            ->default('pending')
+                                            ->default('Pending')
                                             ->required(),
                                         Forms\Components\TextInput::make('keterangan')
                                             ->visible('create', auth()->user()->roles->first()->name != 'pemohon')
@@ -363,7 +363,7 @@ class TrackingResource extends Resource
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
                     // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
-                    ->url(fn(Permohonan $record): string => route('app.cetak.izin.request', $record))
+                    ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 12;

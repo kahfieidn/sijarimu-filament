@@ -21,6 +21,8 @@ return new class extends Migration
             $table->boolean('is_template_izin')->default(false);
             $table->text('template_rekomendasi')->nullable();
             $table->text('template_izin')->nullable();
+            $table->boolean('is_save_as_template_rekomendasi')->default(false);
+            $table->boolean('is_save_as_template_izin')->default(false);
             $table->timestamps();
         });
     }
