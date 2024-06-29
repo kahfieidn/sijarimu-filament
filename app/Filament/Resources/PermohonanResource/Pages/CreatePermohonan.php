@@ -33,7 +33,9 @@ class CreatePermohonan extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = auth()->id();
-        // $data['status_permohonan_id'] = 1;
+        $perizinan = Perizinan::find($data['perizinan_id']);
+
+        $data['is_using_template_izin'] = $perizinan->is_save_as_template_izin;
 
         return $data;
     }

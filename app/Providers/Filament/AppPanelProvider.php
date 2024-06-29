@@ -2,6 +2,9 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Resources\PermohonanResource;
+use App\Filament\Resources\UserResource;
+use App\Models\User;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -27,11 +30,12 @@ class AppPanelProvider extends PanelProvider
             ->default()
             ->id('app')
             ->path('app')
-            ->login(Login::class)
             ->renderHook( 
                 'panels::auth.login.form.after',
                 fn () => view('auth.socialite.google')
-            )    
+            )
+            ->login()
+            ->databaseNotifications()
             ->registration()
             ->colors([
                 'danger' => Color::Rose,
@@ -51,6 +55,8 @@ class AppPanelProvider extends PanelProvider
             ->widgets([
                 Widgets\AccountWidget::class,
                 Widgets\FilamentInfoWidget::class,
+                UserResource\Widgets\StatsOverview::class,
+                PermohonanResource\Widgets\PermohonanChart::class,
             ])
             ->middleware([
                 EncryptCookies::class,

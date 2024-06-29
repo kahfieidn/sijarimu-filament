@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Exports\PermohonanExporter;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
@@ -38,6 +39,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Wizard\Step;
@@ -101,6 +103,9 @@ class PermohonanResource extends Resource
                                         }
                                     }
                                     $set('status_permohonan_id', $options);
+
+
+                                    //Setting default choosing TTE/Manual
 
                                     $role = auth()->user()->roles->first()->id;
 
@@ -379,8 +384,88 @@ class PermohonanResource extends Resource
                                         ->label('Domisili'),
                                 ]),
                         ]),
-                    Wizard\Step::make('Back Office (Draft Rekomendasi)')
+                    Wizard\Step::make('Back Office')
+                        ->description('Permintaan Rekomendasi')
                         ->visible(fn (Get $get) => $get('bo_before_opd_moderation'))
+                        ->schema(function (Get $get): array {
+                            $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
+                                $query->select('perizinan_id')
+                                    ->from('formulirs')
+                                    ->where('perizinan_id', $get('perizinan_id'));
+                            })->get();
+
+                            $selectOptions = [];
+                            foreach ($options as $key => $option) {
+
+                                if ($option->type == 'string') {
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } else if ($option->type == 'date') {
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } else if ($option->type == 'select') {
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $jsonOptions = $option->options;
+                                        $valuesArray = array_map(function ($item) {
+                                            return $item['value'];
+                                        }, $jsonOptions);
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->options(array_combine($valuesArray, $valuesArray));
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                }
+                            }
+                            return [
+
+                                Forms\Components\TextInput::make('nomor_rekomendasi')
+                                    ->label('Nomor Surat Permintaan Rekomendasi'),
+
+                                ...$selectOptions,
+
+                                ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
+                                    ->options([
+                                        'is_template_rekomendasi' => 'TTE dari Template Rekomendasi',
+                                        'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
+                                    ])
+                                    ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first() == 1 ? 'is_template_rekomendasi' : 'is_manual_rekomendasi')
+                                    ->live()
+                                    ->inline()
+                                    ->columnSpanFull()
+                                    ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                        if ($get('tanda_tangan_permintaan_rekomendasi') == 'is_template_rekomendasi') {
+                                            $perizinan = Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first();
+                                            if ($perizinan != 1) {
+                                                $set('tanda_tangan_permintaan_rekomendasi', 'is_manual_rekomendasi');
+                                                Notification::make()
+                                                    ->title('Fitur ini masih dalam pengembangan')
+                                                    ->warning()
+                                                    ->duration(5000)
+                                                    ->send();
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\FileUpload::make('rekomendasi_terbit')
+                                    ->required()
+                                    ->columnSpanFull()
+                                    ->openable()
+                                    ->directory('rekomendasi_terbit' . '/' . Carbon::now()->format('Y-F'))
+                                    ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
+                            ];
+                        })->columns(2),
+                    Wizard\Step::make('Kadis Tanda Tangan')
+                        ->description('Permintaan Rekomendasi')
+                        ->visible(fn (Get $get) => $get('kadis_before_opd_moderation'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -432,9 +517,9 @@ class PermohonanResource extends Resource
                                         'is_template_rekomendasi' => 'TTE dari Template Rekomendasi',
                                         'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
                                     ])
-                                    ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first() == 1 ? 'is_template_rekomendasi' : 'is_manual_rekomendasi')
                                     ->live()
                                     ->inline()
+                                    ->columnSpanFull()
                                     ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
                                         if ($get('tanda_tangan_permintaan_rekomendasi') == 'is_template_rekomendasi') {
                                             $perizinan = Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first();
@@ -456,7 +541,8 @@ class PermohonanResource extends Resource
                                     ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
                             ];
                         })->columns(2),
-                    Wizard\Step::make('OPD (Moderation)')
+                    Wizard\Step::make('OPD')
+                        ->description('Melakukan Kajian Teknis')
                         ->visible(fn (Get $get) => $get('opd_moderation'))
                         ->schema([
                             Forms\Components\TextInput::make('nomor_kajian_teknis')
@@ -470,7 +556,8 @@ class PermohonanResource extends Resource
                                 ->openable()
                                 ->columnSpanFull(),
                         ])->columns(2),
-                    Wizard\Step::make('Back Office (Draft SK)')
+                    Wizard\Step::make('Back Office')
+                        ->description('Membuat Draft Izin')
                         ->visible(fn (Get $get) => $get('bo_after_opd_moderation'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
@@ -548,10 +635,91 @@ class PermohonanResource extends Resource
                                     ->columnSpanFull()
                                     ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
                                     ->hidden(fn ($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
-
-
                             ];
                         })->columns(2),
+
+                    Wizard\Step::make('Kadis Tanda Tangan')
+                        ->description('Izin Terbit')
+                        ->visible(fn (Get $get) => $get('kadis_after_opd_moderation'))
+                        ->schema(function (Get $get): array {
+                            $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
+                                $query->select('perizinan_id')
+                                    ->from('formulirs')
+                                    ->where('perizinan_id', $get('perizinan_id'));
+                            })->get();
+
+                            $selectOptions = [];
+                            foreach ($options as $key => $option) {
+
+                                if ($option->type == 'string') {
+                                    if (in_array('bo_after_opd_moderation', $option->features)) {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } else if ($option->type == 'date') {
+                                    if (in_array('bo_after_opd_moderation', $option->features)) {
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } else if ($option->type == 'select') {
+                                    if (in_array('bo_after_opd_moderation', $option->features)) {
+                                        $jsonOptions = $option->options;
+                                        $valuesArray = array_map(function ($item) {
+                                            return $item['value'];
+                                        }, $jsonOptions);
+                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->options(array_combine($valuesArray, $valuesArray));
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                }
+                            }
+                            return [
+
+                                Forms\Components\TextInput::make('nomor_izin')
+                                    ->label('Nomor Surat Izin'),
+
+                                Forms\Components\DatePicker::make('tanggal_izin_terbit')
+                                    ->label('Tanggal Izin Terbit'),
+
+
+                                ...$selectOptions,
+                                ToggleButtons::make('tanda_tangan_izin')
+                                    ->options([
+                                        'is_template_izin' => 'TTE dari Template Izin',
+                                        'is_manual_izin' => 'Unggah Manual Izin',
+                                    ])
+                                    ->gridDirection('row')
+                                    ->live()
+                                    ->inline()
+                                    ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
+                                        if ($get('tanda_tangan_izin') == 'is_template_izin') {
+                                            $perizinan = Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_izin')->first();
+                                            if ($perizinan != 1) {
+                                                $set('tanda_tangan_izin', 'is_manual_izin');
+                                                Notification::make()
+                                                    ->title('Fitur ini masih dalam pengembangan')
+                                                    ->warning()
+                                                    ->duration(5000)
+                                                    ->send();
+                                            }
+                                        }
+                                    }),
+                                Forms\Components\FileUpload::make('izin_terbit')
+                                    ->required()
+                                    ->openable()
+                                    ->columnSpanFull()
+                                    ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
+                                    ->hidden(fn ($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
+                            ];
+                        })->columns(2),
+
                     Wizard\Step::make('Konfirmasi Permohonan')
                         ->visible(fn (Get $get) => $get('konfirmasi_permohonan'))
                         ->schema([
@@ -627,6 +795,10 @@ class PermohonanResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(PermohonanExporter::class)
+            ])   
             ->filters([
                 //
             ])

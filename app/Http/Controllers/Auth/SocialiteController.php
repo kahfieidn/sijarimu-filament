@@ -23,7 +23,6 @@ class SocialiteController extends Controller
         $socialUser = Socialite::driver('google')->user();
 
         $registeredUser = User::where('google_id', $socialUser->id)->first();
-
         if (!$registeredUser) {
             if (User::where('email', $socialUser->email)->exists()) {
                 $user = User::where('email', $socialUser->email)->first();
@@ -40,6 +39,7 @@ class SocialiteController extends Controller
                 ], [
                     'name' => $socialUser->name,
                     'email' => $socialUser->email,
+                    'nomor_hp' => $socialUser->phone,
                     'password' => Hash::make('passwordGoogleDefault'),
                     'google_token' => $socialUser->token,
                     'google_refresh_token' => $socialUser->refreshToken,

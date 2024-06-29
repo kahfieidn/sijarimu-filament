@@ -42,6 +42,10 @@ class EditPermohonan extends EditRecord
         $flows = $perizinan->perizinan_lifecycle->flow;
         $role = auth()->user()->roles->first()->id;
 
+        $data['tanda_tangan_permintaan_rekomendasi'] = $this->record->is_using_template_izin ? 'is_template_rekomendasi' : 'is_manual_rekomendasi';
+        $data['tanda_tangan_izin'] = $this->record->is_using_template_izin ? 'is_template_izin' : 'is_manual_izin';
+
+
         if ($perizinan->perizinan_lifecycle_id) {
             foreach ($flows as $item) {
                 if (isset($item['flow'])) {
@@ -176,42 +180,42 @@ class EditPermohonan extends EditRecord
                 ->visible(fn ($record) => auth()->user()->roles->first()->name == 'super_admin'),
             Actions\ViewAction::make(),
 
-            //Draft Rekomendasi Only
             Actions\Action::make('Draft Rekomendasi')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4]) && $record->perizinan->is_template_rekomendasi == 1)
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4]))
                 ->url(fn (Permohonan $record): string => route('app.cetak.permintaan-rekomendasi-request', $record))
                 ->openUrlInNewTab(),
+
             //Real Rekomendasi
             Actions\Action::make('Permintaan Rekomendasi')
                 ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [5, 6, 7, 8, 9, 10, 11]) && !is_null($record->rekomendasi_terbit))
                 ->url(fn (Permohonan $record): string => url('storage/' . $record->rekomendasi_terbit))
                 ->openUrlInNewTab(),
-
-
+            //Kajian Teknis
             Actions\Action::make('Kajian Teknis')
                 ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10, 11]) && !is_null($record->kajian_teknis))
                 ->url(fn (Permohonan $record): string => url('storage/' . $record->kajian_teknis))
                 ->openUrlInNewTab(),
 
 
-            //Draft Izin Template (Butuh ttd di Akhir Status)
-            Actions\Action::make('Draft Izin')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10]) && $record->is_using_template_izin == 1)
-                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
-                ->openUrlInNewTab(),
-            Actions\Action::make('Izin')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [11]) && $record->is_using_template_izin == 1)
-                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
-                ->openUrlInNewTab(),
 
+            //Draft Izin Template For Manual
             Actions\Action::make('Draft Izin')
                 ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8]) && $record->is_using_template_izin == 0)
+                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                ->openUrlInNewTab(),
+            //Draft Izin For Automatic
+            Actions\Action::make('Draft Izin')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10]) && $record->is_using_template_izin == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                 ->openUrlInNewTab(),
             //Izin Manual
             Actions\Action::make('Izin')
                 ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [9, 10, 11]) && $record->is_using_template_izin == 0)
                 ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
+                ->openUrlInNewTab(),
+            Actions\Action::make('Izin')
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [11]) && $record->is_using_template_izin == 1)
+                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                 ->openUrlInNewTab()
         ];
     }

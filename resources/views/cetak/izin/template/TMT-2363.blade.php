@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <meta content="text/html; charset=UTF-8" http-equiv="content-type">
+    <meta content="text/html; charset=UTF-8" http-equiv="content-type" />
     <style type="text/css">
         @import url('https://themes.googleusercontent.com/fonts/css?kit=sDU-RIIs3Wq_4pUcDwWu-05zdwzqyXAFhQ3EpAK6bTA');
 
@@ -1438,6 +1438,7 @@
             max-width: 517.3pt;
             padding: 0pt 0pt 0pt 0pt;
             margin-top: 0;
+            margin-left:0px;
         }
 
         .c55 {
@@ -1618,17 +1619,32 @@
 </head>
 
 <body class="c12 doc-content">
-    <p class="c47 c77"><span class="c9"></span></p><a id="t.3c9232b2d5d9ea2a259f8403ad80b64e9db35916"></a><a id="t.0"></a>
+    <p class="c47 c77"><span class="c9"></span></p>
+    <a id="t.3c9232b2d5d9ea2a259f8403ad80b64e9db35916"></a><a id="t.0"></a>
     <table class="c26">
         <tr class="c33">
             <td class="c18" colspan="1" rowspan="1">
-                <p class="c21"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 690.34px; height: 166.39px;"><img alt="" src="images/image1.png" style="width: 690.34px; height: 166.39px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title=""></span></p>
+                <p class="c21">
+                    <span style="
+                                overflow: hidden;
+                                display: inline-block;
+                                margin: 0px 0px;
+                                border: 0px solid #000000;
+                                transform: rotate(0rad) translateZ(0px);
+                                -webkit-transform: rotate(0rad) translateZ(0px);
+                                width: 690.34px;
+                                height: 166.39px;
+                            ">
+                        <img alt="" src="images/image1.png" style="width: 690.34px; height: 166.39px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
+                    </span>
+                </p>
             </td>
         </tr>
     </table>
     <p class="c48"><span class="c58">SURAT KETERANGAN PENELITIAN</span></p>
     <p class="c84"><span class="c1">Nomor : {{$permohonan->perizinan->perizinan_configuration->prefix_nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->suffix_nomor_izin}}</span></p>
-    <p class="c11"><span class="c13"></span></p><a id="t.db85d138772f5d9d8f964e846b407e39005add28"></a><a id="t.1"></a>
+    <p class="c11"><span class="c13"></span></p>
+    <a id="t.db85d138772f5d9d8f964e846b407e39005add28"></a><a id="t.1"></a>
     <table class="c39">
         <tr class="c32">
             <td class="c27" colspan="1" rowspan="1">
@@ -1655,13 +1671,18 @@
                 <p class="c46"><span class="c1">2.</span></p>
             </td>
             <td class="c7" colspan="1" rowspan="1">
-                <p class="c15"><span class="c1">Peraturan Gubernur Kepulauan Riau Nomor 17 Tahun 2023 Tentang Pendelegasian
-Kewenangan Penyelenggaraan Perizinan Berusaha Dan Non Perizinan Kepada Dinas
-Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span></p>
+                <p class="c15">
+                    <span class="c1">
+                        Peraturan Gubernur Kepulauan Riau Nomor 17 Tahun 2023 Tentang Pendelegasian
+                        Kewenangan Penyelenggaraan Perizinan Berusaha Dan Non Perizinan Kepada Dinas
+                        Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.
+                    </span>
+                </p>
             </td>
         </tr>
     </table>
-    <p class="c19"><span class="c17"></span></p><a id="t.59c46684ce0326deaeb3ae982491dc2cf4289ee0"></a><a id="t.2"></a>
+    <p class="c19"><span class="c17"></span></p>
+    <a id="t.59c46684ce0326deaeb3ae982491dc2cf4289ee0"></a><a id="t.2"></a>
     <table class="c39">
         <tr class="c75">
             <td class="c27" colspan="1" rowspan="1">
@@ -1677,20 +1698,21 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
     </table>
     <p class="c19"><span class="c17"></span></p>
     <p class="c23 c34"><span class="c1">Kepala Dinas Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau, memberikan rekomendasi kepada :</span></p>
-    <p class="c5"><span class="c78"></span></p><a id="t.29799e585f1e49f1d4230961806acce16514640c"></a><a id="t.3"></a>
+    <p class="c5"><span class="c78"></span></p>
+    <a id="t.29799e585f1e49f1d4230961806acce16514640c"></a><a id="t.3"></a>
     <table class="c40">
         <tr class="c71">
             <td class="c20" colspan="1" rowspan="1">
                 <p class="c42"><span class="c1">a.</span></p>
             </td>
             <td class="c2" colspan="1" rowspan="1">
-                <p class="c56 c76"><span class="c1">Nama</span></p>
+                <p class="c56 c76"><span class="c1">Nama/NIK/Jabatan dalam struktur</span></p>
             </td>
             <td class="c6" colspan="1" rowspan="1">
                 <p class="c65"><span class="c1">:</span></p>
             </td>
             <td class="c4" colspan="1" rowspan="1">
-                <p class="c79"><span class="c1">{{$permohonan->user->name}}</span></p>
+                <p class="c79"><span class="c1">{{$permohonan->formulir['Nama Peneliti']}} / {{$permohonan->formulir['NIK']}} / Penanggung Jawab</span></p>
             </td>
         </tr>
         <tr class="c67">
@@ -1698,14 +1720,13 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
                 <p class="c59"><span class="c1">b.</span></p>
             </td>
             <td class="c2" colspan="1" rowspan="1">
-                <p class="c54"><span class="c1">NIM/Universitas/</span></p>
-                <p class="c61"><span class="c1">Jurusan/Jenjang</span></p>
+                <p class="c54"><span class="c1">Lembaga</span></p>
             </td>
             <td class="c6" colspan="1" rowspan="1">
                 <p class="c16"><span class="c1">:</span></p>
             </td>
             <td class="c4" colspan="1" rowspan="1">
-                <p class="c35"><span class="c1">{{$permohonan->formulir['NIM']}}/{{$permohonan->formulir['Nama Universitas']}}/{{$permohonan->formulir['Jurusan']}}/{{$permohonan->formulir['Jenjang']}}</span></p>
+                <p class="c35"><span class="c1">{{$permohonan->formulir['Nama Lembaga / Instansi / Perusahaan']}}</span></p>
             </td>
         </tr>
         <tr class="c64">
@@ -1748,7 +1769,8 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
                 <p class="c16"><span class="c1">:</span></p>
             </td>
             <td class="c4" colspan="1" rowspan="1">
-                <p class="c35"><span class="c1">1 (Satu) Tahun setelah surat rekomendasi ini di terbitkan.</span></p>
+                <p class="c35"><span class="c1">{{ \Carbon\Carbon::parse($permohonan->formulir['Waktu Awal Penelitian'])->isoFormat('D MMMM Y') }} - {{ \Carbon\Carbon::parse($permohonan->formulir['Waktu Akhir Penelitian'])->isoFormat('D MMMM Y') }}</span>
+                </p>
             </td>
         </tr>
         <tr class="c66">
@@ -1782,7 +1804,8 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
     </table>
     <p class="c5"><span class="c81"></span></p>
     <p class="c21 c23"><span class="c1">Demikian rekomendasi ini dibuat untuk dipergunakan sebagaimana mestinya.</span></p>
-    <p class="c3 c23"><span class="c1"></span></p><a id="t.43cc618d3e800a3af12ab75527b713c302ef7f05"></a><a id="t.4"></a>
+    <p class="c3 c23"><span class="c1"></span></p>
+    <a id="t.43cc618d3e800a3af12ab75527b713c302ef7f05"></a><a id="t.4"></a>
     <table class="c74">
         <tr class="c22">
             <td class="c0" colspan="1" rowspan="1">
@@ -1802,10 +1825,20 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
         <tr class="c62">
             <td class="c38" colspan="1" rowspan="1">
                 <p class="c28 c47"><span class="c1"></span></p>
-                <p class="c28"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 42.07px; height: 42.07px;">
-                    @if($permohonan->status_permohonan_id == 11)
-                        <img alt="" src="images/image2.jpg" style="width: 42.07px; height: 42.07px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title="">
-                    @endif
+                <p class="c28">
+                    <span style="
+                                overflow: hidden;
+                                display: inline-block;
+                                margin: 0px 0px;
+                                border: 0px solid #000000;
+                                transform: rotate(0rad) translateZ(0px);
+                                -webkit-transform: rotate(0rad) translateZ(0px);
+                                width: 42.07px;
+                                height: 42.07px;
+                            ">
+                        @if($permohonan->status_permohonan_id == 11)
+                        <img alt="" src="images/image2.jpg" style="width: 42.07px; height: 42.07px; margin-left: 0px; margin-top: 0px; transform: rotate(0rad) translateZ(0px); -webkit-transform: rotate(0rad) translateZ(0px);" title="" />
+                        @endif
                     </span>
                 </p>
                 <p class="c28 c47"><span class="c1"></span></p>
@@ -1830,7 +1863,8 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
     <p class="c3"><span class="c24"></span></p>
     <p class="c3"><span class="c24"></span></p>
     <p class="c3"><span class="c24"></span></p>
-    <p class="c70"><span class="c1">Tembusan :</span></p><a id="t.4c651c360f785c1b8a81a94aa471d97dcb1e39e8"></a><a id="t.5"></a>
+    <p class="c70"><span class="c1">Tembusan :</span></p>
+    <a id="t.4c651c360f785c1b8a81a94aa471d97dcb1e39e8"></a><a id="t.5"></a>
     <table class="c82">
         <tr class="c22">
             <td class="c37" colspan="1" rowspan="1">
@@ -1850,7 +1884,9 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
         </tr>
     </table>
     <p class="c47 c72"><span class="c1"></span></p>
-    <p class="c83"><span class="c1">Sesuai Peraturan dan Perundangan undangan yang berlaku. Dokumen ini telah ditandatangani secara elektronik tersertifikasi yang diterbitkan oleh BSrE sehingga tidak memerlukan tandatangan dan cap basah.</span></p>
+    <p class="c83">
+        <span class="c1">Sesuai Peraturan dan Perundangan undangan yang berlaku. Dokumen ini telah ditandatangani secara elektronik tersertifikasi yang diterbitkan oleh BSrE sehingga tidak memerlukan tandatangan dan cap basah.</span>
+    </p>
 </body>
 
 </html>
