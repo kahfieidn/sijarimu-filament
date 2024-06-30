@@ -7,6 +7,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Perizinan;
 use App\Models\Permohonan;
+use App\Models\StatusPermohonan;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Session;
@@ -52,5 +53,21 @@ class CreatePermohonan extends CreateRecord
 
         // Simpan perubahan
         $perizinanConfig->save();
+
+
+        // Mengambil activity_log saat ini
+        $currentActivityLog = $permohonan->activity_log;
+        if (!is_array($currentActivityLog)) {
+            $currentActivityLog = [];
+        }
+        // Menambahkan log baru ke activity_log
+        $newLog = [
+            'Activity' => 'Pemohon Membuat Permohonan',
+            'Stake Holder' => auth()->user()->name,
+        ];
+        $currentActivityLog[] = $newLog;
+        $permohonan->update([
+            'activity_log' => $currentActivityLog
+        ]);
     }
 }

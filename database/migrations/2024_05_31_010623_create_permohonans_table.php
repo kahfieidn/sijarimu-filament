@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('rekomendasi_terbit')->nullable();
             $table->string('kajian_teknis')->nullable();
             $table->string('izin_terbit')->nullable();
+            $table->json('activity_log')->nullable();
             $table->timestamps();
         });
     }

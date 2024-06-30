@@ -41,9 +41,18 @@ class EditPermohonan extends EditRecord
         $perizinan = Perizinan::find($data['perizinan_id']);
         $flows = $perizinan->perizinan_lifecycle->flow;
         $role = auth()->user()->roles->first()->id;
+        $permohonan = Permohonan::find($data['id']);
+
 
         $data['tanda_tangan_permintaan_rekomendasi'] = $this->record->is_using_template_izin ? 'is_template_rekomendasi' : 'is_manual_rekomendasi';
         $data['tanda_tangan_izin'] = $this->record->is_using_template_izin ? 'is_template_izin' : 'is_manual_izin';
+
+        //Handle pesan back office
+        if ($this->record->message_bo != null) {
+            $permohonan->update([
+                'message_bo' => null,
+            ]);
+        }
 
 
         if ($perizinan->perizinan_lifecycle_id) {
@@ -140,6 +149,25 @@ class EditPermohonan extends EditRecord
                 ]);
             }
         }
+
+
+        // Mengambil activity_log saat ini
+        $currentActivityLog = $permohonan->activity_log;
+        if (!is_array($currentActivityLog)) {
+            $currentActivityLog = [];
+        }
+
+        // Menambahkan log baru ke activity_log
+        $newLog = [
+            'Activity' => StatusPermohonan::find($this->record['status_permohonan_id'])->nama_status,
+            'Stake Holder' => auth()->user()->name,
+        ];
+        $currentActivityLog[] = $newLog;
+
+        // Menyimpan kembali activity_log yang sudah diperbarui
+        $permohonan->update([
+            'activity_log' => $currentActivityLog
+        ]);
 
         $record->update($data);
         return $record;

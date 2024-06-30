@@ -23,6 +23,7 @@ return new class extends Migration
             $table->text('template_izin')->nullable();
             $table->boolean('is_save_as_template_rekomendasi')->default(false);
             $table->boolean('is_save_as_template_izin')->default(false);
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

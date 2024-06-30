@@ -36,11 +36,13 @@ class Permohonan extends Model
         'rekomendasi_terbit',
         'kajian_teknis',
         'is_using_template_izin',
+        'activity_log',
     ];
 
     protected $casts = [
         'berkas' => 'json',
         'formulir' => 'json',
+        'activity_log' => 'json',
     ];
 
     protected static function boot()

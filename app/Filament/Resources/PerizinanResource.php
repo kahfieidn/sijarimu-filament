@@ -61,6 +61,7 @@ class PerizinanResource extends Resource
                         Forms\Components\Toggle::make('is_save_as_template_izin')
                             ->onIcon('heroicon-m-bolt')
                             ->offIcon('heroicon-m-user'),
+                        Forms\Components\Toggle::make('is_active')
                     ])->columns(2),
             ]);
     }

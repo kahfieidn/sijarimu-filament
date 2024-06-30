@@ -17,19 +17,24 @@ use App\Models\Persyaratan;
 use App\Models\StatusPermohonan;
 use Filament\Resources\Resource;
 use App\Models\PerizinanLifecycle;
+use Filament\Tables\Filters\Filter;
+use App\Models\AssignPerizinanHandle;
 use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
+use Filament\Tables\Actions\ExportAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\Actions\Action;
+use App\Filament\Exports\TrackingExporter;
 use Filament\Forms\Components\Placeholder;
 use Custom\Path\Models\Permohonan\Tracking;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Forms\Components\Actions\Action;
 use App\Filament\Resources\TrackingResource\Pages;
+use Filament\Infolists\Components\RepeatableEntry;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\TrackingResource\RelationManagers;
 
@@ -327,18 +332,15 @@ class TrackingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
+                    ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.sektor.nama_sektor')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
-                    ->badge()
-                    ->color(fn ($record): string => $record->status_permohonan->color)
-                    ->icon(fn ($record): string => $record->status_permohonan->icon)
+                    ->wrap()
+                    ->lineClamp(2)
+                    ->words(5)
                     ->sortable(),
-                Tables\Columns\TextColumn::make('tanggal_izin_terbit')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -347,7 +349,11 @@ class TrackingResource extends Resource
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])->striped()
+            ])
+            ->headerActions([
+                ExportAction::make()
+                    ->exporter(TrackingExporter::class)
+            ])
             ->filters([
                 SelectFilter::make('nama_sektor')
                     ->relationship('perizinan.sektor', 'nama_sektor')
@@ -356,17 +362,33 @@ class TrackingResource extends Resource
                 SelectFilter::make('nama_perizinan')
                     ->relationship('perizinan', 'nama_perizinan')
                     ->searchable()
-                    ->preload()
+                    ->preload(),
+                Filter::make('created_at')
+                    ->form([
+                        Forms\Components\DatePicker::make('created_from'),
+                        Forms\Components\DatePicker::make('created_until'),
+                    ])
+                    ->query(function (Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['created_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                            )
+                            ->when(
+                                $data['created_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                            );
+                    })
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
                     // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
-                    ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+                    ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
-                        return $record->status_permohonan_id == 12;
+                        return $record->status_permohonan_id == 11;
                     }),
                 Tables\Actions\Action::make('Lihat Pesan')
                     ->icon('heroicon-s-exclamation-triangle')
@@ -381,6 +403,20 @@ class TrackingResource extends Resource
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 2;
                     }),
+                Tables\Actions\Action::make('Tracking')
+                    ->icon('heroicon-s-arrow-trending-up')
+                    ->infolist([
+                        \Filament\Infolists\Components\Section::make('Tracking Berkas')
+                            ->schema([
+                                RepeatableEntry::make('activity_log')
+                                    ->schema([
+                                        TextEntry::make('Activity'),
+                                        TextEntry::make('Stake Holder'),
+                                    ])
+                                    ->columnSpanFull()
+                            ])
+                            ->columns(),
+                    ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -400,6 +436,28 @@ class TrackingResource extends Resource
             //
         ];
     }
+
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $role = auth()->user()->roles->first()->id;
+        $userId = auth()->id();
+
+        $get_assign_perizinan_handle = AssignPerizinanHandle::where('user_id', $userId)->first();
+
+        if (auth()->user()->roles->first()->name == 'pemohon') {
+            return $query->where('user_id', $userId);
+        } else if ($get_assign_perizinan_handle != null && $get_assign_perizinan_handle['is_all_perizinan'] == 0) {
+            return $query->whereHas('status_permohonan', function ($query) use ($role, $get_assign_perizinan_handle) {
+                $query->whereIn('perizinan_id', $get_assign_perizinan_handle['perizinan_id'])
+                    ->whereJsonContains('role_id', "$role");
+            });
+        } elseif ($get_assign_perizinan_handle == null) {
+            return $query;
+        }
+    }
+
 
     public static function getPages(): array
     {

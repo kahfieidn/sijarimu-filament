@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Exports\PermohonanExporter;
 use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
@@ -34,6 +33,7 @@ use App\Models\PerizinanConfiguration;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Fieldset;
+use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
@@ -43,6 +43,7 @@ use Filament\Tables\Actions\ExportAction;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Wizard\Step;
+use App\Filament\Exports\PermohonanExporter;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
@@ -73,7 +74,13 @@ class PermohonanResource extends Resource
                     Wizard\Step::make('Pilih Perizinan')
                         ->schema([
                             Forms\Components\Select::make('perizinan_id')
-                                ->relationship(name: 'perizinan', titleAttribute: 'nama_perizinan')
+                                ->relationship(
+                                    name: 'perizinan',
+                                    titleAttribute: 'nama_perizinan',
+                                    modifyQueryUsing: function (Builder $query) {
+                                        return $query->where('is_active', '1');
+                                    }
+                                )
                                 ->searchable()
                                 ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
                                     // $livewire->dispatch('refresh')->to(CreatePermohonan::class);
@@ -434,8 +441,9 @@ class PermohonanResource extends Resource
                                 ...$selectOptions,
 
                                 ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
+                                    ->label('Konfigurasi Izin')
                                     ->options([
-                                        'is_template_rekomendasi' => 'TTE dari Template Rekomendasi',
+                                        'is_template_rekomendasi' => 'Menggunakan Template Rekomendasi',
                                         'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
                                     ])
                                     ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first() == 1 ? 'is_template_rekomendasi' : 'is_manual_rekomendasi')
@@ -513,6 +521,7 @@ class PermohonanResource extends Resource
                                 ...$selectOptions,
 
                                 ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
+                                    ->label('Konfigurasi Tanda Tangan')
                                     ->options([
                                         'is_template_rekomendasi' => 'TTE dari Template Rekomendasi',
                                         'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
@@ -609,8 +618,9 @@ class PermohonanResource extends Resource
 
                                 ...$selectOptions,
                                 ToggleButtons::make('tanda_tangan_izin')
+                                    ->label('Konfigurasi Izin')
                                     ->options([
-                                        'is_template_izin' => 'TTE dari Template Izin',
+                                        'is_template_izin' => 'Menggunakan Template Izin',
                                         'is_manual_izin' => 'Unggah Manual Izin',
                                     ])
                                     ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_izin')->first() == 1 ? 'is_template_izin' : 'is_manual_izin')
@@ -691,6 +701,7 @@ class PermohonanResource extends Resource
 
                                 ...$selectOptions,
                                 ToggleButtons::make('tanda_tangan_izin')
+                                    ->label('Konfigurasi Izin')
                                     ->options([
                                         'is_template_izin' => 'TTE dari Template Izin',
                                         'is_manual_izin' => 'Unggah Manual Izin',
@@ -752,6 +763,9 @@ class PermohonanResource extends Resource
                                 ->dehydrated(),
                             RichEditor::make('message')
                                 ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
+                            RichEditor::make('message_bo')
+                                ->label('Permintaan Perbaikan Berkas Ke Back Office')
+                                ->visible(fn ($get) => ($get('status_permohonan_id') === '4' || $get('status_permohonan_id') === '8') && auth()->user()->roles->first()->name == 'verifikator'),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             // Forms\Components\Checkbox::make('saya_setuju')
                             //     ->label('Ya, Saya Setuju!')
@@ -784,6 +798,7 @@ class PermohonanResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
                     ->wrap()
+                    ->lineClamp(2)
                     ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -795,15 +810,12 @@ class PermohonanResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->headerActions([
-                ExportAction::make()
-                    ->exporter(PermohonanExporter::class)
-            ])   
+            ->headerActions([])
             ->filters([
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
+                // Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon')
                     ->label('Tinjau'),
@@ -827,6 +839,19 @@ class PermohonanResource extends Resource
                     ])
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 2;
+                    }),
+                Tables\Actions\Action::make('Perbaikan Draft')
+                    ->icon('heroicon-s-exclamation-triangle')
+                    ->infolist([
+                        \Filament\Infolists\Components\Section::make('Informasi')
+                            ->schema([
+                                TextEntry::make('message_bo')
+                                    ->html(),
+                            ])
+                            ->columns(),
+                    ])
+                    ->visible(function ($record) {
+                        return ($record->status_permohonan_id == 4 || $record->status_permohonan_id == 8) && $record->message_bo != null && auth()->user()->roles->first()->name == 'back_office';
                     }),
             ])
             ->bulkActions([
