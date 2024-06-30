@@ -437,6 +437,8 @@ class PermohonanResource extends Resource
 
                                 Forms\Components\TextInput::make('nomor_rekomendasi')
                                     ->label('Nomor Surat Permintaan Rekomendasi'),
+                                Forms\Components\DatePicker::make('tanggal_rekomendasi_terbit')
+                                    ->label('Tanggal Permintaan Rekomendasi'),
 
                                 ...$selectOptions,
 
@@ -888,6 +890,7 @@ class PermohonanResource extends Resource
                 $query->whereJsonContains('role_id', "$role");
             });
         }
+
     }
 
     public static function getRelations(): array

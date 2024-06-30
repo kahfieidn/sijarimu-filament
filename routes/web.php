@@ -17,7 +17,7 @@ use Laravel\Socialite\Facades\Socialite;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/app');
 });
 
 Route::get('/app/sample/generate/izin/{permohonan_id}', [App\Http\Controllers\Cetak\GenerateIzin::class, 'sample'])->name('app.cetak.izin.sample');

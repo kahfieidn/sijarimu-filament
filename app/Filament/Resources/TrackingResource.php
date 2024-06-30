@@ -388,7 +388,7 @@ class TrackingResource extends Resource
                     ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
-                        return $record->status_permohonan_id == 11;
+                        return $record->status_permohonan_id == 11 && auth()->user()->roles->first()->name != 'opd_teknis';
                     }),
                 Tables\Actions\Action::make('Lihat Pesan')
                     ->icon('heroicon-s-exclamation-triangle')
@@ -455,6 +455,7 @@ class TrackingResource extends Resource
             });
         } elseif ($get_assign_perizinan_handle == null) {
             return $query;
+
         }
     }
 

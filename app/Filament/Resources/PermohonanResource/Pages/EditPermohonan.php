@@ -108,8 +108,7 @@ class EditPermohonan extends EditRecord
         $permohonan = Permohonan::find($record->id);
 
         if (isset($data['tanda_tangan_permintaan_rekomendasi'])) {
-
-            if ($data['tanda_tangan_permintaan_rekomendasi'] == 'is_manual_rekomendasi') {
+            if ($data['tanda_tangan_permintaan_rekomendasi'] == 'is_template_rekomendasi') {
                 $pdfData = [
                     'permohonan' => $permohonan,
                 ];
@@ -209,7 +208,7 @@ class EditPermohonan extends EditRecord
             Actions\ViewAction::make(),
 
             Actions\Action::make('Draft Rekomendasi')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4]))
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4]) && $record->perizinan->is_template_rekomendasi == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.permintaan-rekomendasi-request', $record))
                 ->openUrlInNewTab(),
 
@@ -228,7 +227,7 @@ class EditPermohonan extends EditRecord
 
             //Draft Izin Template For Manual
             Actions\Action::make('Draft Izin')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8]) && $record->is_using_template_izin == 0)
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8]) && $record->perizinan->is_template_izin == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                 ->openUrlInNewTab(),
             //Draft Izin For Automatic
