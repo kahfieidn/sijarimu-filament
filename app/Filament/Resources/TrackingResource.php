@@ -384,7 +384,6 @@ class TrackingResource extends Resource
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
-                    // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
                     ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
