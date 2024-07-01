@@ -28,7 +28,7 @@ class PerizinanLifecycleResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Configuration';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 8;
 
 
     public static function form(Form $form): Form

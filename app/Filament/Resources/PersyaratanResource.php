@@ -19,10 +19,11 @@ class PersyaratanResource extends Resource
     protected static ?string $model = Persyaratan::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $pluralModelLabel = 'Docs Persyaratan';
 
     protected static ?string $navigationGroup = 'System Configuration';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 10;
 
     public static function form(Form $form): Form
     {
@@ -57,7 +58,8 @@ class PersyaratanResource extends Resource
                     ->lineClamp(2)  
                     ->searchable(),
                 Tables\Columns\TextColumn::make('deskripsi_persyaratan')
-                    ->searchable(),
+                    ->searchable()
+                    ->wrap(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PerizinanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PerizinanResource\RelationManagers;
@@ -18,11 +19,12 @@ class PerizinanResource extends Resource
 {
     protected static ?string $model = Perizinan::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-adjustments-horizontal';
+    protected static ?string $pluralModelLabel = 'Persyaratan';
+    protected static ?string $navigationGroup = 'Docs';
+    protected static ?int $navigationSort = 3;
 
-    protected static ?string $navigationGroup = 'System Configuration';
+    protected static ?string $navigationIcon = 'heroicon-o-document-duplicate';
 
-    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {
@@ -89,8 +91,21 @@ class PerizinanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->visible(auth()->user()->roles->first()->name == 'super_admin'),
+                Tables\Actions\EditAction::make()
+                    ->visible(auth()->user()->roles->first()->name == 'super_admin'),
+                Tables\Actions\Action::make('Lihat Berkas')
+                    ->icon('heroicon-s-arrow-trending-up')
+                    ->infolist([
+                        TextEntry::make('persyaratan.nama_persyaratan')
+                            ->listWithLineBreaks()
+                            ->bulleted()
+                            ->lineClamp(2)
+                            ->expandableLimitedList()
+                            ->copyable()
+                    ]),
+
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

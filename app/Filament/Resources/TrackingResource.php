@@ -44,7 +44,7 @@ class TrackingResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-magnifying-glass';
     protected static ?string $pluralModelLabel = 'Tracking';
     protected static ?string $navigationGroup = 'Pengajuan';
-    protected static ?int $navigationGroupSort = 2;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

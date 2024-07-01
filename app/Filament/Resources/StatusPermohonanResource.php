@@ -25,7 +25,7 @@ class StatusPermohonanResource extends Resource
 
     protected static ?string $navigationGroup = 'Master Configuration';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 5;
 
     public static function form(Form $form): Form
     {

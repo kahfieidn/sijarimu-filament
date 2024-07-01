@@ -62,8 +62,7 @@ class PermohonanResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-arrow-up-on-square-stack';
     protected static ?string $navigationGroup = 'Pengajuan';
     protected static ?string $pluralModelLabel = 'Permohonan';
-
-    protected static ?int $navigationGroupSort = 1;
+    protected static ?int $navigationSort = 1;
 
 
     public static function form(Form $form): Form

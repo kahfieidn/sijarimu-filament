@@ -20,12 +20,9 @@ use App\Filament\Resources\UserResource\Pages\CreateUser;
 class UserResource extends Resource
 {
     protected static ?string $model = User::class;
-
     protected static ?string $navigationIcon = 'heroicon-o-user-group';
-
-    protected static ?string $navigationGroup = 'Pelindung';
-
-    protected static ?int $navigationSort = 3;
+    protected static ?string $navigationGroup = 'Management User';
+    protected static ?int $navigationSort = 13;
 
 
     public static function form(Form $form): Form

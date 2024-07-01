@@ -22,7 +22,7 @@ class AssignPerizinanHandleResource extends Resource
 
     protected static ?string $navigationGroup = 'System Configuration';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 12;
 
     public static function form(Form $form): Form
     {
