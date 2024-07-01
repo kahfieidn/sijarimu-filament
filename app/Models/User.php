@@ -50,7 +50,6 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
 
-    //production
     protected static function booted(): void
     {
         static::created(function (User $user) {
