@@ -2,21 +2,22 @@
 
 namespace App\Filament\Resources\Shield;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
-use BezhanSalleh\FilamentShield\Facades\FilamentShield;
-use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
-use BezhanSalleh\FilamentShield\Forms\ShieldSelectAllToggle;
-use App\Filament\Resources\Shield\RoleResource\Pages;
-use BezhanSalleh\FilamentShield\Support\Utils;
 use Filament\Forms;
-use Filament\Forms\Components\Component;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use App\Models\User;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
+use Illuminate\Database\Eloquent\Model;
+use Filament\Forms\Components\Component;
+use BezhanSalleh\FilamentShield\Support\Utils;
+use App\Filament\Resources\Shield\RoleResource\Pages;
+use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
+use BezhanSalleh\FilamentShield\Facades\FilamentShield;
+use BezhanSalleh\FilamentShield\Forms\ShieldSelectAllToggle;
+use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 
 class RoleResource extends Resource implements HasShieldPermissions
 {
@@ -200,10 +201,11 @@ class RoleResource extends Resource implements HasShieldPermissions
         return Utils::isResourceGloballySearchable() && count(static::getGloballySearchableAttributes()) && static::canViewAny();
     }
 
-    // public static function canViewAny(): bool
-    // {
-    //     return auth()->user()->roles->first()->name == 'super_admin';
-    // }
+    public static function viewAny(User $user): bool
+    {
+        return $user->hasRole('super_admin');
+    }
+
 
     public static function getResourceEntitiesSchema(): ?array
     {
