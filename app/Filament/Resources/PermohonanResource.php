@@ -802,6 +802,9 @@ class PermohonanResource extends Resource
                     ->lineClamp(2)
                     ->words(5)
                     ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -889,7 +892,6 @@ class PermohonanResource extends Resource
                 $query->whereJsonContains('role_id', "$role");
             });
         }
-
     }
 
     public static function getRelations(): array

@@ -51,11 +51,11 @@ class User extends Authenticatable
     ];
 
     //production
-    // protected static function booted(): void
-    // {
-    //     static::created(function (User $user) {
-    //         $user->assignRole('pemohon');
-    //     });
-    // }
+    protected static function booted(): void
+    {
+        static::created(function (User $user) {
+            $user->assignRole('pemohon');
+        });
+    }
 
 }

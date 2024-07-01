@@ -329,6 +329,7 @@ class TrackingResource extends Resource
                     ->label('Perusahaan/Perorangan')
                     ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
                     ->wrap()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
@@ -341,6 +342,9 @@ class TrackingResource extends Resource
                     ->lineClamp(2)
                     ->words(5)
                     ->sortable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

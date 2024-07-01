@@ -105,7 +105,6 @@ class PerizinanResource extends Resource
                             ->expandableLimitedList()
                             ->copyable()
                     ]),
-
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
