@@ -14,6 +14,7 @@ use Filament\Infolists\Components\TextEntry;
 use App\Filament\Resources\PerizinanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PerizinanResource\RelationManagers;
+use App\Filament\Resources\PerizinanResource\RelationManagers\PersyaratansRelationManager;
 
 class PerizinanResource extends Resource
 {
@@ -93,8 +94,7 @@ class PerizinanResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->visible(auth()->user()->roles->first()->name == 'super_admin'),
-                Tables\Actions\EditAction::make()
-                    ->visible(auth()->user()->roles->first()->name == 'super_admin'),
+                Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('Lihat Berkas')
                     ->icon('heroicon-s-arrow-trending-up')
                     ->infolist([
@@ -117,6 +117,7 @@ class PerizinanResource extends Resource
     {
         return [
             //
+            PersyaratansRelationManager::class,
         ];
     }
 

@@ -89,7 +89,7 @@
                     <p class=MsoNormal><span lang=id style='font-family:"Arial",sans-serif'>&nbsp;</span></p>
                 </td>
                 <td width="47%" valign=top style='width:47.06%;padding:0in 5.4pt 0in 5.4pt'>
-                    <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-family:"Arial",sans-serif'>Tanjungpinang, @if($permohonan->formulir['Tanggal Terbit Rekomendasi'] != null){{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Terbit Rekomendasi'])->isoFormat('D MMMM Y') }}@else [DRAFT]@endif</span></p>
+                    <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-family:"Arial",sans-serif'>Tanjungpinang, @if($permohonan->tanggal_rekomendasi_terbit){{ \Carbon\Carbon::parse($permohonan->tanggal_rekomendasi_terbit)->isoFormat('D MMMM Y') }}@else [DRAFT]@endif</span></p>
                 </td>
             </tr>
         </table>
