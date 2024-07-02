@@ -819,7 +819,7 @@ class PermohonanResource extends Resource
                 //
             ])
             ->actions([
-                // Tables\Actions\ViewAction::make(),
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon')
                     ->label('Tinjau'),
