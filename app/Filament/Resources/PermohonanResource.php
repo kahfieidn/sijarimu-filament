@@ -617,7 +617,6 @@ class PermohonanResource extends Resource
                                 Forms\Components\DatePicker::make('tanggal_izin_terbit')
                                     ->label('Tanggal Izin Terbit'),
 
-
                                 ...$selectOptions,
                                 ToggleButtons::make('tanda_tangan_izin')
                                     ->label('Konfigurasi Izin')
