@@ -34,7 +34,7 @@ class AppPanelProvider extends PanelProvider
                 'panels::auth.login.form.after',
                 fn () => view('auth.socialite.google')
             )
-            ->login()
+            ->login(Login::class)
             ->databaseNotifications()
             ->registration()
             ->colors([
@@ -72,7 +72,6 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ])
-            ->spa()
             ->sidebarFullyCollapsibleOnDesktop()
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
