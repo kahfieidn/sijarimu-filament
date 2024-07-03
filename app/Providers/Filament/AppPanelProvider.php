@@ -35,7 +35,8 @@ class AppPanelProvider extends PanelProvider
                 'panels::auth.login.form.after',
                 fn () => view('auth.socialite.google')
             )
-            ->login(Login::class)
+            ->login()
+            ->passwordReset()
             ->databaseNotifications()
             ->registration()
             ->colors([
