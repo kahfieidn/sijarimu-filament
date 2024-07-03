@@ -30,6 +30,7 @@ class AppPanelProvider extends PanelProvider
             ->default()
             ->id('app')
             ->path('app')
+            ->spa()
             ->renderHook( 
                 'panels::auth.login.form.after',
                 fn () => view('auth.socialite.google')
