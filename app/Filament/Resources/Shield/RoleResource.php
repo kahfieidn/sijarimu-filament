@@ -200,10 +200,10 @@ class RoleResource extends Resource implements HasShieldPermissions
         return Utils::isResourceGloballySearchable() && count(static::getGloballySearchableAttributes()) && static::canViewAny();
     }
 
-    // public static function canViewAny(): bool
-    // {
-    //     return auth()->user()->roles->first()->name === 'super_admin';
-    // }
+    public static function canViewAny(): bool
+    {
+        return auth()->user()->roles->first()->name == 'super_admin';
+    }
 
     public static function getResourceEntitiesSchema(): ?array
     {
