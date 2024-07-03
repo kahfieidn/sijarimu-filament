@@ -778,7 +778,7 @@ class PermohonanResource extends Resource
                     fn (Action $action) => $action->label('Selanjutnya'),
                 )->previousAction(
                     fn (Action $action) => $action->label('Sebelumnya'),
-                )->skippable(),
+                )->skippable(auth()->user()->roles->first()->name != 'pemohon'),
             ]);
     }
 
