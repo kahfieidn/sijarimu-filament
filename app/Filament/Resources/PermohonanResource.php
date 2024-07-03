@@ -263,95 +263,96 @@ class PermohonanResource extends Resource
                                     fn (Action $action) => $action->requiresConfirmation(),
                                 ),
                         ]),
-                    // Wizard\Step::make('Formulir')
-                    //     ->schema(function (Get $get): array {
-                    //         $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
-                    //             $query->select('perizinan_id')
-                    //                 ->from('formulirs')
-                    //                 ->where('perizinan_id', $get('perizinan_id'));
-                    //         })->get();
-                    //         $selectOptions = [];
-                    //         foreach ($options as $key => $option) {
-                    //             if ($option->type == 'string') {
-                    //                 if (in_array('checklist_formulir', $option->features)) {
-                    //                     $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                    Wizard\Step::make('Formulir')
+                        ->visible(fn (Get $get) => $get('checklist_formulir'))
+                        ->schema(function (Get $get): array {
+                            $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
+                                $query->select('perizinan_id')
+                                    ->from('formulirs')
+                                    ->where('perizinan_id', $get('perizinan_id'));
+                            })->get();
+                            $selectOptions = [];
+                            foreach ($options as $key => $option) {
+                                if ($option->type == 'string') {
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
 
-                    //                     if ($option->is_columnSpanFull == 1) {
-                    //                         $input = $input->columnSpanFull(true);
-                    //                     }
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
 
-                    //                     $selectOptions[$option->nama_formulir] = $input;
-                    //                 } else {
-                    //                     $selectOptions[$option->nama_formulir] =
-                    //                         Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
-                    //                 }
-                    //             } elseif ($option->type == 'date') {
-                    //                 if (in_array('checklist_formulir', $option->features)) {
-                    //                     $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'date') {
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
 
-                    //                     if ($option->is_columnSpanFull == 1) {
-                    //                         $input = $input->columnSpanFull(true);
-                    //                     }
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
 
-                    //                     $selectOptions[$option->nama_formulir] = $input;
-                    //                 } else {
-                    //                     $selectOptions[$option->nama_formulir] =
-                    //                         Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
-                    //                 }
-                    //             } elseif ($option->type == 'select') {
-                    //                 if (in_array('checklist_formulir', $option->features)) {
-                    //                     $jsonOptions = $option->options;
-                    //                     $valuesArray = array_map(function ($item) {
-                    //                         return $item['value'];
-                    //                     }, $jsonOptions);
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'select') {
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $jsonOptions = $option->options;
+                                        $valuesArray = array_map(function ($item) {
+                                            return $item['value'];
+                                        }, $jsonOptions);
 
-                    //                     $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                    //                         ->options(array_combine($valuesArray, $valuesArray));
+                                        $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->options(array_combine($valuesArray, $valuesArray));
 
-                    //                     if ($option->is_columnSpanFull == 1) {
-                    //                         $input = $input->columnSpanFull(true);
-                    //                     }
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
 
-                    //                     $selectOptions[$option->nama_formulir] = $input;
-                    //                 } else {
-                    //                     $selectOptions[$option->nama_formulir] =
-                    //                         Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
-                    //                 }
-                    //             } elseif ($option->type == 'textarea') { // Add this block for textarea
-                    //                 if (in_array('checklist_formulir', $option->features)) {
-                    //                     $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir);
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'textarea') { // Add this block for textarea
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir);
 
-                    //                     if ($option->is_columnSpanFull == 1) {
-                    //                         $input = $input->columnSpanFull(true);
-                    //                     }
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
 
-                    //                     $selectOptions[$option->nama_formulir] = $input;
-                    //                 } else {
-                    //                     $selectOptions[$option->nama_formulir] =
-                    //                         Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
-                    //                 }
-                    //             } elseif ($option->type == 'richeditor') { // Add this block for richeditor
-                    //                 if (in_array('checklist_formulir', $option->features)) {
-                    //                     $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
-                    //                         ->toolbarButtons([
-                    //                             'orderedList',
-                    //                         ]);
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'richeditor') { // Add this block for richeditor
+                                    if (in_array('checklist_formulir', $option->features)) {
+                                        $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
+                                            ->toolbarButtons([
+                                                'orderedList',
+                                            ]);
 
-                    //                     if ($option->is_columnSpanFull == 1) {
-                    //                         $input = $input->columnSpanFull(true);
-                    //                     }
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
 
-                    //                     $selectOptions[$option->nama_formulir] = $input;
-                    //                 } else {
-                    //                     $selectOptions[$option->nama_formulir] =
-                    //                         Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
-                    //                 }
-                    //             }
-                    //         }
-                    //         return [
-                    //             ...$selectOptions
-                    //         ];
-                    //     })->columns(2),
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                }
+                            }
+                            return [
+                                ...$selectOptions
+                            ];
+                        })->columns(2),
                     Wizard\Step::make('Profile Usaha')
                         ->visible(fn (Get $get) => $get('profile_usaha_relation'))
                         ->schema([
