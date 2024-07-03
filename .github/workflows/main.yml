@@ -28,6 +28,9 @@ jobs:
       
     - name: Generate storage link
       run: php artisan storage:link
+
+    - name: Chache Icon
+      run: php artisan icons:cache
       
     - name: Directory Permissions
       run: chmod -R 777 storage bootstrap/cache
