@@ -18,9 +18,17 @@ class TrackingExporter extends Exporter
             //
             ExportColumn::make('profile_usaha.nama_perusahaan')
                 ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
-                ->label('Perusahaan'),
+                ->label('Perusahaan/Perorangan'),
             ExportColumn::make('perizinan.nama_perizinan')
-                ->label('Perizinan'),
+                ->label('Nama Izin'),
+            ExportColumn::make('perizinan.sektor.nama_sektor')
+                ->label('Sektor'),
+            ExportColumn::make('nomor_izin')
+                ->label('Nomor Izin'),
+            ExportColumn::make('tanggal_izin_terbit')
+                ->label('Tanggal Izin Terbit'),
+            ExportColumn::make('status_permohonan.general_status')
+                ->label('Status Permohonan'),
         ];
     }
 

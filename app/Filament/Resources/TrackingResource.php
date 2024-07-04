@@ -345,6 +345,13 @@ class TrackingResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('nomor_izin')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('tanggal_izin_terbit')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -357,6 +364,7 @@ class TrackingResource extends Resource
             ->headerActions([
                 ExportAction::make()
                     ->exporter(TrackingExporter::class)
+                    ->hidden(auth()->user()->roles->first()->name == 'pemohon')
             ])
             ->filters([
                 SelectFilter::make('nama_sektor')
@@ -367,22 +375,25 @@ class TrackingResource extends Resource
                     ->relationship('perizinan', 'nama_perizinan')
                     ->searchable()
                     ->preload(),
-                Filter::make('created_at')
+                Filter::make('tanggal_izin_terbit')
                     ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
+                        Forms\Components\DatePicker::make('tanggal_izin_terbit_from'),
+                        Forms\Components\DatePicker::make('tanggal_izin_terbit_until'),
                     ])
                     ->query(function (Builder $query, array $data): Builder {
                         return $query
                             ->when(
-                                $data['created_from'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date),
+                                $data['tanggal_izin_terbit_from'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_izin_terbit', '>=', $date),
                             )
                             ->when(
-                                $data['created_until'],
-                                fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date),
+                                $data['tanggal_izin_terbit_until'],
+                                fn (Builder $query, $date): Builder => $query->whereDate('tanggal_izin_terbit', '<=', $date),
                             );
-                    })
+                    }),
+                Filter::make('status_permohonan_id')
+                    ->query(fn (Builder $query): Builder => $query->where('status_permohonan_id', 11))
+                    ->label('Izin Terbit')
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -458,7 +469,6 @@ class TrackingResource extends Resource
             });
         } elseif ($get_assign_perizinan_handle == null) {
             return $query;
-
         }
     }
 

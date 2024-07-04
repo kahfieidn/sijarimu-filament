@@ -226,10 +226,10 @@ class EditPermohonan extends EditRecord
 
 
             //Draft Izin Template For Manual
-            Actions\Action::make('Draft Izin')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8]) && $record->perizinan->is_template_izin == 1)
-                ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
-                ->openUrlInNewTab(),
+            // Actions\Action::make('Draft Izin')
+            //     ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8]) && $record->perizinan->is_template_izin == 1)
+            //     ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
+            //     ->openUrlInNewTab(),
             //Draft Izin For Automatic
             Actions\Action::make('Draft Izin')
                 ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [8, 9, 10]) && $record->is_using_template_izin == 1)

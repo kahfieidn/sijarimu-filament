@@ -788,6 +788,7 @@ class PermohonanResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('profile_usaha.nama_perusahaan')
                     ->label('Perusahaan/Perorangan')
+                    ->searchable()
                     ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
                     ->wrap()
                     ->sortable(),
@@ -804,6 +805,7 @@ class PermohonanResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
+                    ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
