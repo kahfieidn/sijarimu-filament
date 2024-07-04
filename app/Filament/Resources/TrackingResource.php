@@ -125,7 +125,7 @@ class TrackingResource extends Resource
                                         ->label('NIB'),
                                     Forms\Components\FileUpload::make('nib_file')
                                         ->label('NIB File'),
-                                    Forms\Components\TextArea::make('alamat')
+                                    Forms\Components\Textarea::make('alamat')
                                         ->label('Alamat')->columnSpanFull(),
                                     Forms\Components\TextInput::make('provinsi')
                                         ->label('Provinsi'),
