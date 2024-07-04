@@ -202,8 +202,15 @@ class RoleResource extends Resource implements HasShieldPermissions
 
     public static function canViewAny(): bool
     {
-        return auth()->user()->roles->first()->name == 'super_admin';
+        $user = auth()->user();
+
+        if ($user && $user->roles->isNotEmpty()) {
+            return $user->roles->first()->name === 'super_admin';
+        }
+
+        return false;
     }
+
 
     public static function getResourceEntitiesSchema(): ?array
     {
