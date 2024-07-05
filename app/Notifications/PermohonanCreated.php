@@ -36,10 +36,12 @@ class PermohonanCreated extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $shortenedUuid = substr($this->permohonan->id, 0, 6);
+
         return (new MailMessage)
             ->greeting('Yang terhormat,' . ' ' . $this->permohonan->user->name)
-            ->subject('Permohonan' . ' ' . '#' . $this->permohonan->id . ' ' . 'Berhasil di Ajukan!')
-            ->line('Permohonan anda telah berhasil kami terima. Selanjutnya, tindaklanjut permohonan ini membutuhkan waktu 4 - 7 hari bursa kerja. Setelah berkas selesai diproses, anda akan menerima email notifikasi dari kami apabila berkas telah selesai diproses.')
+            ->subject('Permohonan #' . $shortenedUuid . ' Berhasil di Ajukan!')
+            ->line('Permohonan anda telah berhasil kami terima. Selanjutnya, tindaklanjut permohonan ini membutuhkan waktu 4 - 7 hari bursa kerja. Setelah berkas selesai diproses, anda akan menerima notifikasi dari kami apabila berkas telah selesai diproses.')
             ->line('Sekarang anda dapat memantau proses berkas anda pada menu "Tracking" di Aplikasi Sijarimu:')
             ->action('Login Aplikasi Sijarimu', url('https://sijarimu.kepri.pro'))
             ->line('Terimakasih telah menggunakan aplikasi Sijarimu!');

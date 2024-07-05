@@ -3,14 +3,18 @@
 namespace App\Filament\Resources\PermohonanResource\Pages;
 
 use Filament\Actions;
+use GuzzleHttp\Client;
 use Filament\Forms\Get;
 use Filament\Forms\Form;
 use App\Models\Perizinan;
 use App\Models\Permohonan;
+use Illuminate\Http\Request;
 use App\Models\StatusPermohonan;
 use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Illuminate\Support\Facades\Session;
+use App\Notifications\PermohonanCreated;
+use App\Notifications\PermohonanCreatedWA;
 use Filament\Forms\Components\Wizard\Step;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\PermohonanResource;
@@ -69,5 +73,9 @@ class CreatePermohonan extends CreateRecord
         $permohonan->update([
             'activity_log' => $currentActivityLog
         ]);
+
+
+        //Notifyemail
+        $permohonan->user->notify(new PermohonanCreated($permohonan));
     }
 }

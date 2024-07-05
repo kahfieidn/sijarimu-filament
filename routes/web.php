@@ -4,6 +4,9 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Laravel\Socialite\Facades\Socialite;
+use App\Notifications\PermohonanCreatedWA;
+use App\Http\Controllers\WhatsAppController;
+use Illuminate\Support\Facades\Notification;
 
 /*
 |--------------------------------------------------------------------------

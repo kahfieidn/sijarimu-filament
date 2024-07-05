@@ -38,9 +38,12 @@ class PermohonanDone extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+
+        $shortenedUuid = substr($this->permohonan->id, 0, 6);
+
         return (new MailMessage)
             ->greeting('Yang terhormat,' . ' ' . $this->permohonan->user->name)
-            ->subject('Permohonan' . ' ' . '#' . $this->permohonan->id . ' ' . 'Selesai di Proses!')
+            ->subject('Permohonan #' . $shortenedUuid . 'Selesai di Proses!')
             ->line('Permohonan anda telah selesai di proses.')
             ->line('Sekarang anda dapat memantau proses berkas anda pada menu "Tracking" di Aplikasi Sijarimu:')
             ->action('Login Aplikasi Sijarimu', url('https://sijarimu.kepri.pro'))

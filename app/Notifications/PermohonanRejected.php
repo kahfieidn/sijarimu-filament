@@ -37,9 +37,11 @@ class PermohonanRejected extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
+        $shortenedUuid = substr($this->permohonan->id, 0, 6);
+
         return (new MailMessage)
             ->greeting('Yang terhormat,' . ' ' . $this->permohonan->user->name)
-            ->subject('Permohonan' . ' ' . '#' . $this->permohonan->id . ' ' . 'Ditolak!')
+            ->subject('Permohonan #' . $shortenedUuid . ' ' . 'Ditolak!')
             ->line('Mohon maaf, Permohonan anda ditolak dan perlu diperbaiki.')
             ->line('Alasan verifikator :')
             ->line(new HtmlString("" . $this->permohonan->message . ""))
