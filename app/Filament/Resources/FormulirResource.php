@@ -42,6 +42,8 @@ class FormulirResource extends Resource
                         Forms\Components\TextInput::make('nama_formulir')
                             ->required()
                             ->maxLength(255),
+                        Forms\Components\RichEditor::make('helper_text')
+                        ->columnSpanFull(),
                         Forms\Components\Select::make('type')
                             ->options([
                                 'string' => 'String',

@@ -15,6 +15,7 @@ class Formulir extends Model
         'perizinan_id',
         'features',
         'nama_formulir',
+        'helper_text',
         'type',
         'options',
         'is_columnSpanFull',

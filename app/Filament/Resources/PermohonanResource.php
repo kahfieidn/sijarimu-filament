@@ -275,7 +275,8 @@ class PermohonanResource extends Resource
                             foreach ($options as $key => $option) {
                                 if ($option->type == 'string') {
                                     if (in_array('checklist_formulir', $option->features)) {
-                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text));
 
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
@@ -288,7 +289,8 @@ class PermohonanResource extends Resource
                                     }
                                 } elseif ($option->type == 'date') {
                                     if (in_array('checklist_formulir', $option->features)) {
-                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text));
 
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
@@ -307,6 +309,7 @@ class PermohonanResource extends Resource
                                         }, $jsonOptions);
 
                                         $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
                                             ->options(array_combine($valuesArray, $valuesArray));
 
                                         if ($option->is_columnSpanFull == 1) {
@@ -320,7 +323,8 @@ class PermohonanResource extends Resource
                                     }
                                 } elseif ($option->type == 'textarea') { // Add this block for textarea
                                     if (in_array('checklist_formulir', $option->features)) {
-                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir);
+                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text));
 
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
@@ -336,7 +340,8 @@ class PermohonanResource extends Resource
                                         $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
                                             ->toolbarButtons([
                                                 'orderedList',
-                                            ]);
+                                            ])
+                                            ->helperText(new HtmlString($option->helper_text));
 
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
@@ -439,6 +444,7 @@ class PermohonanResource extends Resource
                                 Forms\Components\TextInput::make('nomor_rekomendasi')
                                     ->label('Nomor Surat Permintaan Rekomendasi'),
                                 Forms\Components\DatePicker::make('tanggal_rekomendasi_terbit')
+                                    ->readOnly()
                                     ->label('Tanggal Permintaan Rekomendasi'),
 
                                 ...$selectOptions,
@@ -520,6 +526,9 @@ class PermohonanResource extends Resource
 
                                 Forms\Components\TextInput::make('nomor_rekomendasi')
                                     ->label('Nomor Surat Rekomendasi'),
+                                Forms\Components\DatePicker::make('tanggal_rekomendasi_terbit')
+                                    ->readOnly()
+                                    ->label('Tanggal Permintaan Rekomendasi'),
 
                                 ...$selectOptions,
 
@@ -616,6 +625,7 @@ class PermohonanResource extends Resource
                                     ->label('Nomor Surat Izin'),
 
                                 Forms\Components\DatePicker::make('tanggal_izin_terbit')
+                                    ->readOnly()
                                     ->label('Tanggal Izin Terbit'),
 
                                 ...$selectOptions,
@@ -698,6 +708,7 @@ class PermohonanResource extends Resource
                                     ->label('Nomor Surat Izin'),
 
                                 Forms\Components\DatePicker::make('tanggal_izin_terbit')
+                                    ->readOnly()
                                     ->label('Tanggal Izin Terbit'),
 
 

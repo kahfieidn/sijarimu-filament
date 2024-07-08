@@ -20,6 +20,8 @@ use Illuminate\Support\Facades\Storage;
 use Filament\Resources\Pages\EditRecord;
 use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
 use App\Filament\Resources\PermohonanResource;
+use App\Notifications\PermohonanDone;
+use App\Notifications\PermohonanRejected;
 use BezhanSalleh\FilamentShield\Traits\HasPageShield;
 
 class EditPermohonan extends EditRecord
@@ -43,7 +45,8 @@ class EditPermohonan extends EditRecord
         $role = auth()->user()->roles->first()->id;
         $permohonan = Permohonan::find($data['id']);
 
-
+        $data['tanggal_izin_terbit'] = Carbon::now()->format('Y-m-d');
+        $data['tanggal_rekomendasi_terbit'] = Carbon::now()->format('Y-m-d');
         $data['tanda_tangan_permintaan_rekomendasi'] = $this->record->is_using_template_izin ? 'is_template_rekomendasi' : 'is_manual_rekomendasi';
         $data['tanda_tangan_izin'] = $this->record->is_using_template_izin ? 'is_template_izin' : 'is_manual_izin';
 
@@ -149,7 +152,6 @@ class EditPermohonan extends EditRecord
             }
         }
 
-
         // Mengambil activity_log saat ini
         $currentActivityLog = $permohonan->activity_log;
         if (!is_array($currentActivityLog)) {
@@ -160,6 +162,7 @@ class EditPermohonan extends EditRecord
         $newLog = [
             'Activity' => StatusPermohonan::find($this->record['status_permohonan_id'])->nama_status,
             'Stake Holder' => auth()->user()->name,
+            'Tanggal' => now()->format('d-m-Y H:i:s')
         ];
         $currentActivityLog[] = $newLog;
 
@@ -178,6 +181,23 @@ class EditPermohonan extends EditRecord
         $currentMonthYear = Carbon::now()->format('Y-F');
         $permohonan = Permohonan::find($this->record->id);
 
+        if ($this->record['status_permohonan_id'] == 7 && $this->record['is_using_template_izin'] == 1) {
+            $pdfData = [
+                'permohonan' => $permohonan,
+            ];
+            $storageDirectory = 'rekomendasi_terbit/' . $currentMonthYear . '/' . $permohonan->id . '.pdf';
+            $pdf = FacadePdf::loadView('cetak.rekomendasi.request', $pdfData);
+            $customPaper = [0, 0, 609.4488, 935.433];
+            $pdf->set_paper($customPaper);
+
+            $fileContent = $pdf->output();
+            $hashedFileName = hash('sha256', $storageDirectory) . '.' . pathinfo($storageDirectory, PATHINFO_EXTENSION);
+
+            Storage::put('public/rekomendasi_terbit/' . $currentMonthYear . '/' . $hashedFileName, $fileContent);
+            $permohonan->update([
+                'rekomendasi_terbit' => 'rekomendasi_terbit/' . $currentMonthYear . '/' . $hashedFileName,
+            ]);
+        }
 
         if ($this->record['status_permohonan_id'] == 11 && $this->record['is_using_template_izin'] == 1) {
             $pdfData = [
@@ -196,6 +216,14 @@ class EditPermohonan extends EditRecord
                 'izin_terbit' => 'izin_terbit/' . $currentMonthYear . '/' . $hashedFileName,
             ]);
         }
+
+
+        //Notify
+        if ($this->record['status_permohonan_id'] == 11) {
+            $permohonan->user->notify(new PermohonanDone($permohonan));
+        } else if ($this->record['status_permohonan_id'] == 2) {
+            $permohonan->user->notify(new PermohonanRejected($permohonan));
+        }
     }
 
 
@@ -208,7 +236,7 @@ class EditPermohonan extends EditRecord
             Actions\ViewAction::make(),
 
             Actions\Action::make('Draft Rekomendasi')
-                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4]) && $record->perizinan->is_template_rekomendasi == 1)
+                ->visible(fn (Permohonan $record): bool => in_array($record->status_permohonan_id, [4, 5, 6]) && $record->perizinan->is_template_rekomendasi == 1)
                 ->url(fn (Permohonan $record): string => route('app.cetak.permintaan-rekomendasi-request', $record))
                 ->openUrlInNewTab(),
 
@@ -245,5 +273,11 @@ class EditPermohonan extends EditRecord
                 ->url(fn (Permohonan $record): string => route('app.cetak.izin.request', $record))
                 ->openUrlInNewTab()
         ];
+    }
+
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('perizinan_id')->constrained();
             $table->string('nama_formulir');
+            $table->string('helper_text')->nullable();
             $table->enum('type', ['string', 'date', 'select', 'textarea', 'richeditor']);
             $table->boolean('is_columnSpanFull')->default(false)->nullable();
             $table->json('options')->nullable();

@@ -68,14 +68,19 @@ class CreatePermohonan extends CreateRecord
         $newLog = [
             'Activity' => 'Pemohon Membuat Permohonan',
             'Stake Holder' => auth()->user()->name,
+            'Tanggal' => now()->format('d-m-Y H:i:s')
         ];
         $currentActivityLog[] = $newLog;
         $permohonan->update([
             'activity_log' => $currentActivityLog
         ]);
 
-
         //Notifyemail
         $permohonan->user->notify(new PermohonanCreated($permohonan));
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
     }
 }

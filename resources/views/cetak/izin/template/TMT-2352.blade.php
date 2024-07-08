@@ -72,8 +72,8 @@
                     <p class=MsoNormal><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>&nbsp;</span></p>
                 </td>
                 <td width="47%" valign=top style='width:47.06%;padding:0in 5.4pt 0in 5.4pt'>
-                    <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Tanjungpinang, @if(isset($permohonan->formulir['Tanggal Izin']) && $permohonan->formulir['Tanggal Izin'] != null)
-                            {{ \Carbon\Carbon::parse($permohonan->formulir['Tanggal Izin'])->isoFormat('D MMMM Y') }}
+                    <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Tanjungpinang, @if(isset($permohonan->tanggal_izin_terbit) && $permohonan->tanggal_izin_terbit != null)
+                            {{ \Carbon\Carbon::parse($permohonan->tanggal_izin_terbit)->isoFormat('D MMMM Y') }}
                             @else
                             [DRAFT]
                             @endif</span></p>
@@ -504,7 +504,7 @@
                 </td>
 
                 <td width="33%" valign=top style='width:33.8%;padding:0in 5.4pt 0in 5.4pt'>
-                    @if($permohonan->status_permohonan_id == 12)
+                    @if($permohonan->status_permohonan_id == 11)
                     <p class=MsoNormal align=right style='text-align:right'><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'><img width=223 height=80 id="Picture 2" src="images/ttekadis.jpg"></span></p>
                     @else
                     [DRAFT]

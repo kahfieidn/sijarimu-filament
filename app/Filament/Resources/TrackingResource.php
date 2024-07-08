@@ -30,6 +30,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Exports\TrackingExporter;
 use Filament\Forms\Components\Placeholder;
+use Filament\Infolists\Components\Section;
 use Custom\Path\Models\Permohonan\Tracking;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
@@ -424,12 +425,12 @@ class TrackingResource extends Resource
                             ->schema([
                                 RepeatableEntry::make('activity_log')
                                     ->schema([
-                                        TextEntry::make('Activity'),
+                                        TextEntry::make('Activity')->columnSpanFull(),
                                         TextEntry::make('Stake Holder'),
+                                        TextEntry::make('Tanggal')->columnSpan(2)
                                     ])
-                                    ->columnSpanFull()
                             ])
-                            ->columns(),
+                            ->columnSpanFull(),
                     ]),
             ])
             ->bulkActions([

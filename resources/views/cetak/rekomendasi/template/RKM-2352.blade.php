@@ -83,7 +83,7 @@
 
         <p class=MsoNormal><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'><img width=717 height=131 id=image2.png src="images/headercop.png"></span></p>
 
-        <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%;border-collapse:collapse;border:none'>
+        <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width="100%" style='margin-top:10px;width:100.0%;border-collapse:collapse;border:none'>
             <tr>
                 <td width="52%" valign=top style='width:52.94%;padding:0in 5.4pt 0in 5.4pt'>
                     <p class=MsoNormal><span lang=id style='font-family:"Arial",sans-serif'>&nbsp;</span></p>
@@ -96,7 +96,7 @@
 
         <p class=MsoNormal><span lang=id style='font-size:5.5pt;font-family:"Arial",sans-serif'>&nbsp;</span></p>
 
-        <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width="100%" style='width:100.0%;border-collapse:collapse;border:none'>
+        <table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width="100%" style='margin-top:16px;width:100.0%;border-collapse:collapse;border:none'>
             <tr>
                 <td width="10%" valign=top style='width:10.6%;padding:0in 5.4pt 0in 5.4pt'>
                     <p class=MsoNormal><span lang=id style='font-family:"Arial",sans-serif'>Nomor</span></p>
