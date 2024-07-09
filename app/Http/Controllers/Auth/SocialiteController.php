@@ -58,6 +58,6 @@ class SocialiteController extends Controller
 
         Auth::login($registeredUser);
 
-        return redirect('/app/profile');
+        return redirect('/app');
     }
 }
