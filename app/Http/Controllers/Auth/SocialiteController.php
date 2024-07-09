@@ -20,9 +20,15 @@ class SocialiteController extends Controller
 
     public function callback()
     {
-        $socialUser = Socialite::driver('google')->user();
+        try {
+            $socialUser = Socialite::driver('google')->user();
+        } catch (\Exception $e) {
+            return redirect('/app')->withErrors(['error' => 'Unable to authenticate with Google: ' . $e->getMessage()]);
+        }
 
+        // Proceed with the rest of the logic if no exception was thrown
         $registeredUser = User::where('google_id', $socialUser->id)->first();
+
         if (!$registeredUser) {
             if (User::where('email', $socialUser->email)->exists()) {
                 $user = User::where('email', $socialUser->email)->first();

@@ -779,9 +779,9 @@ class PermohonanResource extends Resource
                                 ->label('Permintaan Perbaikan Berkas Ke Back Office')
                                 ->visible(fn ($get) => ($get('status_permohonan_id') === '4' || $get('status_permohonan_id') === '8') && auth()->user()->roles->first()->name == 'verifikator'),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
-                            // Forms\Components\Checkbox::make('saya_setuju')
-                            //     ->label('Ya, Saya Setuju!')
-                            //     ->accepted(),
+                            Forms\Components\Checkbox::make('saya_setuju')
+                                ->label('Ya, Saya Setuju!')
+                                ->accepted(),
                             Hidden::make('nomor_rekomendasi'),
                             Hidden::make('nomor_izin'),
                         ]),

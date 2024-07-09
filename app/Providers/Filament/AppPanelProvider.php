@@ -2,16 +2,18 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Resources\PermohonanResource;
-use App\Filament\Resources\UserResource;
-use App\Models\User;
 use Filament\Pages;
 use Filament\Panel;
+use App\Models\User;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Pages\Auth\Login;
+use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
+use Filament\Pages\Auth\EditProfile;
+use App\Filament\Resources\UserResource;
 use Filament\Http\Middleware\Authenticate;
+use App\Filament\Resources\PermohonanResource;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Routing\Middleware\SubstituteBindings;
@@ -30,6 +32,7 @@ class AppPanelProvider extends PanelProvider
             ->default()
             ->id('app')
             ->path('app')
+            ->profile()
             ->spa()
             ->renderHook( 
                 'panels::auth.login.form.after',
