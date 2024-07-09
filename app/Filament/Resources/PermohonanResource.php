@@ -135,6 +135,7 @@ class PermohonanResource extends Resource
                                 })
                                 ->required()
                                 ->live()
+                                ->preload()
                                 ->disabledOn('edit')
                                 ->dehydrated()
                                 ->disableOptionWhen(fn (Get $get) => $get('perizinan_id') != null),
