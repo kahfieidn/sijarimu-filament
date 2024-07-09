@@ -43,7 +43,7 @@ class PermohonanCreated extends Notification
             ->subject('Permohonan #' . $shortenedUuid . ' Berhasil di Ajukan!')
             ->line('Permohonan anda telah berhasil kami terima. Selanjutnya, tindaklanjut permohonan ini membutuhkan waktu 4 - 7 hari bursa kerja. Setelah berkas selesai diproses, anda akan menerima notifikasi dari kami apabila berkas telah selesai diproses.')
             ->line('Sekarang anda dapat memantau proses berkas anda pada menu "Tracking" di Aplikasi Sijarimu:')
-            ->action('Login Aplikasi Sijarimu', url('https://sijarimu.kepri.pro'))
+            ->action('Login Aplikasi Sijarimu', url('https://sijarimu-v2.kepri.pro'))
             ->line('Terimakasih telah menggunakan aplikasi Sijarimu!');
     }
 

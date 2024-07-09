@@ -46,7 +46,7 @@ class PermohonanDone extends Notification
             ->subject('Permohonan #' . $shortenedUuid . ' Selesai di Proses!')
             ->line('Permohonan anda telah selesai di proses.')
             ->line('Sekarang anda dapat memantau proses berkas anda pada menu "Tracking" di Aplikasi Sijarimu:')
-            ->action('Login Aplikasi Sijarimu', url('https://sijarimu.kepri.pro'))
+            ->action('Login Aplikasi Sijarimu', url('https://sijarimu-v2.kepri.pro'))
             ->line('Terimakasih telah menggunakan aplikasi Sijarimu!');
     }
 

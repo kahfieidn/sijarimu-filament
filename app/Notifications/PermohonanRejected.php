@@ -46,7 +46,7 @@ class PermohonanRejected extends Notification
             ->line('Alasan verifikator :')
             ->line(new HtmlString("" . $this->permohonan->message . ""))
             ->line('Silahkan diperbaiki sesuai dengan instruksi tersebut, lalu dapat mengajukan ulang.')
-            ->action('Login Aplikasi Sijarimu', url('https://sijarimu.kepri.pro'))
+            ->action('Login Aplikasi Sijarimu', url('https://sijarimu-v2.kepri.pro'))
             ->line('Terimakasih telah menggunakan aplikasi Sijarimu!');
     }
 
