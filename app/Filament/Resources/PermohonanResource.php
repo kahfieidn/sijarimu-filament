@@ -259,7 +259,7 @@ class PermohonanResource extends Resource
                                         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
                                     Action::make('Approved')
                                         ->button('')
-                                        ->label('Terima')
+                                        ->label('')
                                         ->icon('heroicon-m-check-circle')
                                         ->action(function (array $arguments, Set $set, Get $get, Repeater $component) {
                                             $set('berkas.' . $arguments['item'] . '.status', 'Approved');
@@ -268,7 +268,7 @@ class PermohonanResource extends Resource
                                         ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
                                     Action::make('Revision')
                                         ->button('')
-                                        ->label('Tolak')
+                                        ->label('')
                                         ->icon('heroicon-m-x-circle')
                                         ->action(function (array $arguments, Set $set, Get $get, Repeater $component) {
                                             $set('berkas.' . $arguments['item'] . '.status', 'Revision');
