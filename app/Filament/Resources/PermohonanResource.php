@@ -259,21 +259,21 @@ class PermohonanResource extends Resource
                                         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
                                     Action::make('Approved')
                                         ->button('')
-                                        ->label('')
-                                        ->icon('heroicon-m-check-circle')
+                                        ->label('✓')
                                         ->action(function (array $arguments, Set $set, Get $get, Repeater $component) {
                                             $set('berkas.' . $arguments['item'] . '.status', 'Approved');
                                         })
                                         ->color('success')
+                                        ->disabled(fn (array $arguments, Repeater $component): bool => $component->getRawItemState($arguments['item'])['status'] == 'Approved')
                                         ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
                                     Action::make('Revision')
                                         ->button('')
-                                        ->label('')
-                                        ->icon('heroicon-m-x-circle')
+                                        ->label('✘')
                                         ->action(function (array $arguments, Set $set, Get $get, Repeater $component) {
                                             $set('berkas.' . $arguments['item'] . '.status', 'Revision');
                                         })
                                         ->color('danger')
+                                        ->disabled(fn (array $arguments, Repeater $component): bool => $component->getRawItemState($arguments['item'])['status'] == 'Revision')
                                         ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
                                 ])
                                 ->collapsed(auth()->user()->roles->first()->name != 'pemohon')
