@@ -245,8 +245,8 @@ class PermohonanResource extends Resource
                                 ->columns(2)
                                 ->addActionLabel('Tambah Berkas')
                                 ->extraItemActions([
-                                    Action::make('Lihat Berkas')
-                                        ->button('Lihat Berkas')
+                                    Action::make('Lihat')
+                                        ->button('Lihat')
                                         ->icon('heroicon-m-cursor-arrow-ripple')
                                         ->url(function (array $arguments, Repeater $component): ?string {
                                             $itemData = $component->getItemState($arguments['item']) ?? '';
@@ -257,12 +257,31 @@ class PermohonanResource extends Resource
                                             return url('storage/' . $itemData['file']);
                                         }, shouldOpenInNewTab: true)
                                         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
+                                    Action::make('Approved')
+                                        ->button('')
+                                        ->label('Terima')
+                                        ->icon('heroicon-m-check-circle')
+                                        ->action(function (array $arguments, Set $set, Get $get, Repeater $component) {
+                                            $set('berkas.' . $arguments['item'] . '.status', 'Approved');
+                                        })
+                                        ->color('success')
+                                        ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
+                                    Action::make('Revision')
+                                        ->button('')
+                                        ->label('Tolak')
+                                        ->icon('heroicon-m-x-circle')
+                                        ->action(function (array $arguments, Set $set, Get $get, Repeater $component) {
+                                            $set('berkas.' . $arguments['item'] . '.status', 'Revision');
+                                        })
+                                        ->color('danger')
+                                        ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
                                 ])
                                 ->collapsed(auth()->user()->roles->first()->name != 'pemohon')
                                 ->itemLabel(fn (array $state): ?string => ($state['status'] ?? 'Pending') . ' - ' . Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first())
                                 ->deleteAction(
                                     fn (Action $action) => $action->requiresConfirmation(),
-                                ),
+                                )
+                                ->deletable(auth()->user()->roles->first()->name == 'pemohon' ? true : false),
                         ]),
                     Wizard\Step::make('Formulir')
                         ->visible(fn (Get $get) => $get('checklist_formulir'))
