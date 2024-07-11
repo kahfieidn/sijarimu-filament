@@ -23,6 +23,7 @@ use App\Models\PerizinanLifecycle;
 use Illuminate\Support\HtmlString;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Tabs;
+use Illuminate\Contracts\View\View;
 use Filament\Forms\Components\Split;
 use App\Models\AssignPerizinanHandle;
 use Filament\Forms\Components\Hidden;
@@ -44,7 +45,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Wizard\Step;
 use App\Filament\Exports\PermohonanExporter;
-use App\Filament\Resources\PerizinanResource\RelationManagers\PersyaratansRelationManager;
 use Filament\Forms\Components\ToggleButtons;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Forms\Components\Actions\Action;
@@ -55,6 +55,7 @@ use App\Filament\Resources\PermohonanResource\Pages;
 use App\Filament\Resources\PermohonanResource\RelationManagers;
 use App\Filament\Resources\PermohonanResource\Pages\EditPermohonan;
 use App\Filament\Resources\PermohonanResource\Pages\CreatePermohonan;
+use App\Filament\Resources\PerizinanResource\RelationManagers\PersyaratansRelationManager;
 
 class PermohonanResource extends Resource
 {
@@ -250,14 +251,20 @@ class PermohonanResource extends Resource
                                     Action::make('Lihat')
                                         ->button('Lihat')
                                         ->icon('heroicon-m-cursor-arrow-ripple')
-                                        ->url(function (array $arguments, Repeater $component): ?string {
+                                        ->modalContent(function (Permohonan $record, array $arguments, Repeater $component): View {
                                             $itemData = $component->getItemState($arguments['item']) ?? '';
-                                            if (!$itemData['file']) {
-                                                return null;
+
+                                            if (blank($itemData['file'])) {
+                                                abort(404, 'File not found');
                                             }
 
-                                            return url('storage/' . $itemData['file']);
-                                        }, shouldOpenInNewTab: true)
+                                            return view('filament.pages.actions.berkas', [
+                                                'record' => $record,
+                                                'fileUrl' => url('storage/' . $itemData['file']),
+                                            ]);
+                                        })
+                                        ->modalSubmitAction(false)
+                                        ->modalCancelActionLabel('Tutup')
                                         ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
                                     Action::make('Approved')
                                         ->button('')
