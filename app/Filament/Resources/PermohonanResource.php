@@ -213,6 +213,7 @@ class PermohonanResource extends Resource
                                             ->deletable(auth()->user()->roles->first()->name == 'pemohon' ? true : false)
                                             ->dehydrated()
                                             ->required()
+                                            ->hint('File harus berformat PDF dan Maximal 2MB')
                                             ->appendFiles()
                                             ->acceptedFileTypes(['application/pdf'])
                                             ->directory('berkas' . '/' .  $currentMonthYear)
