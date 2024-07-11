@@ -214,6 +214,7 @@ class PermohonanResource extends Resource
                                             ->dehydrated()
                                             ->required()
                                             ->appendFiles()
+                                            ->acceptedFileTypes(['application/pdf'])
                                             ->directory('berkas' . '/' .  $currentMonthYear)
                                             ->appendFiles()
                                             ->columnSpanFull(),
