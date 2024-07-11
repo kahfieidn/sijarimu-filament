@@ -250,7 +250,6 @@ class PermohonanResource extends Resource
                                 ->extraItemActions([
                                     Action::make('Lihat')
                                         ->button('Lihat')
-                                        ->icon('heroicon-m-cursor-arrow-ripple')
                                         ->modalContent(function (array $arguments, Repeater $component): View {
                                             $itemData = $component->getItemState($arguments['item']) ?? '';
 
