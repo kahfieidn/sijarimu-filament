@@ -251,15 +251,17 @@ class PermohonanResource extends Resource
                                     Action::make('Lihat')
                                         ->button('Lihat')
                                         ->icon('heroicon-m-cursor-arrow-ripple')
-                                        ->modalContent(function (Permohonan $record, array $arguments, Repeater $component): View {
+                                        ->modalContent(function (array $arguments, Repeater $component): View {
                                             $itemData = $component->getItemState($arguments['item']) ?? '';
 
                                             if (blank($itemData['file'])) {
                                                 abort(404, 'File not found');
                                             }
 
+                                            $nama_persyaratan = Persyaratan::where('id', $itemData['nama_persyaratan'])->pluck('nama_persyaratan')->first();
+
                                             return view('filament.pages.actions.berkas', [
-                                                'record' => $record,
+                                                'nama_persyaratan' => $nama_persyaratan,
                                                 'fileUrl' => url('storage/' . $itemData['file']),
                                             ]);
                                         })
