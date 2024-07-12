@@ -216,6 +216,7 @@ class PermohonanResource extends Resource
                                             ->required()
                                             ->hint('File harus berformat PDF dan Maximal 2MB')
                                             ->appendFiles()
+                                            ->acceptedFileTypes(['application/pdf'])
                                             ->directory('berkas' . '/' .  $currentMonthYear)
                                             ->appendFiles()
                                             ->columnSpanFull(),
