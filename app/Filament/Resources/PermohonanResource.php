@@ -216,7 +216,6 @@ class PermohonanResource extends Resource
                                             ->required()
                                             ->hint('File harus berformat PDF dan Maximal 2MB')
                                             ->appendFiles()
-                                            ->acceptedFileTypes(['application/pdf'])
                                             ->directory('berkas' . '/' .  $currentMonthYear)
                                             ->appendFiles()
                                             ->columnSpanFull(),
@@ -292,6 +291,12 @@ class PermohonanResource extends Resource
                                     fn (Action $action) => $action->requiresConfirmation(),
                                 )
                                 ->deletable(auth()->user()->roles->first()->name == 'pemohon' ? true : false),
+                            Toggle::make('is_catatan_kesimpulan')
+                                ->visible(auth()->user()->roles->first()->name != 'pemohon')
+                                ->label('Apakah ada catatan kesimpulan?')
+                                ->live(),
+                            RichEditor::make('catatan_kesimpulan')
+                                ->hidden(fn (Get $get): bool => !$get('is_catatan_kesimpulan') || $get('is_catatan_kesimpulan') == null)
                         ]),
                     Wizard\Step::make('Formulir')
                         ->visible(fn (Get $get) => $get('checklist_formulir'))

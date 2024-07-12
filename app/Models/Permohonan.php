@@ -21,6 +21,7 @@ class Permohonan extends Model
         'status_permohonan_id',
         'profile_usaha_id',
         'message',
+        'catatan_kesimpulan',
         'message_bo',
         'nama_pemohon',
         'berkas',

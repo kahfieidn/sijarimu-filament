@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('status_permohonan_id')->constrained();
             $table->foreignId('profile_usaha_id')->nullable();
             $table->text('message')->nullable();
+            $table->text('catatan_kesimpulan')->nullable();
             $table->text('message_bo')->nullable();
             $table->json('formulir');
             $table->json('berkas');
