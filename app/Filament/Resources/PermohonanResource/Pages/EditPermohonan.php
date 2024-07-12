@@ -49,6 +49,7 @@ class EditPermohonan extends EditRecord
         $data['tanggal_rekomendasi_terbit'] = Carbon::now()->format('Y-m-d');
         $data['tanda_tangan_permintaan_rekomendasi'] = $this->record->is_using_template_izin ? 'is_template_rekomendasi' : 'is_manual_rekomendasi';
         $data['tanda_tangan_izin'] = $this->record->is_using_template_izin ? 'is_template_izin' : 'is_manual_izin';
+        $data['is_catatan_kesimpulan'] = $this->record->catatan_kesimpulan ? '1' : '0';
 
         //Handle pesan back office
         if ($this->record->message_bo != null) {

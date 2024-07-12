@@ -297,6 +297,7 @@ class PermohonanResource extends Resource
                                 ->label('Apakah ada catatan kesimpulan?')
                                 ->live(),
                             RichEditor::make('catatan_kesimpulan')
+                                ->dehydrated(true)
                                 ->hidden(fn (Get $get): bool => !$get('is_catatan_kesimpulan') || $get('is_catatan_kesimpulan') == null)
                         ]),
                     Wizard\Step::make('Formulir')
