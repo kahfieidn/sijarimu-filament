@@ -308,13 +308,15 @@ class PermohonanResource extends Resource
                                     ->from('formulirs')
                                     ->where('perizinan_id', $get('perizinan_id'));
                             })->get();
+
+                            // List Formulir
                             $selectOptions = [];
                             foreach ($options as $key => $option) {
                                 if ($option->type == 'string') {
                                     if (in_array('checklist_formulir', $option->features)) {
                                         $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
-                                            ->helperText(new HtmlString($option->helper_text));
-
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required();
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
                                         }
@@ -327,8 +329,8 @@ class PermohonanResource extends Resource
                                 } elseif ($option->type == 'date') {
                                     if (in_array('checklist_formulir', $option->features)) {
                                         $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
-                                            ->helperText(new HtmlString($option->helper_text));
-
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required();
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
                                         }
@@ -347,8 +349,8 @@ class PermohonanResource extends Resource
 
                                         $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
                                             ->helperText(new HtmlString($option->helper_text))
-                                            ->options(array_combine($valuesArray, $valuesArray));
-
+                                            ->options(array_combine($valuesArray, $valuesArray))
+                                            ->required();
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
                                         }
@@ -361,8 +363,8 @@ class PermohonanResource extends Resource
                                 } elseif ($option->type == 'textarea') { // Add this block for textarea
                                     if (in_array('checklist_formulir', $option->features)) {
                                         $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir)
-                                            ->helperText(new HtmlString($option->helper_text));
-
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required();
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
                                         }
@@ -378,8 +380,8 @@ class PermohonanResource extends Resource
                                             ->toolbarButtons([
                                                 'orderedList',
                                             ])
-                                            ->helperText(new HtmlString($option->helper_text));
-
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required();
                                         if ($option->is_columnSpanFull == 1) {
                                             $input = $input->columnSpanFull(true);
                                         }
@@ -402,24 +404,31 @@ class PermohonanResource extends Resource
                                 ->relationship('profile_usaha')
                                 ->schema([
                                     Forms\Components\TextInput::make('nama_perusahaan')
+                                        ->required()
                                         ->label('Nama Perusahaan')->columnSpanFull(),
                                     Forms\Components\TextInput::make('npwp')
+                                        ->required()
                                         ->label('NPWP'),
                                     Forms\Components\FileUpload::make('npwp_file')
+                                        ->required()
                                         ->openable()
                                         ->label('NPWP File'),
                                     Forms\Components\TextInput::make('nib')
+                                        ->required()
                                         ->label('NIB'),
                                     Forms\Components\FileUpload::make('nib_file')
+                                        ->required()
                                         ->openable()
                                         ->label('NIB File'),
                                     Forms\Components\Textarea::make('alamat')
+                                        ->required()
                                         ->label('Alamat')->columnSpanFull(),
                                     Forms\Components\Select::make('provinsi')
                                         ->options([
                                             'Kepulauan Riau' => 'Kepulauan Riau',
                                         ])
                                         ->native(false)
+                                        ->required()
                                         ->label('Provinsi'),
                                     Forms\Components\Select::make('domisili')
                                         ->options([
@@ -431,6 +440,7 @@ class PermohonanResource extends Resource
                                             'Kota Batam' => 'Kota Tanjungpinang',
                                         ])
                                         ->native(false)
+                                        ->required()
                                         ->label('Domisili'),
                                 ]),
                         ]),
@@ -445,31 +455,83 @@ class PermohonanResource extends Resource
                             })->get();
 
                             $selectOptions = [];
+                            $final_relation_status_id = $get('final_relation_status_id') ?? [];
                             foreach ($options as $key => $option) {
-
                                 if ($option->type == 'string') {
                                     if (in_array('bo_before_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'date') {
+                                } elseif ($option->type == 'date') {
                                     if (in_array('bo_before_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'select') {
+                                } elseif ($option->type == 'select') {
                                     if (in_array('bo_before_opd_moderation', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
                                         }, $jsonOptions);
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                                            ->options(array_combine($valuesArray, $valuesArray));
+
+                                        $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->options(array_combine($valuesArray, $valuesArray))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'textarea') { // Add this block for textarea
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'richeditor') { // Add this block for richeditor
+                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
+                                            ->toolbarButtons([
+                                                'orderedList',
+                                            ])
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -477,13 +539,13 @@ class PermohonanResource extends Resource
                                 }
                             }
                             return [
-
                                 Forms\Components\TextInput::make('nomor_rekomendasi')
-                                    ->label('Nomor Surat Permintaan Rekomendasi'),
+                                    ->label('Nomor Surat Permintaan Rekomendasi')
+                                    ->required(),
                                 Forms\Components\DatePicker::make('tanggal_rekomendasi_terbit')
                                     ->readOnly()
+                                    ->required()
                                     ->label('Tanggal Permintaan Rekomendasi'),
-
                                 ...$selectOptions,
 
                                 ToggleButtons::make('tanda_tangan_permintaan_rekomendasi')
@@ -510,11 +572,13 @@ class PermohonanResource extends Resource
                                         }
                                     }),
                                 Forms\Components\FileUpload::make('rekomendasi_terbit')
-                                    ->required()
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
                                     ->columnSpanFull()
                                     ->openable()
                                     ->directory('rekomendasi_terbit' . '/' . Carbon::now()->format('Y-F'))
                                     ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
+
+
                             ];
                         })->columns(2),
                     Wizard\Step::make('Kadis Tanda Tangan')
@@ -528,31 +592,83 @@ class PermohonanResource extends Resource
                             })->get();
 
                             $selectOptions = [];
+                            $final_relation_status_id = $get('final_relation_status_id') ?? [];
                             foreach ($options as $key => $option) {
-
                                 if ($option->type == 'string') {
-                                    if (in_array('bo_before_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                    if (in_array('kadis_before_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'date') {
-                                    if (in_array('bo_before_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                } elseif ($option->type == 'date') {
+                                    if (in_array('kadis_before_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'select') {
-                                    if (in_array('bo_before_opd_moderation', $option->features)) {
+                                } elseif ($option->type == 'select') {
+                                    if (in_array('kadis_before_opd_moderation', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
                                         }, $jsonOptions);
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                                            ->options(array_combine($valuesArray, $valuesArray));
+
+                                        $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->options(array_combine($valuesArray, $valuesArray))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'textarea') { // Add this block for textarea
+                                    if (in_array('kadis_before_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'richeditor') { // Add this block for richeditor
+                                    if (in_array('kadis_before_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
+                                            ->toolbarButtons([
+                                                'orderedList',
+                                            ])
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -562,9 +678,11 @@ class PermohonanResource extends Resource
                             return [
 
                                 Forms\Components\TextInput::make('nomor_rekomendasi')
+                                    ->required()
                                     ->label('Nomor Surat Rekomendasi'),
                                 Forms\Components\DatePicker::make('tanggal_rekomendasi_terbit')
                                     ->readOnly()
+                                    ->required()
                                     ->label('Tanggal Permintaan Rekomendasi'),
 
                                 ...$selectOptions,
@@ -592,7 +710,7 @@ class PermohonanResource extends Resource
                                         }
                                     }),
                                 Forms\Components\FileUpload::make('rekomendasi_terbit')
-                                    ->required()
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
                                     ->columnSpanFull()
                                     ->openable()
                                     ->directory('rekomendasi_terbit' . '/' . Carbon::now()->format('Y-F'))
@@ -602,18 +720,25 @@ class PermohonanResource extends Resource
                     Wizard\Step::make('OPD')
                         ->description('Melakukan Kajian Teknis')
                         ->visible(fn (Get $get) => $get('opd_moderation'))
-                        ->schema([
-                            Forms\Components\TextInput::make('nomor_kajian_teknis')
-                                ->label('Nomor Surat Kajian Teknis'),
-                            Forms\Components\DatePicker::make('tanggal_kajian_teknis_terbit')
-                                ->label('Tanggal Surat Kajian Teknis'),
-                            Forms\Components\FileUpload::make('kajian_teknis')
-                                ->openable()
-                                ->label('Rekomendasi Teknis')
-                                ->directory('kajian_teknis')
-                                ->openable()
-                                ->columnSpanFull(),
-                        ])->columns(2),
+                        ->schema(function (Get $get) {
+                            $final_relation_status_id = $get('final_relation_status_id') ?? [];
+
+                            return [
+                                Forms\Components\TextInput::make('nomor_kajian_teknis')
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
+                                    ->label('Nomor Surat Kajian Teknis'),
+                                Forms\Components\DatePicker::make('tanggal_kajian_teknis_terbit')
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
+                                    ->label('Tanggal Surat Kajian Teknis'),
+                                Forms\Components\FileUpload::make('kajian_teknis')
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
+                                    ->openable()
+                                    ->label('Rekomendasi Teknis')
+                                    ->directory('kajian_teknis')
+                                    ->openable()
+                                    ->columnSpanFull(),
+                            ];
+                        })->columns(2),
                     Wizard\Step::make('Back Office')
                         ->description('Membuat Draft Izin')
                         ->visible(fn (Get $get) => $get('bo_after_opd_moderation'))
@@ -625,19 +750,23 @@ class PermohonanResource extends Resource
                             })->get();
 
                             $selectOptions = [];
+                            $final_relation_status_id = $get('final_relation_status_id') ?? [];
                             foreach ($options as $key => $option) {
 
                                 if ($option->type == 'string') {
                                     if (in_array('bo_after_opd_moderation', $option->features)) {
                                         $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
                                 } else if ($option->type == 'date') {
                                     if (in_array('bo_after_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -649,6 +778,7 @@ class PermohonanResource extends Resource
                                             return $item['value'];
                                         }, $jsonOptions);
                                         $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
                                             ->options(array_combine($valuesArray, $valuesArray));
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
@@ -659,9 +789,11 @@ class PermohonanResource extends Resource
                             return [
 
                                 Forms\Components\TextInput::make('nomor_izin')
+                                    ->required()
                                     ->label('Nomor Surat Izin'),
 
                                 Forms\Components\DatePicker::make('tanggal_izin_terbit')
+                                    ->required()
                                     ->readOnly()
                                     ->label('Tanggal Izin Terbit'),
 
@@ -689,7 +821,7 @@ class PermohonanResource extends Resource
                                         }
                                     }),
                                 Forms\Components\FileUpload::make('izin_terbit')
-                                    ->required()
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
                                     ->openable()
                                     ->columnSpanFull()
                                     ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
@@ -708,31 +840,83 @@ class PermohonanResource extends Resource
                             })->get();
 
                             $selectOptions = [];
+                            $final_relation_status_id = $get('final_relation_status_id') ?? [];
                             foreach ($options as $key => $option) {
-
                                 if ($option->type == 'string') {
-                                    if (in_array('bo_after_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] =
-                                            Forms\Components\TextInput::make('formulir.' . $option->nama_formulir);
+                                    if (in_array('kadis_after_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\TextInput::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'date') {
-                                    if (in_array('bo_after_opd_moderation', $option->features)) {
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir);
+                                } elseif ($option->type == 'date') {
+                                    if (in_array('kadis_after_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\DatePicker::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
                                     }
-                                } else if ($option->type == 'select') {
-                                    if (in_array('bo_after_opd_moderation', $option->features)) {
+                                } elseif ($option->type == 'select') {
+                                    if (in_array('kadis_after_opd_moderation', $option->features)) {
                                         $jsonOptions = $option->options;
                                         $valuesArray = array_map(function ($item) {
                                             return $item['value'];
                                         }, $jsonOptions);
-                                        $selectOptions[$option->nama_formulir] = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
-                                            ->options(array_combine($valuesArray, $valuesArray));
+
+                                        $input = Forms\Components\Select::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->options(array_combine($valuesArray, $valuesArray))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'textarea') { // Add this block for textarea
+                                    if (in_array('kadis_after_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\Textarea::make('formulir.' . $option->nama_formulir)
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
+                                    } else {
+                                        $selectOptions[$option->nama_formulir] =
+                                            Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
+                                    }
+                                } elseif ($option->type == 'richeditor') { // Add this block for richeditor
+                                    if (in_array('kadis_after_opd_moderation', $option->features)) {
+                                        $input = Forms\Components\RichEditor::make('formulir.' . $option->nama_formulir)
+                                            ->toolbarButtons([
+                                                'orderedList',
+                                            ])
+                                            ->helperText(new HtmlString($option->helper_text))
+                                            ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true);
+                                        if ($option->is_columnSpanFull == 1) {
+                                            $input = $input->columnSpanFull(true);
+                                        }
+
+                                        $selectOptions[$option->nama_formulir] = $input;
                                     } else {
                                         $selectOptions[$option->nama_formulir] =
                                             Forms\Components\Hidden::make('formulir.' . $option->nama_formulir);
@@ -742,9 +926,11 @@ class PermohonanResource extends Resource
                             return [
 
                                 Forms\Components\TextInput::make('nomor_izin')
+                                    ->required()
                                     ->label('Nomor Surat Izin'),
 
                                 Forms\Components\DatePicker::make('tanggal_izin_terbit')
+                                    ->required()
                                     ->readOnly()
                                     ->label('Tanggal Izin Terbit'),
 
@@ -773,7 +959,7 @@ class PermohonanResource extends Resource
                                         }
                                     }),
                                 Forms\Components\FileUpload::make('izin_terbit')
-                                    ->required()
+                                    ->required($get('status_permohonan_id') == end($final_relation_status_id) ?? true)
                                     ->openable()
                                     ->columnSpanFull()
                                     ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
@@ -785,26 +971,30 @@ class PermohonanResource extends Resource
                         ->schema([
                             Select::make('status_permohonan_id')
                                 ->label('Status Permohonan')
-                                ->options(function (Get $get, $state) {
-                                    $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
-                                    $data = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
-                                        ->pluck('flow_status');
-
-                                    $options = [];
-                                    foreach ($data as $item) {
-                                        foreach ($item as $roleData) {
-                                            if ($roleData['condition_status'] == $get('status_permohonan_id_from_edit') && $roleData['role'] == auth()->user()->roles->first()->id) {
-                                                $options = $roleData['status'];
-                                                break;
-                                            } else if ($roleData['condition_status'] == null && $roleData['role'] == auth()->user()->roles->first()->id) {
-                                                $options = $roleData['status'];
-                                                break;
+                                ->options(function (Get $get, $state, string $operation) {
+                                    if ($operation === 'create') {
+                                        // Get Status Permohonan ID from Edit Permohonan
+                                        $perizinan_lifecycle_id = Perizinan::where('id', $get('perizinan_id'))->pluck('perizinan_lifecycle_id')->first();
+                                        $data_lifecycle = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+                                            ->pluck('flow_status');
+                                        $options_select_permohonan_id = [];
+                                        foreach ($data_lifecycle as $item) {
+                                            foreach ($item as $roleData) {
+                                                if ($roleData['condition_status'] == $get('status_permohonan_id') && $roleData['role'] == auth()->user()->roles->first()->id) {
+                                                    $options_select_permohonan_id = $roleData['status'];
+                                                    break;
+                                                } else if ($roleData['condition_status'] == null && $roleData['role'] == auth()->user()->roles->first()->id) {
+                                                    $options_select_permohonan_id = $roleData['status'];
+                                                    break;
+                                                }
                                             }
                                         }
+                                        $final_relation_status_name = StatusPermohonan::whereIn('id', $options_select_permohonan_id)->pluck('nama_status', 'id')->toArray();
+                                        $data['final_relation_status_name'] = $final_relation_status_name;
+                                        return $final_relation_status_name;
+                                    } else {
+                                        return $get('final_relation_status_name');
                                     }
-
-                                    $final_relation_status = StatusPermohonan::whereIn('id', $options)->pluck('nama_status', 'id')->toArray();
-                                    return $final_relation_status;
                                 })
                                 ->searchable()
                                 ->disabled(auth()->user()->roles->first()->name == 'pemohon')

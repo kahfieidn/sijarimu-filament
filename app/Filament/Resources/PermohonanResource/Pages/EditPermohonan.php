@@ -51,6 +51,27 @@ class EditPermohonan extends EditRecord
         $data['tanda_tangan_izin'] = $this->record->is_using_template_izin ? 'is_template_izin' : 'is_manual_izin';
         $data['is_catatan_kesimpulan'] = $this->record->catatan_kesimpulan ? '1' : '0';
 
+        // Get Status Permohonan ID from Edit Permohonan
+        $perizinan_lifecycle_id = Perizinan::where('id', $data['perizinan_id'])->pluck('perizinan_lifecycle_id')->first();
+        $data_lifecycle = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
+            ->pluck('flow_status');
+        $options_select_permohonan_id = [];
+        foreach ($data_lifecycle as $item) {
+            foreach ($item as $roleData) {
+                if ($roleData['condition_status'] == $data['status_permohonan_id'] && $roleData['role'] == auth()->user()->roles->first()->id) {
+                    $options_select_permohonan_id = $roleData['status'];
+                    break;
+                } else if ($roleData['condition_status'] == null && $roleData['role'] == auth()->user()->roles->first()->id) {
+                    $options_select_permohonan_id = $roleData['status'];
+                    break;
+                }
+            }
+        }
+        $final_relation_status_id = StatusPermohonan::whereIn('id', $options_select_permohonan_id)->pluck('id', 'id')->toArray();
+        $final_relation_status_name = StatusPermohonan::whereIn('id', $options_select_permohonan_id)->pluck('nama_status', 'id')->toArray();
+        $data['final_relation_status_id'] = $final_relation_status_id;
+        $data['final_relation_status_name'] = $final_relation_status_name;
+
         //Handle pesan back office
         if ($this->record->message_bo != null) {
             $permohonan->update([
@@ -79,11 +100,10 @@ class EditPermohonan extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $perizinan_lifecycle_id = Perizinan::where('id', $data['perizinan_id'])->first()->pluck('perizinan_lifecycle_id')->first();
+        $perizinan_lifecycle_id = Perizinan::where('id', $data['perizinan_id'])->pluck('perizinan_lifecycle_id')->first();
 
         $flow_status = PerizinanLifecycle::where('id', $perizinan_lifecycle_id)
             ->pluck('flow_status');
-
         $options = null;
         foreach ($flow_status as $item) {
             foreach ($item as $roleData) {
@@ -132,7 +152,6 @@ class EditPermohonan extends EditRecord
         }
 
         if (isset($data['tanda_tangan_izin'])) {
-
             $record->is_using_template_izin = ($data['tanda_tangan_izin'] == 'is_template_izin') ? 1 : 0;
             if ($data['tanda_tangan_izin'] == 'is_template_izin') {
                 $pdfData = [
@@ -219,12 +238,13 @@ class EditPermohonan extends EditRecord
         }
 
 
-        //Notify
+        //Notify Email
         if ($this->record['status_permohonan_id'] == 11) {
             $permohonan->user->notify(new PermohonanDone($permohonan));
         } else if ($this->record['status_permohonan_id'] == 2) {
             $permohonan->user->notify(new PermohonanRejected($permohonan));
         }
+
     }
 
 

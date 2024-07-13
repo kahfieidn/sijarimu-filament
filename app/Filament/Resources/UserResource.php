@@ -59,13 +59,13 @@ class UserResource extends Resource
                     ])->columns(3),
                 Section::make('Reset Password')
                     ->schema([
-                        Forms\Components\TextInput::make('new_password')
+                        Forms\Components\TextInput::make('password')
                             ->password()
                             ->rule(Password::default()),
-                        Forms\Components\TextInput::make('new_password_confirmation')
+                        Forms\Components\TextInput::make('password_confirmation')
                             ->password()
-                            ->same('new_password')
-                            ->requiredWith('new_password')
+                            ->same('password')
+                            ->requiredWith('password')
                     ])->visible(fn ($livewire) => $livewire instanceof EditUser)
             ]);
     }
