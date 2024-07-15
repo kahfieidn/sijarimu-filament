@@ -461,11 +461,8 @@ class TrackingResource extends Resource
         if (auth()->user()->roles->first()->name == 'pemohon') {
             return $query->where('user_id', $userId);
         } else if ($get_assign_perizinan_handle != null && $get_assign_perizinan_handle['is_all_perizinan'] == 0) {
-            return $query->whereHas('status_permohonan', function ($query) use ($role, $get_assign_perizinan_handle) {
-                $query->whereIn('perizinan_id', $get_assign_perizinan_handle['perizinan_id'])
-                    ->whereJsonContains('role_id', "$role");
-            });
-        } elseif ($get_assign_perizinan_handle == null) {
+            return $query->whereIn('perizinan_id', $get_assign_perizinan_handle['perizinan_id']);
+        } else {
             return $query;
         }
     }
