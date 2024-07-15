@@ -10,6 +10,7 @@ use Filament\PanelProvider;
 use Filament\Pages\Auth\Login;
 use Filament\Navigation\MenuItem;
 use Filament\Support\Colors\Color;
+use Filament\View\PanelsRenderHook;
 use Filament\Pages\Auth\EditProfile;
 use App\Filament\Resources\UserResource;
 use Filament\Http\Middleware\Authenticate;
@@ -34,9 +35,13 @@ class AppPanelProvider extends PanelProvider
             ->path('app')
             ->profile()
             ->spa()
-            ->renderHook( 
+            ->renderHook(
                 'panels::auth.login.form.after',
                 fn () => view('auth.socialite.google')
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => view('livechat')
             )
             ->login()
             ->passwordReset()
