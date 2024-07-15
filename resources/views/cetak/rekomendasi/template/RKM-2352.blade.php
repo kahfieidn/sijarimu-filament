@@ -111,7 +111,7 @@
                     <p class=MsoNormal><span style='font-family:"Arial",sans-serif'>:</span></p>
                 </td>
                 <td width="41%" valign=top style='width:41.08%;padding:0in 5.4pt 0in 5.4pt'>
-                    <p class=MsoNormal style='text-align:justify'><span style='font-family:"Arial",sans-serif'>{{$permohonan->perizinan->perizinan_configuration->prefix_nomor_rekomendasi}}{{$permohonan->perizinan->perizinan_configuration->nomor_rekomendasi}}{{$permohonan->perizinan->perizinan_configuration->suffix_nomor_rekomendasi}}</span></p>
+                    <p class=MsoNormal style='text-align:justify'><span style='font-family:"Arial",sans-serif'>@if(isset($permohonan->nomor_rekomendasi)){{ $permohonan->nomor_rekomendasi }}@endif</span></p>
                     <p class=MsoNormal style='text-align:justify'><span style='font-family:"Arial",sans-serif'>1
                             (satu) Berkas</span></p>
                     <p class=MsoNormal style='text-align:justify'><span style='font-family:"Arial",sans-serif'>Penting</span></p>

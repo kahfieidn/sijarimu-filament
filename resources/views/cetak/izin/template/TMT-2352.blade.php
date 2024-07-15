@@ -98,7 +98,7 @@
                     <p class=MsoNormal><span style='font-size:9.5pt;font-family:"Arial",sans-serif'>:</span></p>
                 </td>
                 <td width="38%" valign=top style='width:38.36%;padding:0in 5.4pt 0in 5.4pt'>
-                    <p class=MsoNormal><span style='font-size:9.5pt;font-family:"Arial",sans-serif'>{{$permohonan->perizinan->perizinan_configuration->prefix_nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->suffix_nomor_izin}}</span></p>
+                    <p class=MsoNormal><span style='font-size:9.5pt;font-family:"Arial",sans-serif'>@if(isset($permohonan->nomor_izin)){{ $permohonan->nomor_izin }}@endif</span></p>
                     <p class=MsoNormal><span style='font-size:9.5pt;font-family:"Arial",sans-serif'>-</span></p>
                     <p class=MsoNormal><span style='font-size:9.5pt;font-family:"Arial",sans-serif'>-</span></p>
                     <p class=MsoNormal style='text-align:justify;'><span lang=id style='font-size:9.5pt;font-family:"Arial",sans-serif'>Persetujuan

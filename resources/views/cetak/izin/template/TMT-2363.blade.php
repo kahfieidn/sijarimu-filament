@@ -1438,7 +1438,7 @@
             max-width: 517.3pt;
             padding: 0pt 0pt 0pt 0pt;
             margin-top: 0;
-            margin-left:0px;
+            margin-left: 0px;
         }
 
         .c55 {
@@ -1642,7 +1642,7 @@
         </tr>
     </table>
     <p class="c48"><span class="c58">SURAT KETERANGAN PENELITIAN</span></p>
-    <p class="c84"><span class="c1">Nomor : {{$permohonan->perizinan->perizinan_configuration->prefix_nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->suffix_nomor_izin}}</span></p>
+    <p class="c84"><span class="c1">Nomor : @if(isset($permohonan->nomor_izin)){{ $permohonan->nomor_izin }}@endif</span></p>
     <p class="c11"><span class="c13"></span></p>
     <a id="t.db85d138772f5d9d8f964e846b407e39005add28"></a><a id="t.1"></a>
     <table class="c39">

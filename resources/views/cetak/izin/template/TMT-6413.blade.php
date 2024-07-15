@@ -1627,7 +1627,8 @@
         </tr>
     </table>
     <p class="c48"><span class="c58">SURAT KETERANGAN PENELITIAN</span></p>
-    <p class="c84"><span class="c1">Nomor : {{$permohonan->perizinan->perizinan_configuration->prefix_nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->nomor_izin}}{{$permohonan->perizinan->perizinan_configuration->suffix_nomor_izin}}</span></p>
+    <p class="c84"><span class="c1">Nomor : @if(isset($permohonan->nomor_izin)){{ $permohonan->nomor_izin }}@endif
+        </span></p>
     <p class="c11"><span class="c13"></span></p><a id="t.db85d138772f5d9d8f964e846b407e39005add28"></a><a id="t.1"></a>
     <table class="c39">
         <tr class="c32">
@@ -1656,8 +1657,8 @@
             </td>
             <td class="c7" colspan="1" rowspan="1">
                 <p class="c15"><span class="c1">Peraturan Gubernur Kepulauan Riau Nomor 17 Tahun 2023 Tentang Pendelegasian
-Kewenangan Penyelenggaraan Perizinan Berusaha Dan Non Perizinan Kepada Dinas
-Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span></p>
+                        Kewenangan Penyelenggaraan Perizinan Berusaha Dan Non Perizinan Kepada Dinas
+                        Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span></p>
             </td>
         </tr>
     </table>
@@ -1803,9 +1804,9 @@ Penanaman Modal Dan Pelayanan Terpadu Satu Pintu Provinsi Kepulauan Riau.</span>
             <td class="c38" colspan="1" rowspan="1">
                 <p class="c28 c47"><span class="c1"></span></p>
                 <p class="c28"><span style="overflow: hidden; display: inline-block; margin: 0.00px 0.00px; border: 0.00px solid #000000; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px); width: 42.07px; height: 42.07px;">
-                    @if($permohonan->status_permohonan_id == 11)
+                        @if($permohonan->status_permohonan_id == 11)
                         <img alt="" src="images/image2.jpg" style="width: 42.07px; height: 42.07px; margin-left: 0.00px; margin-top: 0.00px; transform: rotate(0.00rad) translateZ(0px); -webkit-transform: rotate(0.00rad) translateZ(0px);" title="">
-                    @endif
+                        @endif
                     </span>
                 </p>
                 <p class="c28 c47"><span class="c1"></span></p>
