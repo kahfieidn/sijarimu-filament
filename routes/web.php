@@ -23,6 +23,10 @@ Route::get('/', function () {
     return redirect('/app');
 });
 
+Route::get('/login', function () {
+    return redirect('/app');
+});
+
 Route::get('/app/sample/generate/izin/{permohonan_id}', [App\Http\Controllers\Cetak\GenerateIzin::class, 'sample'])->name('app.cetak.izin.sample');
 
 
