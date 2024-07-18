@@ -1116,7 +1116,8 @@ class PermohonanResource extends Resource
                             return auth()->user()->roles->first()->name == 'super_admin';
                         }),
                 ]),
-            ])->recordUrl(
+            ])
+            ->recordUrl(
                 fn (Permohonan $record) => null,
             );
     }
@@ -1145,6 +1146,10 @@ class PermohonanResource extends Resource
                 $query->whereJsonContains('role_id', "$role");
             });
         }
+    }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 
     public static function getRelations(): array
