@@ -1020,13 +1020,16 @@ class TrackingResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
-                    ->words(5)
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('perizinan.sektor.nama_sektor')
+                    ->description(
+                        fn (Permohonan $record) => 'Sektor : ' . $record->perizinan->sektor->nama_sektor,
+                        position: 'below'
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
                     ->wrap()
-                    ->lineClamp(2)
+                    ->badge()
+                    ->color(fn (Permohonan $record) => $record->status_permohonan->color)
+                    ->icon(fn (Permohonan $record) => $record->status_permohonan->icon)
                     ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')

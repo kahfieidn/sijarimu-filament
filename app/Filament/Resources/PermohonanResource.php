@@ -1028,31 +1028,38 @@ class PermohonanResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('profile_usaha.nama_perusahaan')
                     ->label('Perusahaan/Perorangan')
-                    ->searchable()
                     ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
                     ->wrap()
+                    ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
-                    ->words(5)
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('perizinan.sektor.nama_sektor')
+                    ->description(
+                        fn (Permohonan $record) => 'Sektor : ' . $record->perizinan->sektor->nama_sektor,
+                        position: 'below'
+                    )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
                     ->wrap()
-                    ->lineClamp(2)
+                    ->badge()
+                    ->color(fn (Permohonan $record) => $record->status_permohonan->color)
+                    ->icon(fn (Permohonan $record) => $record->status_permohonan->icon)
                     ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
                     ->sortable()
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('nomor_izin')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
+                Tables\Columns\TextColumn::make('created_at')
+                    ->label('Tanggal Pengajuan')
+                    ->date(format: 'd-m-Y')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('tanggal_izin_terbit')
+                    ->date(format: 'd-m-Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])

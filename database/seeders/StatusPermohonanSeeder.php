@@ -14,37 +14,37 @@ class StatusPermohonanSeeder extends Seeder
     {
         //
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Permohonan Anda Ditolak',
+            'general_status' => 'Permohonan Ditolak',
             'nama_status' => 'Ditolak',
             'icon' => 'heroicon-o-x-circle',
             'color' => 'danger',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Permohonan Anda Perlu Direvisi',
+            'general_status' => 'Permohonan Perlu Direvisi',
             'nama_status' => 'Revisi',
             'icon' => 'heroicon-o-exclamation-triangle',
             'color' => 'warning',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Permohonan Sedang Ditinjau Oleh Front Office',
+            'general_status' => 'Peninjauan Front Office',
             'nama_status' => 'Permintaan Persetujuan Front Office',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Back Office Cross Check Berkas & Membuat Draft Permintaan Rekomendasi',
+            'general_status' => 'Peninjauan Back Office (Rekomendasi)',
             'nama_status' => 'Permintaan Back Office Cross Check Berkas & Membuat Draft Permintaan Rekomendasi',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Verifikator Permintaan Rekomendasi',
+            'general_status' => 'Verifikator (Rekomendasi)',
             'nama_status' => 'Persetujuan Permintaan Rekomendasi Oleh Verifikator',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Persetujuan Kepala Dinas Permintaan Rekomendasi',
+            'general_status' => 'Persetujuan Kepala Dinas (Rekomendasi)',
             'nama_status' => 'Persetujuan Permintaan Rekomendasi Oleh Kepala Dinas',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
@@ -68,13 +68,13 @@ class StatusPermohonanSeeder extends Seeder
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Menunggu Persetujuan Izin Oleh Kepala Dinas',
+            'general_status' => 'Persetujuan Izin Kepala Dinas',
             'nama_status' => 'Persetujuan Izin Oleh Kepala Dinas',
             'icon' => 'heroicon-o-document-duplicate',
             'color' => 'primary',
         ]);
         \App\Models\StatusPermohonan::create([
-            'general_status' => 'Izin Anda Telah Terbit',
+            'general_status' => 'Izin Terbit',
             'nama_status' => 'Terbitkan Izin',
             'icon' => 'heroicon-o-check-badge',
             'color' => 'success',
