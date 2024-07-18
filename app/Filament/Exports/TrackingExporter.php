@@ -25,6 +25,8 @@ class TrackingExporter extends Exporter
                 ->label('Sektor'),
             ExportColumn::make('nomor_izin')
                 ->label('Nomor Izin'),
+            ExportColumn::make('created_at')
+                ->label('Tanggal Pengajuan'),
             ExportColumn::make('tanggal_izin_terbit')
                 ->label('Tanggal Izin Terbit'),
             ExportColumn::make('status_permohonan.general_status')
