@@ -28,6 +28,7 @@ use Filament\Forms\Components\Wizard;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Fieldset;
 use Filament\Forms\Components\Repeater;
+use Illuminate\Database\Eloquent\Model;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\RichEditor;
 use Filament\Tables\Actions\ExportAction;
@@ -1114,7 +1115,7 @@ class TrackingResource extends Resource
                                         ])
                                 ])
                                 ->columnSpanFull(),
-                        ]),
+                        ])->modalSubmitAction(false),
                 ]),
             ])
             ->bulkActions([
@@ -1124,7 +1125,10 @@ class TrackingResource extends Resource
                             return auth()->user()->roles->first()->name == 'super_admin';
                         }),
                 ]),
-            ]);
+            ])
+            ->recordUrl(
+                fn (Permohonan $record) => null,
+            );
     }
 
     // public static function canViewAny(): bool

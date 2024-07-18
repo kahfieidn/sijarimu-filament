@@ -2,9 +2,10 @@
 
 namespace App\Filament\Resources\TrackingResource\Pages;
 
-use App\Filament\Resources\TrackingResource;
+use Closure;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Resources\TrackingResource;
 
 class ListTrackings extends ListRecords
 {

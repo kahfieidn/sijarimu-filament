@@ -1109,7 +1109,9 @@ class PermohonanResource extends Resource
                             return auth()->user()->roles->first()->name == 'super_admin';
                         }),
                 ]),
-            ]);
+            ])->recordUrl(
+                fn (Permohonan $record) => null,
+            );
     }
 
     public static function getEloquentQuery(): Builder
