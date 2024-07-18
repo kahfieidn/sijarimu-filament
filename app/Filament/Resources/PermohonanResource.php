@@ -992,6 +992,8 @@ class PermohonanResource extends Resource
                                         $final_relation_status_name = StatusPermohonan::whereIn('id', $options_select_permohonan_id)->pluck('nama_status', 'id')->toArray();
                                         $data['final_relation_status_name'] = $final_relation_status_name;
                                         return $final_relation_status_name;
+                                    } else if ($operation === 'view') {
+                                        return StatusPermohonan::pluck('nama_status', 'id')->toArray();
                                     } else {
                                         return $get('final_relation_status_name');
                                     }
@@ -1059,7 +1061,6 @@ class PermohonanResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make()
                     ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon')
                     ->label('Tinjau'),
@@ -1097,6 +1098,9 @@ class PermohonanResource extends Resource
                     ->visible(function ($record) {
                         return ($record->status_permohonan_id == 4 || $record->status_permohonan_id == 8) && $record->message_bo != null && auth()->user()->roles->first()->name == 'back_office';
                     }),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ViewAction::make(),
+                ]),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

@@ -22,19 +22,22 @@ class ViewTracking extends ViewRecord
                 if (isset($item['flow'])) {
                     $flow_name = $item['flow'];
 
-                    if (in_array("$role", $item['role_id'])) {
+                    if (in_array("$role", $item['role_id']) && $item['condition_status'] == null) {
+                        $data[$flow_name] = true;
+                    } else if (in_array("$role", $item['role_id']) && $item['condition_status'] == $data['status_permohonan_id']) {
                         $data[$flow_name] = true;
                     }
                 }
             }
         }
+        $data['status_permohonan_id_from_edit'] = $data['status_permohonan_id'];
+
 
         return $data;
     }
 
     protected function getHeaderActions(): array
     {
-        return [
-        ];
+        return [];
     }
 }
