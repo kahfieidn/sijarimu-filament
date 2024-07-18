@@ -104,7 +104,7 @@ class PerizinanResource extends Resource
                             ->lineClamp(2)
                             ->expandableLimitedList()
                             ->copyable()
-                    ]),
+                    ])->modalSubmitAction(false),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
