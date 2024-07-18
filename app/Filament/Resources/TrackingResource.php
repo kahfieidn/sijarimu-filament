@@ -1082,6 +1082,20 @@ class TrackingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('Tracking')
+                        ->icon('heroicon-s-arrow-trending-up')
+                        ->infolist([
+                            \Filament\Infolists\Components\Section::make('Tracking Berkas')
+                                ->schema([
+                                    RepeatableEntry::make('activity_log')
+                                        ->schema([
+                                            TextEntry::make('Activity')->columnSpanFull(),
+                                            TextEntry::make('Stake Holder'),
+                                            TextEntry::make('Tanggal')->columnSpan(2)
+                                        ])
+                                ])
+                                ->columnSpanFull(),
+                        ])->modalSubmitAction(false),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\Action::make('Unduh Izin')
                         ->icon('heroicon-s-arrow-down-circle')
@@ -1103,20 +1117,6 @@ class TrackingResource extends Resource
                         ->visible(function ($record) {
                             return $record->status_permohonan_id == 2;
                         }),
-                    Tables\Actions\Action::make('Tracking')
-                        ->icon('heroicon-s-arrow-trending-up')
-                        ->infolist([
-                            \Filament\Infolists\Components\Section::make('Tracking Berkas')
-                                ->schema([
-                                    RepeatableEntry::make('activity_log')
-                                        ->schema([
-                                            TextEntry::make('Activity')->columnSpanFull(),
-                                            TextEntry::make('Stake Holder'),
-                                            TextEntry::make('Tanggal')->columnSpan(2)
-                                        ])
-                                ])
-                                ->columnSpanFull(),
-                        ])->modalSubmitAction(false),
                 ]),
             ])
             ->bulkActions([
