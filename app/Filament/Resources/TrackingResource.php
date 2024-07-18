@@ -1081,21 +1081,21 @@ class TrackingResource extends Resource
                     ->label('Izin Terbit')
             ])
             ->actions([
+                Tables\Actions\Action::make('Tracking')
+                    ->icon('heroicon-s-arrow-trending-up')
+                    ->infolist([
+                        \Filament\Infolists\Components\Section::make('Tracking Berkas')
+                            ->schema([
+                                RepeatableEntry::make('activity_log')
+                                    ->schema([
+                                        TextEntry::make('Activity')->columnSpanFull(),
+                                        TextEntry::make('Stake Holder'),
+                                        TextEntry::make('Tanggal')->columnSpan(2)
+                                    ])
+                            ])
+                            ->columnSpanFull(),
+                    ])->modalSubmitAction(false),
                 Tables\Actions\ActionGroup::make([
-                    Tables\Actions\Action::make('Tracking')
-                        ->icon('heroicon-s-arrow-trending-up')
-                        ->infolist([
-                            \Filament\Infolists\Components\Section::make('Tracking Berkas')
-                                ->schema([
-                                    RepeatableEntry::make('activity_log')
-                                        ->schema([
-                                            TextEntry::make('Activity')->columnSpanFull(),
-                                            TextEntry::make('Stake Holder'),
-                                            TextEntry::make('Tanggal')->columnSpan(2)
-                                        ])
-                                ])
-                                ->columnSpanFull(),
-                        ])->modalSubmitAction(false),
                     Tables\Actions\ViewAction::make(),
                     Tables\Actions\Action::make('Unduh Izin')
                         ->icon('heroicon-s-arrow-down-circle')
