@@ -241,7 +241,7 @@ class EditPermohonan extends EditRecord
         //Notify Email
         if ($this->record['status_permohonan_id'] == 11) {
             $permohonan->user->notify(new PermohonanDone($permohonan));
-        } else if ($this->record['status_permohonan_id'] == 2) {
+        } else if ($this->record['status_permohonan_id'] == 2 || $this->record['status_permohonan_id'] == 1) {
             $permohonan->user->notify(new PermohonanRejected($permohonan));
         }
 

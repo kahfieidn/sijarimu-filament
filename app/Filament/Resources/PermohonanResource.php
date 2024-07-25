@@ -1003,7 +1003,7 @@ class PermohonanResource extends Resource
                                 ->live()
                                 ->dehydrated(),
                             RichEditor::make('message')
-                                ->visible(fn ($get) => $get('status_permohonan_id') === '2'),
+                                ->visible(fn ($get) => $get('status_permohonan_id') === '2' || $get('status_permohonan_id') === '1'),
                             RichEditor::make('message_bo')
                                 ->label('Permintaan Perbaikan Berkas Ke Back Office')
                                 ->visible(fn ($get) => ($get('status_permohonan_id') === '4' || $get('status_permohonan_id') === '8') && auth()->user()->roles->first()->name == 'verifikator'),
