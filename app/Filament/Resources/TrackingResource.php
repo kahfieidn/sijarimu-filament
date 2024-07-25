@@ -1118,7 +1118,7 @@ class TrackingResource extends Resource
                                 ->columns(),
                         ])
                         ->visible(function ($record) {
-                            return $record->status_permohonan_id == 2;
+                            return $record->status_permohonan_id == 2 || $record->status_permohonan_id == 1;
                         }),
                 ]),
             ])
