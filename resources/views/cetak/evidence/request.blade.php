@@ -237,7 +237,7 @@
         {!! $permohonan->catatan_kesimpulan !!}
         @endif
 
-        <p class=MsoNormal><span style='font-size:12.0pt;font-family:"Times New Roman",serif'>Tracking
+        <p class=MsoNormal><span style='margin-top:10px;font-size:12.0pt;font-family:"Times New Roman",serif'>Tracking
                 Berkas :</span></p>
 
         <p class=MsoNormal><span style='font-size:12.0pt;font-family:"Times New Roman",serif'>&nbsp;</span></p>
