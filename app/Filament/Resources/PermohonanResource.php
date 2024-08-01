@@ -1062,7 +1062,7 @@ class PermohonanResource extends Resource
                     ->date(format: 'd-m-Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
+            ])->defaultSort('created_at', 'desc')
             ->headerActions([])
             ->filters([
                 //

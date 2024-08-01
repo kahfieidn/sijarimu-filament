@@ -34,6 +34,7 @@ Route::get('/auth/redirect', [App\Http\Controllers\Auth\SocialiteController::cla
 Route::get('/auth/google/callback', [App\Http\Controllers\Auth\SocialiteController::class, 'callback'])->name('socialite.callback');
 
 Route::group(['middleware' => []], function () {
+    Route::get('/app/generate/cetak_evidence/{permohonan_id}', [App\Http\Controllers\Cetak\GenerateEvidence::class, 'generateEvidence'])->name('app.cetak.generate-evidence');
     Route::get('/app/generate/permintaan_rekomendasi/{permohonan_id}', [App\Http\Controllers\Cetak\GeneratePermintaanRekomendasi::class, 'generatePermintaanRekomendasi'])->name('app.cetak.permintaan-rekomendasi-request');
     Route::get('/app/generate/izin/{permohonan_id}', [App\Http\Controllers\Cetak\GenerateIzin::class, 'generateIzin'])->name('app.cetak.izin.request');
 });
