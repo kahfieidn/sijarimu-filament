@@ -1107,7 +1107,7 @@ class TrackingResource extends Resource
                         ->visible(function ($record) {
                             return $record->status_permohonan_id == 11 && auth()->user()->roles->first()->name != 'opd_teknis';
                         }),
-                    Tables\Actions\Action::make('Cetak Evident')
+                    Tables\Actions\Action::make('Lembar Verifikasi')
                         ->icon('heroicon-s-printer')
                         ->url(fn (Permohonan $record): string => route('app.cetak.generate-evidence', $record->id))
                         ->openUrlInNewTab(),
