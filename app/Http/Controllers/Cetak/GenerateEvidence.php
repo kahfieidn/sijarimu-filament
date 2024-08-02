@@ -30,6 +30,6 @@ class GenerateEvidence extends Controller
 
         // $pdf = PDF::loadView('cetak.izin', compact('permohonan'));
 
-        return $pdf->stream($get_nama_izin . '_' . $nama_user . '.pdf');
+        return $pdf->stream('Lembar Verifikasi Berkas' . '_' . $nama_user . '_' . $permohonan->id . '.pdf');
     }
 }
