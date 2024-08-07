@@ -13,7 +13,8 @@ class Persyaratan extends Model
     protected $fillable = [
         'perizinan_id',
         'nama_persyaratan',
-        'deskripsi_persyaratan'
+        'deskripsi_persyaratan',
+        'template',
     ];
 
     public function perizinan()

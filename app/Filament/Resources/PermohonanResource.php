@@ -200,7 +200,14 @@ class PermohonanResource extends Resource
                                             })
                                             ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
                                                 $persyaratan = Persyaratan::where('id', $get('nama_persyaratan'))->first();
-                                                $set('deskripsi_persyaratan', $persyaratan->deskripsi_persyaratan ?? '-');
+
+                                                if (!empty($persyaratan->template)) {
+                                                    $deskripsi_persyaratan = $persyaratan->deskripsi_persyaratan . ' ' . $persyaratan->template;
+                                                } else {
+                                                    $deskripsi_persyaratan = $persyaratan->deskripsi_persyaratan;
+                                                }
+
+                                                $set('deskripsi_persyaratan', $deskripsi_persyaratan ?? '-');
                                             })
                                             ->live()
                                             ->preload(),

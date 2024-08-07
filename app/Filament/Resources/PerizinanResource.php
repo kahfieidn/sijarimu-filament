@@ -11,6 +11,8 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Section;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Infolists\Components\KeyValueEntry;
+use Filament\Infolists\Components\RepeatableEntry;
 use App\Filament\Resources\PerizinanResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\PerizinanResource\RelationManagers;
@@ -98,12 +100,15 @@ class PerizinanResource extends Resource
                 Tables\Actions\Action::make('Lihat Berkas')
                     ->icon('heroicon-s-arrow-trending-up')
                     ->infolist([
-                        TextEntry::make('persyaratan.nama_persyaratan')
-                            ->listWithLineBreaks()
-                            ->bulleted()
-                            ->lineClamp(2)
-                            ->expandableLimitedList()
-                            ->copyable()
+                        RepeatableEntry::make('persyaratan')
+                            ->schema([
+                                TextEntry::make('nama_persyaratan'),
+                                TextEntry::make('deskripsi_persyaratan')->html(),
+                                TextEntry::make('template')
+                                    ->html()
+                                    ->hidden(fn ($record) => $record->template == null),
+                            ])
+                            ->columns(2),
                     ])->modalSubmitAction(false),
             ])
             ->bulkActions([
