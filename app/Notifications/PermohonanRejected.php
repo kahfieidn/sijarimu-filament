@@ -3,7 +3,10 @@
 namespace App\Notifications;
 
 use App\Models\Permohonan;
+use Illuminate\Support\Str;
 use Illuminate\Bus\Queueable;
+use App\Channels\WhacenterChannel;
+use App\Services\WhacenterService;
 use Illuminate\Support\HtmlString;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -29,7 +32,7 @@ class PermohonanRejected extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', WhacenterChannel::class];
     }
 
     /**
@@ -61,5 +64,22 @@ class PermohonanRejected extends Notification
         return [
             //
         ];
+    }
+
+    public function toWhacenter($notifiable)
+    {
+        $plainMessage = strip_tags($this->permohonan->message);
+        $decodedMessage = html_entity_decode($plainMessage, ENT_QUOTES, 'UTF-8');
+    
+        return (new WhacenterService())
+            ->to('62' . $this->permohonan->user->nomor_hp)
+            ->file('')
+            ->line('*Yang terhormat, ' . $this->permohonan->user->name . "*\n\n" .
+                "📄 Permohonan dengan ID # *" . $this->permohonan->id . "* perihal kepengurusan *" . $this->permohonan->perizinan->nama_perizinan . "*.\n\n" .
+                "Mohon maaf, Permohonan anda ditolak dan perlu diperbaiki.\n\n" .
+                "Alasan verifikator: " . $decodedMessage . "\n\n" .
+                "Silahkan diperbaiki sesuai dengan instruksi tersebut, lalu dapat mengajukan ulang.\n\n" .
+                "Terima kasih.\n" .
+                "📲 *Sijarimu* - Aplikasi Perizinan Non OSS Online : https://s.id/sijarimu");
     }
 }

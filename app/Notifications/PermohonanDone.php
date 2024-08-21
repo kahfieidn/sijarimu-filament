@@ -4,6 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Permohonan;
 use Illuminate\Bus\Queueable;
+use App\Channels\WhacenterChannel;
+use App\Services\WhacenterService;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -30,7 +32,7 @@ class PermohonanDone extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', WhacenterChannel::class];
     }
 
     /**
@@ -60,5 +62,20 @@ class PermohonanDone extends Notification
         return [
             //
         ];
+    }
+
+    public function toWhacenter($notifiable)
+    {
+        $fileUrl = url('storage/' . $this->permohonan->izin_terbit);
+
+        return (new WhacenterService())
+            ->to('62' . $this->permohonan->user->nomor_hp)
+            ->file('')
+            ->line('*Yang terhormat, ' . $this->permohonan->user->name . "*\n\n" .
+                "📄 Permohonan dengan ID # *" . $this->permohonan->id . "* perihal kepengurusan *" . $this->permohonan->perizinan->nama_perizinan . "*.\n\n" .
+                "Dapat kami informasikan Permohonan anda telah selesai di proses.\n\n" .
+                "Anda bisa mengunduh berkas izin terbit melalui Aplikasi Sijarimu, Silahkan login menggunakan akun anda dan unduh izin pada permohonan anda.\n\n" .
+                "Terima kasih.\n" .
+                "📲 *Sijarimu* - Aplikasi Perizinan Non OSS Online : https://s.id/sijarimu");
     }
 }

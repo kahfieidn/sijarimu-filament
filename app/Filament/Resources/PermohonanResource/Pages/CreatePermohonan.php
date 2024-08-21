@@ -81,6 +81,8 @@ class CreatePermohonan extends CreateRecord
 
         //Notifyemail
         $permohonan->user->notify(new PermohonanCreated($permohonan));
+
+
     }
 
     protected function getRedirectUrl(): string

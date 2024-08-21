@@ -4,6 +4,8 @@ namespace App\Notifications;
 
 use App\Models\Permohonan;
 use Illuminate\Bus\Queueable;
+use App\Channels\WhacenterChannel;
+use App\Services\WhacenterService;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -28,7 +30,7 @@ class PermohonanCreated extends Notification
      */
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', WhacenterChannel::class];
     }
 
     /**
@@ -57,5 +59,18 @@ class PermohonanCreated extends Notification
         return [
             //
         ];
+    }
+
+    public function toWhacenter($notifiable)
+    {
+        return (new WhacenterService())
+            ->to('62' . $this->permohonan->user->nomor_hp)
+            ->file('')
+            ->line('*Yang terhormat, ' . $this->permohonan->user->name . "*\n\n" .
+                "📄 Anda telah membuat permohonan baru dengan ID *" . $this->permohonan->id . "* perihal kepengurusan *" . $this->permohonan->perizinan->nama_perizinan . "*.\n\n" .
+                "Permohonan Anda telah berhasil kami terima. Selanjutnya, tindak lanjut permohonan ini membutuhkan waktu *4 - 7 hari* bursa kerja.\n\n" .
+                "Setelah berkas selesai diproses, Anda akan menerima notifikasi dari kami. Sekarang Anda dapat memantau proses berkas Anda pada menu *\"Tracking\"* di Aplikasi Sijarimu.\n\n" .
+                "Terima kasih.\n" .
+                "📲 *Sijarimu* - Aplikasi Perizinan Non OSS Online : https://s.id/sijarimu");
     }
 }
