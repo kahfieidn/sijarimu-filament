@@ -15,8 +15,6 @@ class WhacenterService
 
     public function __construct()
     {
-        $this->appKey = env('WA_APP_KEY');
-        $this->authKey = env('WA_AUTH_KEY');
         $this->client = new Client();
     }
 
@@ -45,17 +43,28 @@ class WhacenterService
         }
         $message = implode("\n", $this->lines);
 
-        $response = $this->client->post('https://app.wapanels.com/api/create-message', [
-            'form_params' => [
-                'appkey' => $this->appKey,
-                'authkey' => $this->authKey,
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://app.wapanels.com/api/create-message',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => array(
+                'appkey' => env('WA_APP_KEY'),
+                'authkey' => env('WA_AUTH_KEY'),
                 'to' => $this->to,
                 'file' => $this->file,
                 'message' => $message,
-                'sandbox' => 'true'
-            ]
-        ]);
+                'sandbox' => 'false'
+            ),
+        ));
+        $response = curl_exec($curl);
 
-        return json_decode($response->getBody()->getContents(), true);
+        curl_close($curl);
+        return $response;
     }
 }

@@ -139,7 +139,7 @@ class PermohonanResource extends Resource
                                 ->preload()
                                 ->disabledOn('edit')
                                 ->dehydrated()
-                                ->disableOptionWhen(fn (Get $get) => $get('perizinan_id') != null),
+                                ->disableOptionWhen(fn(Get $get) => $get('perizinan_id') != null),
                         ]),
                     Wizard\Step::make('Unggah Berkas')
                         ->schema([
@@ -257,12 +257,16 @@ class PermohonanResource extends Resource
                                 ->extraItemActions([
                                     Action::make('Lihat')
                                         ->button('Lihat')
-                                        ->modalContent(function (array $arguments, Repeater $component): View {
+                                        ->modalContent(function (array $state,array $arguments, Repeater $component): View {
                                             $itemData = $component->getItemState($arguments['item']) ?? '';
+                                            $currentIndex = $arguments['item']; // Current item index
 
                                             if (blank($itemData['file'])) {
                                                 abort(404, 'File not found');
                                             }
+
+                                            $key = array_search($state, $component->getState());
+                                            $index = array_search($key, array_keys($component->getState()));
 
                                             $nama_persyaratan = Persyaratan::where('id', $itemData['nama_persyaratan'])->pluck('nama_persyaratan')->first();
 
@@ -271,9 +275,9 @@ class PermohonanResource extends Resource
                                                 'fileUrl' => url('storage/' . $itemData['file']),
                                             ]);
                                         })
-                                        ->modalSubmitAction(false)
+                                        ->modalSubmitAction()
                                         ->modalCancelActionLabel('Tutup')
-                                        ->hidden(fn (array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
+                                        ->hidden(fn(array $arguments, Repeater $component): bool => blank($component->getRawItemState($arguments['item'])['file'])),
                                     Action::make('Approved')
                                         ->button('')
                                         ->label('✓')
@@ -281,7 +285,7 @@ class PermohonanResource extends Resource
                                             $set('berkas.' . $arguments['item'] . '.status', 'Approved');
                                         })
                                         ->color('success')
-                                        ->disabled(fn (array $arguments, Repeater $component): bool => $component->getRawItemState($arguments['item'])['status'] == 'Approved')
+                                        ->disabled(fn(array $arguments, Repeater $component): bool => $component->getRawItemState($arguments['item'])['status'] == 'Approved')
                                         ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
                                     Action::make('Revision')
                                         ->button('')
@@ -290,13 +294,13 @@ class PermohonanResource extends Resource
                                             $set('berkas.' . $arguments['item'] . '.status', 'Revision');
                                         })
                                         ->color('danger')
-                                        ->disabled(fn (array $arguments, Repeater $component): bool => $component->getRawItemState($arguments['item'])['status'] == 'Revision')
+                                        ->disabled(fn(array $arguments, Repeater $component): bool => $component->getRawItemState($arguments['item'])['status'] == 'Revision')
                                         ->visible(auth()->user()->roles->first()->name != 'pemohon' ? true : false),
                                 ])
                                 ->collapsed(auth()->user()->roles->first()->name != 'pemohon')
-                                ->itemLabel(fn (array $state): ?string => ($state['status'] ?? 'Pending') . ' - ' . Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first())
+                                ->itemLabel(fn(array $state): ?string => ($state['status'] ?? 'Pending') . ' - ' . Persyaratan::where('id', $state['nama_persyaratan'] ?? null)->pluck('nama_persyaratan')->first())
                                 ->deleteAction(
-                                    fn (Action $action) => $action->requiresConfirmation(),
+                                    fn(Action $action) => $action->requiresConfirmation(),
                                 )
                                 ->deletable(auth()->user()->roles->first()->name == 'pemohon' ? true : false),
                             Toggle::make('is_catatan_kesimpulan')
@@ -305,10 +309,10 @@ class PermohonanResource extends Resource
                                 ->live(),
                             RichEditor::make('catatan_kesimpulan')
                                 ->dehydrated(true)
-                                ->hidden(fn (Get $get): bool => !$get('is_catatan_kesimpulan') || $get('is_catatan_kesimpulan') == null)
+                                ->hidden(fn(Get $get): bool => !$get('is_catatan_kesimpulan') || $get('is_catatan_kesimpulan') == null)
                         ]),
                     Wizard\Step::make('Formulir')
-                        ->visible(fn (Get $get) => $get('checklist_formulir'))
+                        ->visible(fn(Get $get) => $get('checklist_formulir'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -405,7 +409,7 @@ class PermohonanResource extends Resource
                             ];
                         })->columns(2),
                     Wizard\Step::make('Profile Usaha')
-                        ->visible(fn (Get $get) => $get('profile_usaha_relation'))
+                        ->visible(fn(Get $get) => $get('profile_usaha_relation'))
                         ->schema([
                             Fieldset::make('Profile Usaha')
                                 ->relationship('profile_usaha')
@@ -453,7 +457,7 @@ class PermohonanResource extends Resource
                         ]),
                     Wizard\Step::make('Back Office')
                         ->description('Permintaan Rekomendasi')
-                        ->visible(fn (Get $get) => $get('bo_before_opd_moderation'))
+                        ->visible(fn(Get $get) => $get('bo_before_opd_moderation'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -561,7 +565,7 @@ class PermohonanResource extends Resource
                                         'is_template_rekomendasi' => 'Menggunakan Template Rekomendasi',
                                         'is_manual_rekomendasi' => 'Unggah Manual Rekomendasi',
                                     ])
-                                    ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first() == 1 ? 'is_template_rekomendasi' : 'is_manual_rekomendasi')
+                                    ->default(fn($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_rekomendasi')->first() == 1 ? 'is_template_rekomendasi' : 'is_manual_rekomendasi')
                                     ->live()
                                     ->inline()
                                     ->columnSpanFull()
@@ -583,14 +587,14 @@ class PermohonanResource extends Resource
                                     ->columnSpanFull()
                                     ->openable()
                                     ->directory('rekomendasi_terbit' . '/' . Carbon::now()->format('Y-F'))
-                                    ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
+                                    ->hidden(fn($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
 
 
                             ];
                         })->columns(2),
                     Wizard\Step::make('Kadis Tanda Tangan')
                         ->description('Permintaan Rekomendasi')
-                        ->visible(fn (Get $get) => $get('kadis_before_opd_moderation'))
+                        ->visible(fn(Get $get) => $get('kadis_before_opd_moderation'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -721,12 +725,12 @@ class PermohonanResource extends Resource
                                     ->columnSpanFull()
                                     ->openable()
                                     ->directory('rekomendasi_terbit' . '/' . Carbon::now()->format('Y-F'))
-                                    ->hidden(fn ($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
+                                    ->hidden(fn($get) => $get('tanda_tangan_permintaan_rekomendasi') !== 'is_manual_rekomendasi')
                             ];
                         })->columns(2),
                     Wizard\Step::make('OPD')
                         ->description('Melakukan Kajian Teknis')
-                        ->visible(fn (Get $get) => $get('opd_moderation'))
+                        ->visible(fn(Get $get) => $get('opd_moderation'))
                         ->schema(function (Get $get) {
                             $final_relation_status_id = $get('final_relation_status_id') ?? [];
 
@@ -748,7 +752,7 @@ class PermohonanResource extends Resource
                         })->columns(2),
                     Wizard\Step::make('Back Office')
                         ->description('Membuat Draft Izin')
-                        ->visible(fn (Get $get) => $get('bo_after_opd_moderation'))
+                        ->visible(fn(Get $get) => $get('bo_after_opd_moderation'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -811,7 +815,7 @@ class PermohonanResource extends Resource
                                         'is_template_izin' => 'Menggunakan Template Izin',
                                         'is_manual_izin' => 'Unggah Manual Izin',
                                     ])
-                                    ->default(fn ($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_izin')->first() == 1 ? 'is_template_izin' : 'is_manual_izin')
+                                    ->default(fn($get) => Perizinan::where('id', $get('perizinan_id'))->pluck('is_save_as_template_izin')->first() == 1 ? 'is_template_izin' : 'is_manual_izin')
                                     ->live()
                                     ->inline()
                                     ->afterStateUpdated(function ($livewire, Set $set, Get $get, $state) {
@@ -832,13 +836,13 @@ class PermohonanResource extends Resource
                                     ->openable()
                                     ->columnSpanFull()
                                     ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
-                                    ->hidden(fn ($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
+                                    ->hidden(fn($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
                             ];
                         })->columns(2),
 
                     Wizard\Step::make('Kadis Tanda Tangan')
                         ->description('Izin Terbit')
-                        ->visible(fn (Get $get) => $get('kadis_after_opd_moderation'))
+                        ->visible(fn(Get $get) => $get('kadis_after_opd_moderation'))
                         ->schema(function (Get $get): array {
                             $options = Formulir::whereIn('perizinan_id', function ($query) use ($get) {
                                 $query->select('perizinan_id')
@@ -970,7 +974,7 @@ class PermohonanResource extends Resource
                                     ->openable()
                                     ->columnSpanFull()
                                     ->directory('izin_terbit' . '/' . Carbon::now()->format('Y-F'))
-                                    ->hidden(fn ($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
+                                    ->hidden(fn($get) => $get('tanda_tangan_izin') !== 'is_manual_izin')
                             ];
                         })->columns(2),
 
@@ -1010,10 +1014,10 @@ class PermohonanResource extends Resource
                                 ->live()
                                 ->dehydrated(),
                             RichEditor::make('message')
-                                ->visible(fn ($get) => $get('status_permohonan_id') === '2' || $get('status_permohonan_id') === '1'),
+                                ->visible(fn($get) => $get('status_permohonan_id') === '2' || $get('status_permohonan_id') === '1'),
                             RichEditor::make('message_bo')
                                 ->label('Permintaan Perbaikan Berkas Ke Back Office')
-                                ->visible(fn ($get) => ($get('status_permohonan_id') === '4' || $get('status_permohonan_id') === '8') && auth()->user()->roles->first()->name == 'verifikator'),
+                                ->visible(fn($get) => ($get('status_permohonan_id') === '4' || $get('status_permohonan_id') === '8') && auth()->user()->roles->first()->name == 'verifikator'),
                             Placeholder::make('Apakah seluruh data yang diunggah sudah benar ?'),
                             Forms\Components\Checkbox::make('saya_setuju')
                                 ->label('Ya, Saya Setuju!')
@@ -1022,9 +1026,9 @@ class PermohonanResource extends Resource
                             Hidden::make('nomor_izin'),
                         ]),
                 ])->columnSpanFull()->nextAction(
-                    fn (Action $action) => $action->label('Selanjutnya'),
+                    fn(Action $action) => $action->label('Selanjutnya'),
                 )->previousAction(
-                    fn (Action $action) => $action->label('Sebelumnya'),
+                    fn(Action $action) => $action->label('Sebelumnya'),
                 )->skippable(auth()->user()->roles->first()->name != 'pemohon'),
             ]);
     }
@@ -1035,22 +1039,22 @@ class PermohonanResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('profile_usaha.nama_perusahaan')
                     ->label('Perusahaan/Perorangan')
-                    ->default(fn ($record) => $record->profile_usaha->nama_perusahaan ?? fn ($record) => $record->user->name)
+                    ->default(fn($record) => $record->profile_usaha->nama_perusahaan ?? fn($record) => $record->user->name)
                     ->wrap()
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('perizinan.nama_perizinan')
                     ->wrap()
                     ->description(
-                        fn (Permohonan $record) => 'Sektor : ' . $record->perizinan->sektor->nama_sektor,
+                        fn(Permohonan $record) => 'Sektor : ' . $record->perizinan->sektor->nama_sektor,
                         position: 'below'
                     )
                     ->sortable(),
                 Tables\Columns\TextColumn::make('status_permohonan.general_status')
                     ->wrap()
                     ->badge()
-                    ->color(fn (Permohonan $record) => $record->status_permohonan->color)
-                    ->icon(fn (Permohonan $record) => $record->status_permohonan->icon)
+                    ->color(fn(Permohonan $record) => $record->status_permohonan->color)
+                    ->icon(fn(Permohonan $record) => $record->status_permohonan->icon)
                     ->words(5)
                     ->sortable(),
                 Tables\Columns\TextColumn::make('user.name')
@@ -1076,12 +1080,12 @@ class PermohonanResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->visible(fn ($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon')
+                    ->visible(fn($record) => auth()->user()->roles->first()->name == 'pemohon' && $record->status_permohonan_id == 2 || auth()->user()->roles->first()->name != 'pemohon')
                     ->label('Tinjau'),
                 Tables\Actions\Action::make('Unduh Izin')
                     ->icon('heroicon-s-arrow-down-circle')
                     // ->url(fn (Permohonan $record): string => url('storage/izin/' . $record->izin_terbit))
-                    ->url(fn (Permohonan $record): string => url('storage/' . $record->izin_terbit))
+                    ->url(fn(Permohonan $record): string => url('storage/' . $record->izin_terbit))
                     ->openUrlInNewTab()
                     ->visible(function ($record) {
                         return $record->status_permohonan_id == 11;
@@ -1125,7 +1129,7 @@ class PermohonanResource extends Resource
                 ]),
             ])
             ->recordUrl(
-                fn (Permohonan $record) => null,
+                fn(Permohonan $record) => null,
             );
     }
 
