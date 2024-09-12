@@ -29,7 +29,7 @@ class TrackingExporter extends Exporter
                 ->label('Nomor Handphone'),
             ExportColumn::make('formulir.Judul Penelitian')
                 ->label('Judul Penelitian'),
-            ExportColumn::make('formulir.Universitas')
+            ExportColumn::make('formulir.Nama Universitas')
                 ->label('Universitas'),
             ExportColumn::make('formulir.Jenjang')
                 ->label('Jenjang'),
